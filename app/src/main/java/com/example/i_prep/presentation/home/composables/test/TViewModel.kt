@@ -41,8 +41,8 @@ class TViewModel : ViewModel() {
 
     private fun startTimer(navHostController: NavHostController) {
         timer?.cancel()
-
-        timer = object : CountDownTimer(state.value.pTest.itemSet * 500L, 1000L) {
+        // adjust it for testing = 1000L, actual value = 30000L
+        timer = object : CountDownTimer((state.value.pTest.itemSet * 1000L) + 1000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 _state.update { it.copy(time = millisUntilFinished) }
             }

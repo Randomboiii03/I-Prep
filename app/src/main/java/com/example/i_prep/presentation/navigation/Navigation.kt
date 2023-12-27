@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -22,9 +21,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalViewModel
+import com.example.i_prep.presentation.create.form.Form
 import com.example.i_prep.presentation.history.HistoryNavHost
 import com.example.i_prep.presentation.home.HomeNavHost
 import com.example.i_prep.presentation.navigation.components.BottomNavAnimation
+import com.example.i_prep.presentation.navigation.model.BottomNav
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -48,9 +49,9 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
             }
         }
     ) {
-        NavHost(navController = rootNavController, startDestination = "Home") {
+        NavHost(navController = rootNavController, startDestination = BottomNav.Home.title) {
             composable(
-                route = "Home",
+                route = BottomNav.Home.title,
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Right,
@@ -68,7 +69,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
             }
 
             composable(
-                route = "Create",
+                route = BottomNav.Create.title,
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,
@@ -76,16 +77,11 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "Create")
-                }
+                Form(globalEvent = mGlobalViewModel::onEvent)
             }
 
             composable(
-                route = "History",
+                route = BottomNav.History.title,
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,
@@ -97,7 +93,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
             }
 
             composable(
-                route = "More",
+                route = BottomNav.More.title,
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,

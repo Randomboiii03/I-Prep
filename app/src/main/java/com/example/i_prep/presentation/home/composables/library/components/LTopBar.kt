@@ -1,5 +1,6 @@
 package com.example.i_prep.presentation.home.composables.library.components
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -18,6 +19,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,19 +58,13 @@ fun HTopBar(
 
                 AnimatedVisibility(visible = isSearch) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Search",
-                            modifier = modifier
-                                .padding(end = 16.dp)
-                                .clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    showSearch()
-                                }
+                        LIconButton(
+                            icon = Icons.Default.ArrowBack,
+                            onAction = { showSearch() },
+                            contentDesc = "Search"
                         )
 
                         Column(
@@ -101,59 +100,54 @@ fun HTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AnimatedVisibility(visible = !isSearch) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        modifier = modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                showSearch()
-                            }
+                    LIconButton(
+                        icon = Icons.Default.Search,
+                        onAction = { showSearch() },
+                        contentDesc = "Search"
                     )
                 }
 
                 AnimatedVisibility(visible = isSearch && searchText.isNotEmpty()) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Search",
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
-                        modifier = modifier
-                            .clickable(
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) {
-                                onSearch("")
-                            }
-                    )
+                    LIconButton(
+                        icon = Icons.Default.Close,
+                        contentDesc = "Delete Search Text",
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
+                        onAction = { onSearch("") })
                 }
 
-                Icon(
-                    imageVector = Icons.Default.FilterList,
-                    contentDescription = "Search",
-                    modifier = modifier
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            showFilter()
-                        }
-                )
+                LIconButton(
+                    icon = Icons.Default.FilterList,
+                    contentDesc = "Show Filter List",
+                    onAction = { showFilter() })
 
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Search",
-                    modifier = modifier
-                        .padding(end = 16.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            onSearch("")
-                        }
-                )
+                LIconButton(
+                    icon = Icons.Default.MoreVert,
+                    contentDesc = "More Options",
+                    onAction = {  },
+                    modifier = modifier.padding(end = 16.dp))
             }
         }
+    )
+}
+
+@Composable
+private fun LIconButton(
+    icon: ImageVector,
+    onAction: () -> Unit,
+    contentDesc: String,
+    color: Color = MaterialTheme.colorScheme.onSurface,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+) {
+    Icon(
+        imageVector = icon,
+        contentDescription = contentDesc,
+        tint = color,
+        modifier = modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                onAction()
+            }
     )
 }

@@ -1,13 +1,13 @@
 package com.example.i_prep.presentation.navigation.model
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -17,9 +17,9 @@ sealed class BottomNav(
     val unselectedItem: ImageVector
 ) {
     object Home : BottomNav(
-        title = "Home",
-        selectedItem = Icons.Filled.Home,
-        unselectedItem = Icons.Outlined.Home
+        title = "Library",
+        selectedItem = Icons.Filled.CollectionsBookmark,
+        unselectedItem = Icons.Outlined.CollectionsBookmark
     )
 
     object Create : BottomNav(
