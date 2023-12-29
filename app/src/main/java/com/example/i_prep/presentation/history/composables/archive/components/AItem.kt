@@ -77,7 +77,7 @@ fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, mod
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = modifier
-                        .padding(3.dp)
+                        .padding(4.dp)
                 )
             }
 
@@ -91,7 +91,7 @@ fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, mod
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onTertiary,
                     modifier = modifier
-                        .padding(3.dp)
+                        .padding(4.dp)
                 )
             }
         }

@@ -35,19 +35,16 @@ import com.example.i_prep.presentation.GlobalState
 import com.example.i_prep.presentation.home.composables.result.components.RTopBar
 import com.example.i_prep.presentation.home.composables.test.TEvent
 import com.example.i_prep.presentation.home.composables.test.TViewModel
+import com.example.i_prep.presentation.home.model.HomeNav
 
 @Composable
 fun Result(
-    globalState: GlobalState,
-    globalEvent: (GlobalEvent) -> Unit,
-    mTViewModel: TViewModel,
-    onEvent: (TEvent) -> Unit,
+    score: Int,
+    itemSet: Int,
     navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val state by mTViewModel.state.collectAsState()
-
-    val percentage = ((state.score.toDouble() / state.pTest.itemSet.toDouble()) * 100).toInt()
+    val percentage = ((score.toDouble() / itemSet.toDouble()) * 100).toInt()
 
     Scaffold(
         topBar = { RTopBar { navHostController.popBackStack() } }
@@ -59,7 +56,12 @@ fun Result(
             contentAlignment = Alignment.Center
         ) {
             Column(
-                modifier = modifier.wrapContentSize().background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp)),
+                modifier = modifier
+                    .wrapContentSize()
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        RoundedCornerShape(16.dp)
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -98,7 +100,7 @@ fun Result(
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("${state.questions.size} questions")
+                            append("${itemSet} questions")
                         }
 
                         append(" and")
@@ -117,7 +119,7 @@ fun Result(
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("${state.score} answer")
+                            append("${score} answer")
                         }
 
                         append(" is correct.")
@@ -129,12 +131,7 @@ fun Result(
                 )
 
                 Button(
-                    onClick = {
-//                        when (state.pTest.questionType) {
-//                            "sa" -> navHostController.navigateToSingleTop("Test Result SA/${state.historyId}")
-//                            else -> navHostController.navigateToSingleTop("Test Result MC/${state.historyId}")
-//                        }
-                    },
+                    onClick = { navHostController.navigate(HomeNav.View.title) },
                     shape = RoundedCornerShape(16.dp),
                     modifier = modifier.padding(bottom = 12.dp)
                 ) {

@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.form.components
+package com.example.i_prep.presentation.create.composables.form.components
 
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -10,22 +10,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.UploadFile
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.example.i_prep.presentation.create.CEvent
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun FUploadFile(fileName: String, modifier: Modifier = Modifier) {
+fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -51,31 +50,30 @@ fun FUploadFile(fileName: String, modifier: Modifier = Modifier) {
                             val fileSize = inputStream?.available() ?: 0
                             inputStream?.close()
 
-                            if (!(fileSize > 10000000)) {
-
-//                                mCTViewModel.setFileName(it.getString(columnIndex))
+                            if (fileSize <= 10000000) {
                                 val folder = File(cacheDir, "uploaded_files")
 
                                 if (!folder.exists()) {
                                     folder.mkdir()
                                 }
 
-//                                val file = File(folder, mCTViewModel.state.fileName)
-//                                mCTViewModel.setFilePath(file.absolutePath)
-//
-//                                try {
-//                                    val inputStream = contentResolver.openInputStream(uri)
-//                                    val outputStream = FileOutputStream(file)
-//
-//                                    inputStream?.use { input ->
-//                                        outputStream.use { output ->
-//                                            input.copyTo(output)
-//                                        }
-//                                    }
-//                                    Toast.makeText(context, fileName, Toast.LENGTH_LONG).show()
-//                                } catch (e: Exception) {
-//                                    Toast.makeText(context, "Error: $e", Toast.LENGTH_LONG).show()
-//                                }
+                                val file = File(folder, fileName)
+
+                                try {
+                                    val inputStream = contentResolver.openInputStream(uri)
+                                    val outputStream = FileOutputStream(file)
+                                    onEvent(CEvent.UploadFile(fileName, file.absolutePath))
+
+                                    inputStream?.use { input ->
+                                        outputStream.use { output ->
+                                            input.copyTo(output)
+                                        }
+                                    }
+
+                                    Toast.makeText(context, fileName, Toast.LENGTH_LONG).show()
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Error: $e", Toast.LENGTH_LONG).show()
+                                }
 
                             } else {
                                 Toast.makeText(

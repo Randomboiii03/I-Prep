@@ -86,7 +86,7 @@ class GlobalViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = true) }
 
                     _state.update {
-                        it.copy(tHistory = event.tHistory, isLoading = false)
+                        it.copy(pTest = event.pTest, tHistory = event.tHistory, showBottomNav = false, isLoading = false)
                     }
                 }
             }
@@ -96,7 +96,7 @@ class GlobalViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = true) }
 
                     _state.update {
-                        it.copy(pTest = event.pTest, showBottomNav = false, isLoading = false)
+                        it.copy(showBottomNav = false, pTest = event.pTest, isLoading = false)
                     }
                 }
             }
@@ -140,7 +140,7 @@ class GlobalViewModel @Inject constructor(
                 }
             }
 
-            GlobalEvent.ShowBottomNav -> _state.update { it.copy(showBottomNav = true) }
+            is GlobalEvent.ShowBottomNav -> _state.update { it.copy(showBottomNav = event.isShow) }
         }
     }
 }
@@ -166,7 +166,8 @@ sealed interface GlobalEvent {
 
     data class SearchTest(val query: String) : GlobalEvent
     data class GetTest(val pTest: PTest) : GlobalEvent
-    object ShowBottomNav : GlobalEvent
 
-    data class GetHistory(val tHistory: THistory) : GlobalEvent
+    data class ShowBottomNav(val isShow: Boolean) : GlobalEvent
+
+    data class GetHistory(val tHistory: THistory, val pTest: PTest) : GlobalEvent
 }

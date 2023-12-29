@@ -21,9 +21,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalViewModel
-import com.example.i_prep.presentation.create.form.Form
+import com.example.i_prep.presentation.create.CreateNavHost
+import com.example.i_prep.presentation.create.composables.form.Form
 import com.example.i_prep.presentation.history.HistoryNavHost
 import com.example.i_prep.presentation.home.HomeNavHost
+import com.example.i_prep.presentation.more.MoreNavHost
 import com.example.i_prep.presentation.navigation.components.BottomNavAnimation
 import com.example.i_prep.presentation.navigation.model.BottomNav
 
@@ -77,7 +79,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                Form(globalEvent = mGlobalViewModel::onEvent)
+                CreateNavHost(globalEvent = mGlobalViewModel::onEvent)
             }
 
             composable(
@@ -101,12 +103,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "More")
-                }
+                MoreNavHost()
             }
         }
     }

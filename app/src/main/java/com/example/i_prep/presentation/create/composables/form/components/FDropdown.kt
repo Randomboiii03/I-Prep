@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.form.components
+package com.example.i_prep.presentation.create.composables.form.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,12 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.text.style.TextAlign
-import com.example.i_prep.presentation.create.form.model.DropdownItem
+import com.example.i_prep.presentation.create.composables.form.model.DropdownItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FDropdown(
-    value: String, onValueChange: (String) -> Unit, list: List<DropdownItem>, label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    list: List<DropdownItem>,
+    label: String,
 //    supportingText: String,
 //    importanceText: String,
 //    colorImportance: Color,

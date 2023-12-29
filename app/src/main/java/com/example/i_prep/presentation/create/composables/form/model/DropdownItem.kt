@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.form.model
+package com.example.i_prep.presentation.create.composables.form.model
 
 sealed class DropdownItem(
     val name: String,
@@ -53,7 +53,7 @@ sealed class DropdownItem(
 val questionTypes = listOf(
     DropdownItem.MultipleChoice,
     DropdownItem.TrueOrFalse,
-    DropdownItem.ShortAnswer,
+//    DropdownItem.ShortAnswer,
     DropdownItem.FillInTheBlank
 )
 

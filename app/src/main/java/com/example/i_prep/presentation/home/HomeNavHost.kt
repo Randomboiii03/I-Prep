@@ -3,12 +3,19 @@ package com.example.i_prep.presentation.home
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
+import com.example.i_prep.presentation.history.composables.view.VEvent
+import com.example.i_prep.presentation.history.composables.view.VVIewModel
+import com.example.i_prep.presentation.history.composables.view.mc.ViewMC
 import com.example.i_prep.presentation.home.composables.details.Details
 import com.example.i_prep.presentation.home.composables.library.Library
 import com.example.i_prep.presentation.home.composables.result.Result
@@ -71,17 +78,16 @@ fun HomeNavHost(
                 globalEvent = globalEvent,
                 onBack = { homeNavHostController.popBackStack() },
                 takeTest = {
-                    onEvent(TEvent.InitializeTest(it, homeNavHostController))
+                    onEvent(TEvent.InitializeTest(it, homeNavHostController, globalEvent))
                     homeNavHostController.navigate("Test")
                 }
             )
         }
 
-        composable(
-            route = HomeNav.Test.title)
-        {
+        composable(route = HomeNav.Test.title) {
             when (globalState.pTest.questionType != "sa") {
                 true -> TestMC(
+                    globalEvent = globalEvent,
                     mTViewModel = mTViewModel,
                     onEvent = { onEvent(it) },
                     navHostController = homeNavHostController
@@ -110,13 +116,50 @@ fun HomeNavHost(
                 )
             }
         ) {
+            val state by mTViewModel.state.collectAsState()
+
             Result(
-                globalState = globalState,
-                globalEvent = globalEvent,
-                mTViewModel = mTViewModel,
-                onEvent = mTViewModel::onEvent,
+                score = state.score,
+                itemSet = state.pTest.itemSet,
                 navHostController = homeNavHostController
             )
+        }
+
+        composable(route = HomeNav.View.title) {
+            val mVViewModel = viewModel<VVIewModel>()
+            val mVEvent = mVViewModel::onEvent
+
+            val state by mTViewModel.state.collectAsState()
+
+            LaunchedEffect(true) {
+                mVEvent(
+                    VEvent.InitializeResult(
+                        pTest = state.pTest,
+                        tHistory = THistory(
+                            testId = state.pTest.testId,
+                            questions = state.questions,
+                            selectedAnswer = state.answers,
+                            questionsTaken = state.pTest.itemSet,
+                            score = state.score,
+                            dateTaken = 0L
+                        )
+                    )
+                )
+            }
+
+            when (globalState.pTest.questionType != "sa") {
+                true -> ViewMC(
+                    mVVIewModel = mVViewModel,
+                    onEvent = mVEvent,
+                    navHostController = homeNavHostController
+                )
+
+                false -> TestSA(
+                    mTViewModel = mTViewModel,
+                    onEvent = { onEvent(it) },
+                    navHostController = homeNavHostController
+                )
+            }
         }
     }
 }

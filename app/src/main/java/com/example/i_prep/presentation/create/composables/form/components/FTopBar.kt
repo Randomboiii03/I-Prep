@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.form.components
+package com.example.i_prep.presentation.create.composables.form.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

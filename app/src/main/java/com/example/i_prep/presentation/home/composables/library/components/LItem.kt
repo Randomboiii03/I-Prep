@@ -78,7 +78,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimary,
                 modifier = modifier
-                    .padding(3.dp)
+                    .padding(4.dp)
             )
         }
     }

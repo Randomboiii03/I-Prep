@@ -8,6 +8,8 @@ sealed class HomeNav(val title: String) {
     object Test : HomeNav(title = "Test")
 
     object Result : HomeNav(title = "Result")
+
+    object View : HomeNav(title = "View")
 }
 
 val homeNavs = listOf(
@@ -15,4 +17,5 @@ val homeNavs = listOf(
     HomeNav.Details,
     HomeNav.Test,
     HomeNav.Result,
+    HomeNav.View
 )

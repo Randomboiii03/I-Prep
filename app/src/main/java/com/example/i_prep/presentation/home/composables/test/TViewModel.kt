@@ -3,14 +3,20 @@ package com.example.i_prep.presentation.home.composables.test
 import android.os.CountDownTimer
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.data.local.model.PTest
+import com.example.i_prep.data.local.model.THistory
+import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.home.model.HomeNav
 import com.randomboiii.i_prep.data.Question
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class TViewModel : ViewModel() {
@@ -39,8 +45,11 @@ class TViewModel : ViewModel() {
         return List(items) { "" }
     }
 
-    private fun startTimer(navHostController: NavHostController) {
-        timer?.cancel()
+    private fun startTimer(
+        navHostController: NavHostController,
+        globalEvent: (GlobalEvent) -> Unit
+    ) {
+        stopTimer()
         // adjust it for testing = 1000L, actual value = 30000L
         timer = object : CountDownTimer((state.value.pTest.itemSet * 1000L) + 1000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
@@ -48,7 +57,7 @@ class TViewModel : ViewModel() {
             }
 
             override fun onFinish() {
-                onEvent(TEvent.CheckResult(navHostController))
+                onEvent(TEvent.CheckResult(navHostController, globalEvent))
             }
         }
 
@@ -88,8 +97,29 @@ class TViewModel : ViewModel() {
                     )
                 }
 
-                event.navHostController.navigate(HomeNav.Result.title) {
-                    popUpTo(HomeNav.Library.title)
+                viewModelScope.launch {
+                    event.globalEvent(
+                        GlobalEvent.InsertHistory(
+                            tHistory = THistory(
+                                testId = state.value.pTest.testId,
+                                questions = state.value.questions,
+                                selectedAnswer = state.value.answers,
+                                questionsTaken = state.value.pTest.itemSet,
+                                score = state.value.score,
+                                dateTaken = System.currentTimeMillis()
+                            )
+                        )
+                    )
+
+                    event.globalEvent(GlobalEvent.UpsertTest(state.value.pTest))
+                    event.globalEvent(GlobalEvent.GetAllTest)
+                    event.globalEvent(GlobalEvent.GetAllHistory)
+
+                    withContext(Dispatchers.Main) {
+                        event.navHostController.navigate(HomeNav.Result.title) {
+                            popUpTo(HomeNav.Library.title)
+                        }
+                    }
                 }
             }
 
@@ -99,11 +129,13 @@ class TViewModel : ViewModel() {
                         pTest = event.pTest,
                         questions = getQuestionList(event.pTest),
                         answers = initializeAnswers(event.pTest.itemSet),
+                        currentQIndex = 0,
+                        score = -1,
                         isLoading = false
                     )
                 }
 
-                if (event.pTest.isTimed) startTimer(event.navHostController)
+                if (event.pTest.isTimed) startTimer(event.navHostController, event.globalEvent)
             }
 
             is TEvent.InsertAnswer -> {
@@ -139,10 +171,18 @@ data class TState(
 )
 
 sealed interface TEvent {
-    data class InitializeTest(val pTest: PTest, val navHostController: NavHostController) : TEvent
+    data class InitializeTest(
+        val pTest: PTest,
+        val navHostController: NavHostController,
+        val globalEvent: (GlobalEvent) -> Unit
+    ) : TEvent
+
     data class InsertAnswer(val answer: String) : TEvent
 
     object PreviousQuestion : TEvent
     object NextQuestion : TEvent
-    data class CheckResult(val navHostController: NavHostController) : TEvent
+    data class CheckResult(
+        val navHostController: NavHostController,
+        val globalEvent: (GlobalEvent) -> Unit
+    ) : TEvent
 }
