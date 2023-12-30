@@ -33,12 +33,8 @@ class CViewModel : ViewModel() {
             is CEvent.SetLanguage -> _state.update { it.copy(language = event.language) }
             is CEvent.SetQuestionType -> _state.update { it.copy(questionType = event.questionType) }
             is CEvent.UploadFile -> _state.update {
-                it.copy(
-                    fileName = event.fileName, filePath = event.filePath
-                )
+                it.copy(fileName = event.fileName, filePath = event.filePath)
             }
-
-            is CEvent.SetCookies -> _state.update { it.copy(cookie = event.cookie) }
         }
     }
 }
@@ -49,7 +45,6 @@ data class CState(
     val filePath: String = "",
     val language: String = "",
     val difficulty: String = "Easy",
-    val cookie: String = ""
 )
 
 sealed interface CEvent {
@@ -59,6 +54,4 @@ sealed interface CEvent {
     data class UploadFile(val fileName: String, val filePath: String) : CEvent
     data class SetLanguage(val language: String) : CEvent
     data class SetDifficulty(val difficulty: String) : CEvent
-
-    data class SetCookies(val cookie: String): CEvent
 }

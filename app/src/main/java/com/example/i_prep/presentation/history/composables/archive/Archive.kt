@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -53,34 +55,53 @@ fun Archive(
                 }
 
                 false -> {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .navigationBarsPadding()
-                            .padding(bottom = 20.dp)
-                    ) {
-                        LazyColumn {
-                            items(
-                                items = globalState.tHistoryList.reversed(),
-                                key = { it.historyId }
-                            ) { item ->
-                                val pTest = globalState.pTestList.find { it.testId == item.testId }
+                    when (globalState.tHistoryList.isEmpty()) {
+                        true -> {
+                            Box(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No history available yet",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                        }
 
-                                AITem(
-                                    pTest = pTest!!,
-                                    tHistory = item,
-                                    onClickItem = {
-                                        globalEvent(
-                                            GlobalEvent.GetHistory(
-                                                tHistory = item,
-                                                pTest = pTest
-                                            )
-                                        )
+                        false -> {
+                            Column(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding()
+                                    .padding(bottom = 20.dp)
+                            ) {
+                                LazyColumn {
+                                    items(
+                                        items = globalState.tHistoryList.reversed(),
+                                        key = { it.historyId }
+                                    ) { item ->
+                                        val pTest =
+                                            globalState.pTestList.find { it.testId == item.testId }
 
-                                        navHostController.navigate(HistoryNav.View.title) {
-                                            popUpTo(HistoryNav.Archive.title)
-                                        }
-                                    })
+                                        AITem(
+                                            pTest = pTest!!,
+                                            tHistory = item,
+                                            onClickItem = {
+                                                globalEvent(
+                                                    GlobalEvent.GetHistory(
+                                                        tHistory = item,
+                                                        pTest = pTest
+                                                    )
+                                                )
+
+                                                navHostController.navigate(HistoryNav.View.title) {
+                                                    popUpTo(HistoryNav.Archive.title)
+                                                }
+                                            })
+                                    }
+                                }
                             }
                         }
                     }

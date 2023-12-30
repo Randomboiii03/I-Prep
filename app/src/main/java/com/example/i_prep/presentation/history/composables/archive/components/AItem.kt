@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +33,12 @@ import com.example.i_prep.data.local.model.THistory
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, modifier: Modifier = Modifier) {
+fun AITem(
+    pTest: PTest,
+    tHistory: THistory,
+    onClickItem: (THistory) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -51,7 +57,7 @@ fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, mod
                 model = ImageRequest.Builder(LocalContext.current).data(pTest.image).crossfade(true)
                     .build(),
                 contentDescription = pTest.title,
-                placeholder=  painterResource(R.drawable.ic_launcher_background),
+                placeholder = painterResource(R.drawable.ic_launcher_background),
                 contentScale = ContentScale.Crop,
                 modifier = modifier
                     .size(40.dp)
@@ -66,10 +72,17 @@ fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, mod
             )
         }
 
-        Row(modifier = modifier.padding(horizontal = 16.dp)) {
+        Row(
+            modifier = modifier
+            .wrapContentSize()
+            .padding(horizontal = 16.dp)
+        ) {
             Box(
                 modifier = modifier
-                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)),
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -83,7 +96,10 @@ fun AITem(pTest: PTest, tHistory: THistory, onClickItem: (THistory) -> Unit, mod
 
             Box(
                 modifier = modifier
-                    .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)),
+                    .background(
+                        MaterialTheme.colorScheme.tertiary,
+                        RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(

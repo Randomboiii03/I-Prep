@@ -2,14 +2,13 @@ package com.example.i_prep.domain.api
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.example.i_prep.common.gson
 import com.example.i_prep.domain.api.model.dto.TokenStream
 import com.example.i_prep.domain.api.model.payload.AppendMessagePayload
 import com.example.i_prep.domain.api.model.payload.Completion
 import com.example.i_prep.domain.api.model.payload.ConversationPayload
 import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -38,18 +37,11 @@ class IPrepAPI(private val cookie: String) {
 
     private var organizationId: String = ""
 
-    private val gsonBuilder: GsonBuilder = GsonBuilder().apply {
-        setPrettyPrinting()
-        setLenient()
-        setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-    }
-
-    private val gson: Gson = gsonBuilder.create()
-
     private val client = HttpClient(CIO) {
         engine {
             requestTimeout = 300_000 // 5 mins
         }
+
         install(ContentNegotiation) {
             gson() {
                 setPrettyPrinting()
@@ -77,7 +69,7 @@ class IPrepAPI(private val cookie: String) {
         getOrganizationId()
     }
 
-    fun getOrganizationId() {
+    private fun getOrganizationId() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = client.get("https://claude.ai/api/organizations") {
@@ -92,11 +84,10 @@ class IPrepAPI(private val cookie: String) {
                 }
 
                 val responseData = response.bodyAsText()
-                organizationId =
-                    JsonParser.parseString(responseData).asJsonArray[0].asJsonObject.get("uuid").asString
-                Log.v("TAG", "OrganizationId: $organizationId")
-            } catch (e: Exception) {
-                Log.v("TAG - getOrganizationId", "Error: $e")
+                organizationId = JsonParser.parseString(responseData).asJsonArray[0].asJsonObject.get("uuid").asString
+
+            } catch (throwable: Throwable) {
+                Log.v("TAG - getOrganizationId", "Error: $throwable")
             }
         }
     }
@@ -125,13 +116,13 @@ class IPrepAPI(private val cookie: String) {
 
             return JsonParser.parseString(responseData).asJsonObject.get("uuid").asString
 
-        } catch (e: Exception) {
-            Log.v("TAG - createNewChat", "Error: $e")
+        } catch (throwable: Throwable) {
+            Log.v("TAG - createNewChat", "Error: $throwable")
             return null
         }
     }
 
-    fun getContentType(file: File) = when (file.extension) {
+    private fun getContentType(file: File) = when (file.extension) {
         "pdf" -> "application/pdf"
         "txt" -> "text/plain"
         "csv" -> "text/csv"
@@ -168,8 +159,8 @@ class IPrepAPI(private val cookie: String) {
 
             return gson.fromJson(response.bodyAsText(), AttachmentPayload::class.java)
 
-        } catch (e: Exception) {
-            Log.v("TAG - uploadAttachment", "Error: $e")
+        } catch (throwable: Throwable) {
+            Log.v("TAG - uploadAttachment", "Error: $throwable")
             return null
         }
     }
@@ -177,7 +168,7 @@ class IPrepAPI(private val cookie: String) {
     suspend fun sendMessage(
         conversationId: String,
         prompt: String,
-        attachments: List<AttachmentPayload?>
+        attachments: List<AttachmentPayload?> = emptyList()
     ): String? {
         try {
             val message = mutableStateOf("")
@@ -204,7 +195,7 @@ class IPrepAPI(private val cookie: String) {
             }.execute { response ->
                 if (!response.status.isSuccess()) {
                     Log.v("TAG - sendMessage", "Error!")
-                    deleteConversation("127f8743-7348-4336-8e05-45adda16babb")
+                    deleteConversation(conversationId)
                     return@execute
                 }
 
@@ -224,11 +215,12 @@ class IPrepAPI(private val cookie: String) {
                 }
             }
 
+            deleteConversation(conversationId)
             return message.value
 
-        } catch (e: Exception) {
-            Log.v("TAG - sendMessage", "Error: $e")
-            deleteConversation("127f8743-7348-4336-8e05-45adda16babb")
+        } catch (throwable: Throwable) {
+            Log.v("TAG - sendMessage", "Error: $throwable")
+            deleteConversation(conversationId)
             return null
         }
     }
@@ -244,5 +236,9 @@ class IPrepAPI(private val cookie: String) {
         if (!response.status.isSuccess()) {
             Log.v("TAG - deleteConversation", "Error!")
         }
+    }
+
+    suspend fun getRandomImage(): String {
+        return HttpClient().get("https://random.imagecdn.app/v1/image?width=400&height=600").bodyAsText()
     }
 }

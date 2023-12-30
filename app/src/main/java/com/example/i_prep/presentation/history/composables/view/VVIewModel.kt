@@ -1,13 +1,10 @@
 package com.example.i_prep.presentation.history.composables.view
 
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavHostController
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.presentation.GlobalState
-import com.randomboiii.i_prep.data.Question
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 

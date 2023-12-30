@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,7 +44,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = modifier
+            modifier = modifier.weight(1f)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -69,6 +70,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
 
         Box(
             modifier = modifier
+                .wrapContentSize()
                 .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
             contentAlignment = Alignment.Center

@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -96,25 +98,43 @@ fun Library(
                 }
 
                 false -> {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .navigationBarsPadding()
-                            .padding(bottom = 20.dp)
-                    ) {
-                        LazyColumn {
-                            items(
-                                items = (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList).reversed(),
-                                key = { it.testId }
-                            ) { item: PTest ->
-                                HItem(
-                                    pTest = item,
-                                    onClickItem = {
-                                        globalEvent(GlobalEvent.GetTest(it))
-                                        navHostController.navigate(HomeNav.Details.title) {
-                                            popUpTo(HomeNav.Library.title)
-                                        }
-                                    })
+                    val list =
+                        (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList).reversed()
+
+                    when (list.isEmpty()) {
+                        true -> {
+                            Box(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (state.isSearch) "No test result" else "No test available yet",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                            }
+                        }
+
+                        false -> {
+                            Column(
+                                modifier = modifier
+                                    .fillMaxSize()
+                                    .navigationBarsPadding()
+                                    .padding(bottom = 20.dp)
+                            ) {
+                                LazyColumn {
+                                    items(items = list, key = { it.testId }) { item: PTest ->
+                                        HItem(
+                                            pTest = item,
+                                            onClickItem = {
+                                                globalEvent(GlobalEvent.GetTest(it))
+                                                navHostController.navigate(HomeNav.Details.title) {
+                                                    popUpTo(HomeNav.Library.title)
+                                                }
+                                            })
+                                    }
+                                }
                             }
                         }
                     }

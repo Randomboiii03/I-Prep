@@ -3,7 +3,7 @@ package com.example.i_prep.data.local
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.randomboiii.i_prep.data.Question
+import com.example.i_prep.domain.api.model.dto.Question
 
 class TypeConverterDB {
     @TypeConverter

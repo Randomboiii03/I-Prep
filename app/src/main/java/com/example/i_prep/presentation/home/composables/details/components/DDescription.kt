@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -31,7 +32,8 @@ fun DDescription(desc: String, modifier: Modifier = Modifier) {
         Text(
             text = desc,
             style = MaterialTheme.typography.bodyMedium,
-            maxLines = if (expanded) 5 else 1,
+            textAlign = TextAlign.Justify,
+            maxLines = if (expanded) 20 else 1,
             overflow = TextOverflow.Ellipsis
         )
     }

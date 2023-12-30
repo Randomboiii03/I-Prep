@@ -2,9 +2,9 @@ package com.example.i_prep.presentation.create
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,8 +14,10 @@ import com.example.i_prep.presentation.create.composables.generate.Generate
 import com.example.i_prep.presentation.create.model.CreateNav
 
 @Composable
-fun CreateNavHost(    globalEvent: (GlobalEvent) -> Unit) {
+fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit) {
     val createNavHostController = rememberNavController()
+
+    val mCViewModel = viewModel<CViewModel>()
 
     NavHost(navController = createNavHostController, startDestination = CreateNav.Form.title) {
         composable(
@@ -27,7 +29,9 @@ fun CreateNavHost(    globalEvent: (GlobalEvent) -> Unit) {
                 )
             }
         ) {
-            Form(globalEvent = globalEvent, navHostController = createNavHostController)
+            LaunchedEffect(true) { globalEvent(GlobalEvent.ShowBottomNav(true)) }
+
+            Form(mCViewModel = mCViewModel, onEvent = mCViewModel::onEvent, navHostController = createNavHostController)
         }
 
         composable(
@@ -45,7 +49,7 @@ fun CreateNavHost(    globalEvent: (GlobalEvent) -> Unit) {
                 )
             }
         ) {
-            Generate()
+            Generate(mCViewModel = mCViewModel, cEvent = mCViewModel::onEvent, globalEvent = globalEvent, navHostController = createNavHostController)
         }
     }
 }

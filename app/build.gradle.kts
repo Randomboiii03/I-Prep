@@ -154,6 +154,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.google.accompanist/accompanist-systemuicontroller
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.2-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 
     implementation("co.yml:ycharts:2.1.0")
 

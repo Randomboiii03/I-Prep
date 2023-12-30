@@ -3,7 +3,7 @@ package com.example.i_prep.data.local.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.randomboiii.i_prep.data.Question
+import com.example.i_prep.domain.api.model.dto.Question
 
 @Entity(tableName = "history")
 data class THistory(

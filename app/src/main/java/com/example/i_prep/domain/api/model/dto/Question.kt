@@ -1,4 +1,4 @@
-package com.randomboiii.i_prep.data
+package com.example.i_prep.domain.api.model.dto
 
 data class Question(
     val question: String,

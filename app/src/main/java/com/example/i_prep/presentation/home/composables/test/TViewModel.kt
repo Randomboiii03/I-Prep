@@ -10,7 +10,7 @@ import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.home.model.HomeNav
-import com.randomboiii.i_prep.data.Question
+import com.example.i_prep.domain.api.model.dto.Question
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
