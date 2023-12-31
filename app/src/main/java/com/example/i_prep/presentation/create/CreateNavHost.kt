@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,9 +13,10 @@ import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.composables.form.Form
 import com.example.i_prep.presentation.create.composables.generate.Generate
 import com.example.i_prep.presentation.create.model.CreateNav
+import com.example.i_prep.presentation.navigation.model.BottomNav
 
 @Composable
-fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit) {
+fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit, navHostController: NavHostController) {
     val createNavHostController = rememberNavController()
 
     val mCViewModel = viewModel<CViewModel>()
@@ -31,7 +33,11 @@ fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit) {
         ) {
             LaunchedEffect(true) { globalEvent(GlobalEvent.ShowBottomNav(true)) }
 
-            Form(mCViewModel = mCViewModel, onEvent = mCViewModel::onEvent, navHostController = createNavHostController)
+            Form(
+                mCViewModel = mCViewModel,
+                onEvent = mCViewModel::onEvent,
+                navHostController = createNavHostController,
+                showList = { navHostController.navigate(BottomNav.Home.title) })
         }
 
         composable(
@@ -49,7 +55,12 @@ fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit) {
                 )
             }
         ) {
-            Generate(mCViewModel = mCViewModel, cEvent = mCViewModel::onEvent, globalEvent = globalEvent, navHostController = createNavHostController)
+            Generate(
+                mCViewModel = mCViewModel,
+                cEvent = mCViewModel::onEvent,
+                globalEvent = globalEvent,
+                navHostController = createNavHostController
+            )
         }
     }
 }

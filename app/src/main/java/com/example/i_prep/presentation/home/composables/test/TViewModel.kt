@@ -112,8 +112,6 @@ class TViewModel : ViewModel() {
                     )
 
                     event.globalEvent(GlobalEvent.UpsertTest(state.value.pTest))
-                    event.globalEvent(GlobalEvent.GetAllTest)
-                    event.globalEvent(GlobalEvent.GetAllHistory)
 
                     withContext(Dispatchers.Main) {
                         event.navHostController.navigate(HomeNav.Result.title) {

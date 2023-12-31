@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -31,7 +32,12 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DTopBar(onBack: () -> Unit, onModify: (Boolean) -> Unit, modifier: Modifier = Modifier) {
+fun DTopBar(
+    onBack: () -> Unit,
+    onModify: (Boolean) -> Unit,
+    onDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     TopAppBar(
@@ -69,6 +75,14 @@ fun DTopBar(onBack: () -> Unit, onModify: (Boolean) -> Unit, modifier: Modifier 
                         onClick = {
                             expanded = !expanded
                             onModify(true)
+                        })
+
+                    DDropDownItem(
+                        icon = Icons.Outlined.Delete,
+                        text = "Delete Test",
+                        onClick = {
+                            expanded = !expanded
+                            onDelete()
                         })
                 }
             }

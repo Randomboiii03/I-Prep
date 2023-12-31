@@ -17,6 +17,7 @@ class NotificationService(
         val notification = NotificationCompat.Builder(context, "i_prep_reminder")
             .setContentTitle("I-Prep")
             .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
             .setSmallIcon(if (isError) R.drawable.baseline_error_24 else R.drawable.baseline_notification_important_24)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)

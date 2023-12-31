@@ -6,6 +6,7 @@ import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
+import com.example.i_prep.data.repository.DataStoreRepository
 import com.example.i_prep.domain.use_cases.DeleteHistory
 import com.example.i_prep.domain.use_cases.DeleteTest
 import com.example.i_prep.domain.use_cases.GetAllHistory
@@ -14,6 +15,7 @@ import com.example.i_prep.domain.use_cases.GetLastHistory
 import com.example.i_prep.domain.use_cases.InsertHistory
 import com.example.i_prep.domain.use_cases.UpsertTest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -30,7 +32,7 @@ class GlobalViewModel @Inject constructor(
 //    private val getHistoryById: GetHistoryById,
 //    private val getLastHistory: GetLastHistory,
     private val insertHistory: InsertHistory,
-    private val deleteHistory: DeleteHistory
+    private val deleteHistory: DeleteHistory,
 ) : ViewModel() {
     private val _state: MutableStateFlow<GlobalState> = MutableStateFlow(GlobalState())
     val state = _state
@@ -55,6 +57,8 @@ class GlobalViewModel @Inject constructor(
                     deleteTest(event.pTest)
 
                     _state.update { it.copy(pTest = emptyPTest) }
+
+                    onEvent(GlobalEvent.GetAllTest)
                 }
             }
 
@@ -104,6 +108,7 @@ class GlobalViewModel @Inject constructor(
             is GlobalEvent.InsertHistory -> {
                 viewModelScope.launch {
                     insertHistory(event.tHistory)
+                    onEvent(GlobalEvent.GetAllHistory)
                 }
             }
 
@@ -119,7 +124,9 @@ class GlobalViewModel @Inject constructor(
                                 } else pTest
                             })
                     }
+
                     upsertTest(event.pTest)
+                    onEvent(GlobalEvent.GetAllTest)
                 }
             }
 

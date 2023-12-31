@@ -129,9 +129,8 @@ class GViewModel : ViewModel() {
                             )
 
                             globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
-                            globalEvent(GlobalEvent.GetAllTest)
 
-                            notification.showNotification("Test created successfully.", false)
+                            notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
                         }
 
                         false -> notification.showNotification(
@@ -149,7 +148,7 @@ class GViewModel : ViewModel() {
 
         } catch (throwable: Throwable) {
             Log.v("TAG - GViewModel", "$throwable")
-            notification.showNotification("$throwable", true)
+            notification.showNotification("Error: $throwable", true)
         }
 
         withContext(Dispatchers.Main) {

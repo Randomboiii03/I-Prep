@@ -35,6 +35,8 @@ class CViewModel : ViewModel() {
             is CEvent.UploadFile -> _state.update {
                 it.copy(fileName = event.fileName, filePath = event.filePath)
             }
+
+            is CEvent.Generate -> _state.update { it.copy(isGenerate = event.isGenerate) }
         }
     }
 }
@@ -45,6 +47,7 @@ data class CState(
     val filePath: String = "",
     val language: String = "",
     val difficulty: String = "Easy",
+    val isGenerate: Boolean = false
 )
 
 sealed interface CEvent {
@@ -54,4 +57,5 @@ sealed interface CEvent {
     data class UploadFile(val fileName: String, val filePath: String) : CEvent
     data class SetLanguage(val language: String) : CEvent
     data class SetDifficulty(val difficulty: String) : CEvent
+    data class Generate(val isGenerate: Boolean) : CEvent
 }

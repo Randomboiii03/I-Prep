@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.i_prep.data.local.PTestDB
 import com.example.i_prep.data.local.PTestDao
+import com.example.i_prep.data.repository.DataStoreRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +24,11 @@ object DatabaseModule {
             "i-prep"
         ).fallbackToDestructiveMigration().build()
     }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreRepository(@ApplicationContext context: Context) =
+        DataStoreRepository(context = context)
 
     @Provides
     @Singleton

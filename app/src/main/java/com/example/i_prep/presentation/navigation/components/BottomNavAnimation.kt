@@ -32,7 +32,7 @@ fun BottomNavAnimation(
         modifier = modifier
             .shadow(5.dp)
             .background(MaterialTheme.colorScheme.inverseOnSurface)
-            .height(110.dp)
+            .height(115.dp)
             .navigationBarsPadding()
             .fillMaxWidth()
             .padding(horizontal = 16.dp)

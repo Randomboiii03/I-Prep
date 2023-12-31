@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,12 +19,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.create.CreateNavHost
-import com.example.i_prep.presentation.create.composables.form.Form
 import com.example.i_prep.presentation.history.HistoryNavHost
 import com.example.i_prep.presentation.home.HomeNavHost
 import com.example.i_prep.presentation.more.MoreNavHost
 import com.example.i_prep.presentation.navigation.components.BottomNavAnimation
 import com.example.i_prep.presentation.navigation.model.BottomNav
+import com.example.i_prep.presentation.welcome.Welcome
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -89,7 +88,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                CreateNavHost(globalEvent = mGlobalViewModel::onEvent)
+                CreateNavHost(globalEvent = mGlobalViewModel::onEvent, navHostController = rootNavController)
             }
 
             composable(

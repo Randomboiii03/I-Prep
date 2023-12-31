@@ -1,6 +1,7 @@
 package com.example.i_prep.presentation.more.composables.options
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,7 +29,11 @@ fun Options(modifier: Modifier = Modifier) {
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(painter = painterResource(id = R.drawable.ic_launcher_foreground), contentDescription = "Logo", modifier = modifier.size(275.dp))
+            Box(
+                modifier.padding(vertical = 75.dp)
+            ) {
+                Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo", modifier = modifier.size(125.dp))
+            }
 
             Divider()
 

@@ -104,7 +104,7 @@ fun Details(
             model = ImageRequest.Builder(LocalContext.current).data(pTest.image).crossfade(true)
                 .build(),
             contentDescription = pTest.title,
-            placeholder=  painterResource(R.drawable.ic_launcher_background),
+            placeholder = painterResource(R.drawable.ic_launcher_background),
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .requiredHeight(250.dp)
@@ -127,7 +127,15 @@ fun Details(
         )
 
         Scaffold(
-            topBar = { DTopBar(onBack = { onBack() }, onModify = { showDialog = it }) },
+            topBar = {
+                DTopBar(
+                    onBack = { onBack() },
+                    onModify = { showDialog = it },
+                    onDelete = {
+                        globalEvent(GlobalEvent.DeleteTest(pTest))
+                        onBack()
+                    })
+            },
             floatingActionButton = { DFAB(onClickFAB = { takeTest(globalState.pTest) }) },
             containerColor = Color.Transparent
         ) { paddingValues ->
@@ -148,11 +156,11 @@ fun Details(
                             .width(100.dp)
                     ) {
                         AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).data(pTest.image).crossfade(true)
+                            model = ImageRequest.Builder(LocalContext.current).data(pTest.image)
+                                .crossfade(true)
                                 .build(),
                             contentDescription = pTest.title,
-                            placeholder=  painterResource(R.drawable.ic_launcher_background),
-//                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(R.drawable.ic_launcher_background),
                             modifier = modifier.clip(RoundedCornerShape(6.dp))
                         )
                     }

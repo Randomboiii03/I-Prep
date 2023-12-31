@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
@@ -83,7 +84,7 @@ fun Archive(
                                         key = { it.historyId }
                                     ) { item ->
                                         val pTest =
-                                            globalState.pTestList.find { it.testId == item.testId }
+                                            globalState.pTestList.find { it.testId == item.testId } ?: emptyPTest
 
                                         AITem(
                                             pTest = pTest!!,

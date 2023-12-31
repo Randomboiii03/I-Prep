@@ -47,12 +47,9 @@ fun Form(
     mCViewModel: CViewModel,
     onEvent: (CEvent) -> Unit,
     navHostController: NavHostController,
+    showList: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LaunchedEffect(true) {
-        onEvent(CEvent.Reset)
-    }
-
     val state by mCViewModel.state.collectAsState()
 
     val connection by connectivityState()
@@ -60,6 +57,14 @@ fun Form(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(true) {
+        if (state.isGenerate){
+            onEvent(CEvent.Generate(false))
+            onEvent(CEvent.Reset)
+            showList()
+        }
+    }
 
     Scaffold(
         topBar = { FTopBar(onReset = {}) },
@@ -129,6 +134,8 @@ fun Form(
 
                 Button(
                     onClick = {
+                        onEvent(CEvent.Generate(true))
+
                         navHostController.navigate(CreateNav.Generate.title) {
                             popUpTo(CreateNav.Form.title)
                         }

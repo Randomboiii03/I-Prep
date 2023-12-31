@@ -16,6 +16,9 @@ ktorClientAndroid = "3.0.0-beta-1"
 ktorClientGson = "3.0.0-beta-1"
 ktorSerializationGson = "3.0.0-beta-1"
 ktorClientCio = "3.0.0-beta-1"
+accompanistPager = "0.33.2-alpha"
+accompanistPagerIndicators = "0.33.2-alpha"
+datastorePreferences = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +43,9 @@ ktor-client-android = { group = "io.ktor", name = "ktor-client-android", version
 ktor-client-gson = { group = "io.ktor", name = "ktor-client-gson", version.ref = "ktorClientGson" }
 ktor-serialization-gson = { group = "io.ktor", name = "ktor-serialization-gson", version.ref = "ktorSerializationGson" }
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktorClientCio" }
+accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistPager" }
+accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
