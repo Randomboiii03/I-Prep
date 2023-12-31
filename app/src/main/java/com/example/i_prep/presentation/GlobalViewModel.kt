@@ -54,9 +54,15 @@ class GlobalViewModel @Inject constructor(
 
             is GlobalEvent.DeleteTest -> {
                 viewModelScope.launch {
-                    deleteTest(event.pTest)
-
-                    _state.update { it.copy(pTest = emptyPTest) }
+                    _state.update {
+                        it.copy(pTest = emptyPTest,
+                            pTestList = state.value.pTestList.map { pTest ->
+                                if (pTest.testId == event.pTest.testId) {
+                                    pTest.copy(isAvailable = false)
+                                } else pTest
+                            }
+                        )
+                    }
 
                     onEvent(GlobalEvent.GetAllTest)
                 }
@@ -80,7 +86,7 @@ class GlobalViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = true) }
 
                     _state.update {
-                        it.copy(pTestList = getAllTest().first(), isLoading = false)
+                        it.copy(pTestList = getAllTest().first().filter { it.isAvailable }, isLoading = false)
                     }
                 }
             }
@@ -90,7 +96,12 @@ class GlobalViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = true) }
 
                     _state.update {
-                        it.copy(pTest = event.pTest, tHistory = event.tHistory, showBottomNav = false, isLoading = false)
+                        it.copy(
+                            pTest = event.pTest,
+                            tHistory = event.tHistory,
+                            showBottomNav = false,
+                            isLoading = false
+                        )
                     }
                 }
             }
@@ -132,6 +143,7 @@ class GlobalViewModel @Inject constructor(
 
             is GlobalEvent.SearchTest -> {
                 _state.update { it.copy(isLoading = true) }
+
                 if (event.query.isBlank()) {
                     _state.update {
                         it.copy(

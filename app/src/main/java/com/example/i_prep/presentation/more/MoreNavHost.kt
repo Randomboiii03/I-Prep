@@ -1,35 +1,100 @@
 package com.example.i_prep.presentation.more
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.i_prep.presentation.GlobalEvent
+import com.example.i_prep.presentation.GlobalState
+import com.example.i_prep.presentation.more.composables.about.About
+import com.example.i_prep.presentation.more.composables.help.Help
 import com.example.i_prep.presentation.more.composables.options.Options
+import com.example.i_prep.presentation.more.composables.statistics.Statistics
+import com.example.i_prep.presentation.more.composables.uploaded.UploadedFile
 import com.example.i_prep.presentation.more.model.MoreNav
+import kotlin.reflect.KFunction1
 
 @Composable
-fun MoreNavHost() {
+fun MoreNavHost(globalState: GlobalState, globalEvent: KFunction1<GlobalEvent, Unit>) {
     val moreNavHostController = rememberNavController()
 
     NavHost(navController = moreNavHostController, startDestination = MoreNav.Options.title) {
         composable(route = MoreNav.Options.title) {
-            Options()
+            Options(globalEvent = globalEvent, navHostController = moreNavHostController)
         }
 
-        composable(route = MoreNav.Statistics.title) {
-
+        composable(
+            route = MoreNav.Statistics.title,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
+            Statistics(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
 
-        composable(route = MoreNav.UploadedFiles.title) {
-
+        composable(
+            route = MoreNav.UploadedFiles.title,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
+            UploadedFile(globalState = globalState, globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
 
-        composable(route = MoreNav.Help.title) {
-
+        composable(
+            route = MoreNav.Help.title,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
+            Help(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
 
-        composable(route = MoreNav.About.title) {
-
+        composable(
+            route = MoreNav.About.title,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
+            About(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
     }
 }

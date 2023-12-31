@@ -57,7 +57,7 @@ fun AITem(
                 model = ImageRequest.Builder(LocalContext.current).data(pTest.image).crossfade(true)
                     .build(),
                 contentDescription = pTest.title,
-                placeholder = painterResource(R.drawable.ic_launcher_background),
+                placeholder = painterResource(R.drawable.logo),
                 contentScale = ContentScale.Crop,
                 modifier = modifier
                     .size(40.dp)

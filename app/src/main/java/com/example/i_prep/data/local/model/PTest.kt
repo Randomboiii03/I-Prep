@@ -19,7 +19,8 @@ data class PTest(
     @ColumnInfo(name = "image") val image: String,
     @ColumnInfo(name = "dateCreated") val dateCreated: Long,
     @ColumnInfo(name = "isTimed") val isTimed: Boolean = true,
-    @ColumnInfo(name = "itemSet") val itemSet: Int = 20
+    @ColumnInfo(name = "itemSet") val itemSet: Int = 20,
+    @ColumnInfo(name = "isAvailable") val isAvailable: Boolean = true
 ) {
     fun doesMatchQuery(query: String): Boolean {
         val matchingCombinations = listOf(

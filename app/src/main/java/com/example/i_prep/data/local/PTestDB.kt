@@ -7,7 +7,7 @@ import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
 
 @TypeConverters(TypeConverterDB::class)
-@Database(entities = [PTest::class, THistory::class], version = 2)
+@Database(entities = [PTest::class, THistory::class], version = 3)
 abstract class PTestDB : RoomDatabase() {
     abstract val pTestDao: PTestDao
 }

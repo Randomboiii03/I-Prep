@@ -24,7 +24,6 @@ import com.example.i_prep.presentation.home.HomeNavHost
 import com.example.i_prep.presentation.more.MoreNavHost
 import com.example.i_prep.presentation.navigation.components.BottomNavAnimation
 import com.example.i_prep.presentation.navigation.model.BottomNav
-import com.example.i_prep.presentation.welcome.Welcome
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -112,7 +111,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                MoreNavHost()
+                MoreNavHost(globalState = state, globalEvent = mGlobalViewModel::onEvent)
             }
         }
     }

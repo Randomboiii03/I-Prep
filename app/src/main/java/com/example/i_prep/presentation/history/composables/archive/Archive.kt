@@ -87,7 +87,7 @@ fun Archive(
                                             globalState.pTestList.find { it.testId == item.testId } ?: emptyPTest
 
                                         AITem(
-                                            pTest = pTest!!,
+                                            pTest = pTest,
                                             tHistory = item,
                                             onClickItem = {
                                                 globalEvent(
