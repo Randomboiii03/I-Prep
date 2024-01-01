@@ -1,12 +1,19 @@
 package com.example.i_prep.presentation
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.i_prep.common.compareToVersion
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
+import com.example.i_prep.common.latestVersion
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.data.repository.DataStoreRepository
+import com.example.i_prep.domain.app_updater.AppUpdater
+import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
 import com.example.i_prep.domain.use_cases.DeleteHistory
 import com.example.i_prep.domain.use_cases.DeleteTest
 import com.example.i_prep.domain.use_cases.GetAllHistory
@@ -16,10 +23,12 @@ import com.example.i_prep.domain.use_cases.InsertHistory
 import com.example.i_prep.domain.use_cases.UpsertTest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,6 +42,7 @@ class GlobalViewModel @Inject constructor(
 //    private val getLastHistory: GetLastHistory,
     private val insertHistory: InsertHistory,
     private val deleteHistory: DeleteHistory,
+    private val downloader: IPrepDownloader
 ) : ViewModel() {
     private val _state: MutableStateFlow<GlobalState> = MutableStateFlow(GlobalState())
     val state = _state
@@ -86,7 +96,10 @@ class GlobalViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = true) }
 
                     _state.update {
-                        it.copy(pTestList = getAllTest().first().filter { it.isAvailable }, isLoading = false)
+                        it.copy(
+                            pTestList = getAllTest().first().filter { it.isAvailable },
+                            isLoading = false
+                        )
                     }
                 }
             }
@@ -160,6 +173,34 @@ class GlobalViewModel @Inject constructor(
             }
 
             is GlobalEvent.ShowBottomNav -> _state.update { it.copy(showBottomNav = event.isShow) }
+            is GlobalEvent.CheckUpdate -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val updateChangeLog = AppUpdater().checkUpdates()
+
+                    when (updateChangeLog != null) {
+                        true -> {
+                            when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
+                                true -> downloader.downloadFIle(
+                                    url = updateChangeLog.url,
+                                    desc = updateChangeLog.releaseNotes.joinToString("\n• ")
+                                )
+
+                                false -> {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(event.context, "App is up-to-date", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+                        }
+
+                        false -> {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(event.context, "Failed to update", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -189,4 +230,6 @@ sealed interface GlobalEvent {
     data class ShowBottomNav(val isShow: Boolean) : GlobalEvent
 
     data class GetHistory(val tHistory: THistory, val pTest: PTest) : GlobalEvent
+
+    data class CheckUpdate(val context: Context) : GlobalEvent
 }

@@ -13,3 +13,21 @@ val gsonBuilder: GsonBuilder = GsonBuilder().apply {
 }
 
 val gson: Gson = gsonBuilder.create()
+
+fun String.compareToVersion(version: String): Boolean {
+    val latestVersion = this.split(".").mapNotNull { it.toIntOrNull() }
+    val updateVersion = version.split(".").mapNotNull { it.toIntOrNull() }
+
+    val minLength = minOf(latestVersion.size, updateVersion.size)
+
+    for (i in 0 until minLength) {
+        val latestComponent = latestVersion[i]
+        val updateComponent = updateVersion[i]
+
+        if (latestComponent < updateComponent) {
+            return true
+        }
+    }
+
+    return false
+}

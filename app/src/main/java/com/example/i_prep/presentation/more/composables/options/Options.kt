@@ -1,6 +1,7 @@
 package com.example.i_prep.presentation.more.composables.options
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,21 +14,26 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.i_prep.R
-import com.example.i_prep.common.gson
 import com.example.i_prep.domain.app_updater.AppUpdater
-import com.example.i_prep.domain.app_updater.model.UpdateChangeLog
+import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.more.composables.options.components.OItem
 import com.example.i_prep.presentation.more.model.MoreNav
 import com.example.i_prep.presentation.more.model.moreNav
+import com.randomboiii.i_prep.presentation.use_case.ConnectionState
+import com.randomboiii.i_prep.presentation.use_case.connectivityState
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,7 +46,10 @@ fun Options(
         globalEvent(GlobalEvent.ShowBottomNav(true))
     }
 
-    val scope = rememberCoroutineScope()
+    val connection by connectivityState()
+    val isConnected = connection == ConnectionState.Available
+
+    val context = LocalContext.current
 
     Scaffold { paddingValues ->
         Column(
@@ -69,11 +78,10 @@ fun Options(
                         onClickItem = {
                             when (item.title != MoreNav.CheckUpdate.title) {
                                 true -> navHostController.navigate(item.title)
-                                false -> scope.launch(Dispatchers.IO) {
-                                    val updateChangeLog = AppUpdater().checkUpdates()
-
-                                    if (updateChangeLog != null) {
-                                        Log.v("TAG", updateChangeLog.toString())
+                                false -> {
+                                    when(isConnected) {
+                                        true -> globalEvent(GlobalEvent.CheckUpdate(context))
+                                        false -> Toast.makeText(context, "Check internet connection", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }

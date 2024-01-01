@@ -25,6 +25,8 @@ import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.navigation.Navigation
 import com.example.i_prep.presentation.splash.SplashViewModel
 import com.example.i_prep.presentation.welcome.Welcome
+import com.randomboiii.i_prep.presentation.use_case.ConnectionState
+import com.randomboiii.i_prep.presentation.use_case.connectivityState
 //import com.github.javiersantos.appupdater.AppUpdater
 //import com.github.javiersantos.appupdater.enums.UpdateFrom
 import dagger.hilt.android.AndroidEntryPoint

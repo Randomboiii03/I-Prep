@@ -13,10 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.create.CreateNavHost
 import com.example.i_prep.presentation.history.HistoryNavHost
@@ -27,6 +29,8 @@ import com.example.i_prep.presentation.navigation.model.BottomNav
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.randomboiii.i_prep.presentation.use_case.ConnectionState
+import com.randomboiii.i_prep.presentation.use_case.connectivityState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,9 +43,17 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
 
     val postNotificationPermission = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
+    val connection by connectivityState()
+    val isConnected = connection == ConnectionState.Available
+    val context = LocalContext.current
+
     LaunchedEffect(true) {
         if (!postNotificationPermission.status.isGranted) {
             postNotificationPermission.launchPermissionRequest()
+        }
+
+        if (isConnected) {
+            mGlobalViewModel.onEvent(GlobalEvent.CheckUpdate(context))
         }
     }
 
