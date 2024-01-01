@@ -20,10 +20,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.IPrepTheme
+import com.example.i_prep.common.updateJSON
 import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.navigation.Navigation
 import com.example.i_prep.presentation.splash.SplashViewModel
 import com.example.i_prep.presentation.welcome.Welcome
+//import com.github.javiersantos.appupdater.AppUpdater
+//import com.github.javiersantos.appupdater.enums.UpdateFrom
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -50,7 +53,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             IPrepTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -59,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     val mainNavHostController = rememberNavController()
 
                     val mGlobalViewModel = viewModel<GlobalViewModel>()
-                    Log.v("TAG", screen)
+
                     NavHost(navController = mainNavHostController, startDestination = screen) {
 
                         composable(route = "Blank") {
