@@ -46,11 +46,6 @@ fun Options(
         globalEvent(GlobalEvent.ShowBottomNav(true))
     }
 
-    val connection by connectivityState()
-    val isConnected = connection == ConnectionState.Available
-
-    val context = LocalContext.current
-
     Scaffold { paddingValues ->
         Column(
             modifier = modifier
@@ -75,17 +70,7 @@ fun Options(
                     OItem(
                         title = item.title,
                         icon = item.icon,
-                        onClickItem = {
-                            when (item.title != MoreNav.CheckUpdate.title) {
-                                true -> navHostController.navigate(item.title)
-                                false -> {
-                                    when(isConnected) {
-                                        true -> globalEvent(GlobalEvent.CheckUpdate(context))
-                                        false -> Toast.makeText(context, "Check internet connection", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                            }
-                        })
+                        onClickItem = { navHostController.navigate(item.title) })
                 }
             }
         }

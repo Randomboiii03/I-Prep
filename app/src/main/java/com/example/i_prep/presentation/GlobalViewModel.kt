@@ -180,10 +180,16 @@ class GlobalViewModel @Inject constructor(
                     when (updateChangeLog != null) {
                         true -> {
                             when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
-                                true -> downloader.downloadFIle(
-                                    url = updateChangeLog.url,
-                                    desc = updateChangeLog.releaseNotes.joinToString("\n• ")
-                                )
+                                true -> {
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(event.context, "Downloading latest version", Toast.LENGTH_SHORT).show()
+                                    }
+
+                                    downloader.downloadFIle(
+                                        url = updateChangeLog.url,
+                                        desc = updateChangeLog.releaseNotes.joinToString("\n• ")
+                                    )
+                                }
 
                                 false -> {
                                     withContext(Dispatchers.Main) {

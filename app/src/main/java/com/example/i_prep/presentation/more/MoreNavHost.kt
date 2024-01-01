@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
-import com.example.i_prep.presentation.more.composables.about.About
+import com.example.i_prep.presentation.more.composables.about.AboutNavHost
 import com.example.i_prep.presentation.more.composables.help.Help
 import com.example.i_prep.presentation.more.composables.options.Options
 import com.example.i_prep.presentation.more.composables.statistics.Statistics
@@ -17,7 +17,7 @@ import com.example.i_prep.presentation.more.model.MoreNav
 import kotlin.reflect.KFunction1
 
 @Composable
-fun MoreNavHost(globalState: GlobalState, globalEvent: KFunction1<GlobalEvent, Unit>) {
+fun MoreNavHost(globalState: GlobalState, globalEvent: (GlobalEvent) -> Unit) {
     val moreNavHostController = rememberNavController()
 
     NavHost(navController = moreNavHostController, startDestination = MoreNav.Options.title) {
@@ -94,7 +94,7 @@ fun MoreNavHost(globalState: GlobalState, globalEvent: KFunction1<GlobalEvent, U
                 )
             }
         ) {
-            About(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
+            AboutNavHost(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
     }
 }
