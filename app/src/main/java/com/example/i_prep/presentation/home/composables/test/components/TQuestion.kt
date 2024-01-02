@@ -10,7 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun TQuestion(question: String, modifier: Modifier = Modifier) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = question, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+    Row(modifier = modifier.fillMaxWidth()) {
+        Text(text = question, textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.fillMaxWidth())
     }
 }

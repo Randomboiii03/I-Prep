@@ -4,14 +4,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -24,7 +27,7 @@ fun TTimer(
 ) {
     Column(
         modifier = modifier.fillMaxWidth().padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(
             modifier = modifier.fillMaxWidth(),
@@ -42,8 +45,11 @@ fun TTimer(
 
         LinearProgressIndicator(
             progress = currentIndex.toFloat() / (totalItems - 1).toFloat(),
+            strokeCap = StrokeCap.Round,
             modifier = modifier
                 .fillMaxWidth()
+                .height(6.dp)
+                .clip(RoundedCornerShape(6.dp))
                 .padding(horizontal = 6.dp)
         )
     }

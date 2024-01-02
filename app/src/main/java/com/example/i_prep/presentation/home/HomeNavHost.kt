@@ -85,15 +85,15 @@ fun HomeNavHost(
         }
 
         composable(route = HomeNav.Test.title) {
-            when (globalState.pTest.questionType != "sa") {
-                true -> TestMC(
-                    globalEvent = globalEvent,
+            when (globalState.pTest.questionType) {
+                "sa" -> TestSA(
                     mTViewModel = mTViewModel,
                     onEvent = { onEvent(it) },
                     navHostController = homeNavHostController
                 )
 
-                false -> TestSA(
+                else -> TestMC(
+                    globalEvent = globalEvent,
                     mTViewModel = mTViewModel,
                     onEvent = { onEvent(it) },
                     navHostController = homeNavHostController

@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.more.composables.about.composables.list
+package com.example.i_prep.presentation.more.composables.about
 
 import android.content.Intent
 import android.net.Uri
@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,15 +34,15 @@ import com.example.i_prep.R
 import com.example.i_prep.common.githubRepo
 import com.example.i_prep.common.latestVersion
 import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.more.composables.about.composables.list.components.BItem
+import com.example.i_prep.presentation.more.composables.about.components.BItem
 import com.example.i_prep.presentation.more.composables.about.model.AboutNav
 import com.example.i_prep.presentation.more.composables.about.model.aboutNav
-import com.example.i_prep.presentation.more.composables.components.MTopBar
+import com.example.i_prep.presentation.more.components.MTopBar
 import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
 
 @Composable
-fun AboutList(
+fun About(
     onBack: () -> Unit,
     globalEvent: (GlobalEvent) -> Unit,
     navHostController: NavHostController,
@@ -77,37 +75,35 @@ fun AboutList(
             Divider()
 
             LazyColumn {
-                item {
-                    BItem(
-                        title = AboutNav.Version.title,
-                        onClickItem = {
-                            Toast.makeText(
-                                context,
-                                "I-Prep v$latestVersion",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        })
-                }
 
-                item {
+                items(aboutNav) { item ->
                     BItem(
-                        title = AboutNav.CheckUpdate.title,
+                        title = item.title,
                         onClickItem = {
-                            when (isConnected) {
-                                true -> globalEvent(GlobalEvent.CheckUpdate(context))
-                                false -> Toast.makeText(
-                                    context,
-                                    "Check internet connection",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            when (item.title) {
+                                AboutNav.Version.title -> {
+                                    Toast.makeText(
+                                        context,
+                                        "I-Prep v$latestVersion",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                                AboutNav.CheckUpdate.title -> {
+                                    when (isConnected) {
+                                        true -> globalEvent(GlobalEvent.CheckUpdate(context, true))
+                                        false -> Toast.makeText(
+                                            context,
+                                            "Check internet connection",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+
+                                else -> navHostController.navigate(item.title)
                             }
-                        })
-                }
-
-                item {
-                    BItem(
-                        title = AboutNav.PrivacyPolicy.title,
-                        onClickItem = { navHostController.navigate(AboutNav.PrivacyPolicy.title) })
+                        }
+                    )
                 }
             }
 

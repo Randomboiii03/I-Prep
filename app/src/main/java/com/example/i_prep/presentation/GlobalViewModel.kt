@@ -64,15 +64,13 @@ class GlobalViewModel @Inject constructor(
 
             is GlobalEvent.DeleteTest -> {
                 viewModelScope.launch {
-                    _state.update {
-                        it.copy(pTest = emptyPTest,
-                            pTestList = state.value.pTestList.map { pTest ->
-                                if (pTest.testId == event.pTest.testId) {
-                                    pTest.copy(isAvailable = false)
-                                } else pTest
-                            }
-                        )
+                    if (state.value.tHistoryList.any { tHistory -> tHistory.testId == event.pTest.testId }) {
+                        onEvent(GlobalEvent.UpsertTest(event.pTest.copy(isAvailable = false)))
+                    } else {
+                        deleteTest(event.pTest)
                     }
+
+                    _state.update { it.copy(pTest = emptyPTest) }
 
                     onEvent(GlobalEvent.GetAllTest)
                 }
@@ -97,7 +95,7 @@ class GlobalViewModel @Inject constructor(
 
                     _state.update {
                         it.copy(
-                            pTestList = getAllTest().first().filter { it.isAvailable },
+                            pTestList = getAllTest().first(),
                             isLoading = false
                         )
                     }
@@ -139,15 +137,7 @@ class GlobalViewModel @Inject constructor(
             is GlobalEvent.UpsertTest -> {
                 viewModelScope.launch {
 
-                    _state.update {
-                        it.copy(
-                            pTest = event.pTest,
-                            pTestList = state.value.pTestList.map { pTest ->
-                                if (pTest.testId == event.pTest.testId) {
-                                    event.pTest
-                                } else pTest
-                            })
-                    }
+                    _state.update { it.copy(pTest = event.pTest) }
 
                     upsertTest(event.pTest)
                     onEvent(GlobalEvent.GetAllTest)
@@ -182,7 +172,11 @@ class GlobalViewModel @Inject constructor(
                             when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
                                 true -> {
                                     withContext(Dispatchers.Main) {
-                                        Toast.makeText(event.context, "Downloading latest version", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            event.context,
+                                            "Downloading latest version",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
 
                                     downloader.downloadFIle(
@@ -192,8 +186,14 @@ class GlobalViewModel @Inject constructor(
                                 }
 
                                 false -> {
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(event.context, "App is up-to-date", Toast.LENGTH_SHORT).show()
+                                    if (event.showToast) {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                event.context,
+                                                "App is up-to-date",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
                                     }
                                 }
                             }
@@ -201,7 +201,11 @@ class GlobalViewModel @Inject constructor(
 
                         false -> {
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(event.context, "Failed to update", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    event.context,
+                                    "Failed to update",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -237,5 +241,5 @@ sealed interface GlobalEvent {
 
     data class GetHistory(val tHistory: THistory, val pTest: PTest) : GlobalEvent
 
-    data class CheckUpdate(val context: Context) : GlobalEvent
+    data class CheckUpdate(val context: Context, val showToast: Boolean) : GlobalEvent
 }

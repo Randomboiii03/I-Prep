@@ -1,5 +1,7 @@
 package com.example.i_prep.presentation.more.composables.options
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -46,6 +48,8 @@ fun Options(
         globalEvent(GlobalEvent.ShowBottomNav(true))
     }
 
+    val context = LocalContext.current
+
     Scaffold { paddingValues ->
         Column(
             modifier = modifier
@@ -70,7 +74,18 @@ fun Options(
                     OItem(
                         title = item.title,
                         icon = item.icon,
-                        onClickItem = { navHostController.navigate(item.title) })
+                        onClickItem = {
+                            when (item.title) {
+                                MoreNav.Feedback.title -> context.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse("")
+                                    )
+                                )
+
+                                else -> navHostController.navigate(item.title)
+                            }
+                        })
                 }
             }
         }

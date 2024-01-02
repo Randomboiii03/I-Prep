@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.more.composables.about.composables.list.components
+package com.example.i_prep.presentation.more.composables.about.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

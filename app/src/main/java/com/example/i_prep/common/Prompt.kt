@@ -474,9 +474,9 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                             - The question / item should be so worded that there is only one correct response. 
                         </guidelines> 
                         <examples> 
-                            How many centimeters make up 2 meters? 1. ____ 
-                            Convert 7, 000 grams to kilograms. 2. ____ 
-                            It is the fundamental unit of element. 3. ____ 
+                            How many centimeters make up 2 meters? ____ 
+                            Convert 7, 000 grams to kilograms. ____ 
+                            It is the fundamental unit of element. ____ 
                         </examples>
                     
                         <json>

@@ -67,7 +67,8 @@ fun TestMC(
                 Button(onClick = {
                     onEvent(TEvent.CheckResult(navHostController, globalEvent))
                     showDialog = false
-                    navHostController.popBackStack()}
+                    navHostController.popBackStack()
+                }
                 ) {
                     Text(text = "Confirm")
                 }
@@ -173,7 +174,9 @@ private fun TChoices(
             .clickable { onClickItem(choice) }
     ) {
         Row(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
             Text(
                 text = choice,
@@ -181,7 +184,6 @@ private fun TChoices(
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
             )
         }
     }

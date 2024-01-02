@@ -80,7 +80,7 @@ class GViewModel : ViewModel() {
                     val message = api.sendMessage(
                         conversationId = conversationId,
                         prompt = getPrompt(
-                            version = 1,
+                            version = 2,
                             questionType = state.questionType,
                             difficulty = state.difficulty,
                             language = state.language

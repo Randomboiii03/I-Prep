@@ -23,7 +23,7 @@ import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
 import com.example.i_prep.presentation.home.composables.library.components.HItem
 import com.example.i_prep.presentation.home.model.HomeNav
-import com.example.i_prep.presentation.more.composables.components.MTopBar
+import com.example.i_prep.presentation.more.components.MTopBar
 import com.example.i_prep.presentation.more.composables.uploaded.components.UITem
 import java.io.File
 

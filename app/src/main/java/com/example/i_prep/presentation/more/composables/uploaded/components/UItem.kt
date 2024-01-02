@@ -44,7 +44,7 @@ fun UITem(referenceFile: File, modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(
-                text = referenceFile.name.split('.')[0],
+                text = referenceFile.nameWithoutExtension,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis

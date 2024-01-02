@@ -49,6 +49,7 @@ fun AITem(
     ) {
         Row(
             modifier = modifier
+                .weight(4f)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -74,8 +75,9 @@ fun AITem(
 
         Row(
             modifier = modifier
-            .wrapContentSize()
-            .padding(horizontal = 16.dp)
+                .wrapContentSize()
+                .weight(1f)
+                .padding(horizontal = 16.dp)
         ) {
             Box(
                 modifier = modifier

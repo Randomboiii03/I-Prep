@@ -44,7 +44,8 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = modifier.weight(1f)
+            modifier = modifier
+                .weight(4f)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -71,6 +72,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
         Box(
             modifier = modifier
                 .wrapContentSize()
+                .weight(1f)
                 .padding(horizontal = 16.dp)
                 .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
             contentAlignment = Alignment.Center

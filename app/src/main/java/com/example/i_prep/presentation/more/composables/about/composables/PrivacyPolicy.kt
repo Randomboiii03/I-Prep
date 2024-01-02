@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.more.composables.about.composables.privacy_polocy
+package com.example.i_prep.presentation.more.composables.about.composables
 
 import android.content.Intent
 import android.net.Uri
@@ -32,7 +32,7 @@ import com.example.i_prep.common.about3
 import com.example.i_prep.common.about4
 import com.example.i_prep.common.claudePrivPol
 import com.example.i_prep.common.githubRepo
-import com.example.i_prep.presentation.more.composables.components.MTopBar
+import com.example.i_prep.presentation.more.components.MTopBar
 
 @Composable
 fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {

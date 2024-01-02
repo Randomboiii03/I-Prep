@@ -1,6 +1,7 @@
 package com.example.i_prep.presentation.more.model
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.HelpOutline
@@ -22,11 +23,14 @@ sealed class MoreNav(
     object Help: MoreNav(title = "Help", icon = Icons.Outlined.HelpOutline)
 
     object About: MoreNav(title = "About", icon = Icons.Outlined.Info)
+
+    object Feedback: MoreNav(title = "Feedback", icon = Icons.Outlined.Feedback)
 }
 
 val moreNav = listOf(
     MoreNav.Statistics,
     MoreNav.UploadedFiles,
+    MoreNav.Feedback,
     MoreNav.Help,
-    MoreNav.About
+    MoreNav.About,
 )

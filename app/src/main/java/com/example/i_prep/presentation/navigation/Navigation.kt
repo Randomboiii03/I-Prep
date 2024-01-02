@@ -53,7 +53,7 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
         }
 
         if (isConnected) {
-            mGlobalViewModel.onEvent(GlobalEvent.CheckUpdate(context))
+            mGlobalViewModel.onEvent(GlobalEvent.CheckUpdate(context, false))
         }
     }
 

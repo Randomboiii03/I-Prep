@@ -98,8 +98,9 @@ fun Library(
                 }
 
                 false -> {
-                    val list =
-                        (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList).reversed()
+                    val list = (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList)
+                            .filter { it.isAvailable }
+                            .reversed()
 
                     when (list.isEmpty()) {
                         true -> {

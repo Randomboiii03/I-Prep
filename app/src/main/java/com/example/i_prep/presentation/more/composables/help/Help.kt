@@ -37,7 +37,7 @@ import com.example.i_prep.common.about4
 import com.example.i_prep.common.claudePrivPol
 import com.example.i_prep.common.githubRepo
 import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.more.composables.components.MTopBar
+import com.example.i_prep.presentation.more.components.MTopBar
 
 @Composable
 fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modifier = Modifier) {
