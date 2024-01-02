@@ -100,12 +100,18 @@ class GViewModel : ViewModel() {
                                 testInfo = testInfo.copy(
                                     description = testInfo.description.replace(
                                         number[0],
-                                        testInfo.questions.toString()
+                                        testInfo.questions.size.toString()
                                     )
                                 )
                             }
 
                             val image = api.getRandomImage()
+
+                            if (state.questionType == "tof") {
+                                testInfo = testInfo.copy(
+                                    questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) }
+                                )
+                            }
 
                             if (testInfo.questions.all { it.answer.length == 1 }) {
                                 if (state.questionType == "mcq" || state.questionType == "fitb") {

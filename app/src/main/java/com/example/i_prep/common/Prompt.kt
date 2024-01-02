@@ -89,7 +89,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                     """.trimIndent()
                 }
 
-                "Sa" -> {
+                "sa" -> {
                     rules.value = """
                         <rules>
                         - Ensure question variety by limiting "W" questions (Who, What, When, Where, Why) to 30% or less of total
@@ -116,8 +116,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                             [
                                 {
                                     "question": "question stem1",
-                                    "choice": ["choice1", "choice2", "choice3", "choice4"],
-                                    "answer": "index number of the correct answer from choices"
+                                    "answer": "correct answer"
                                 }
                             ]
                         }
@@ -157,7 +156,8 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                             [
                                 {
                                     "question": "question stem1",
-                                    "answer": "correct answer"
+                                    "choice": ["choice1", "choice2", "choice3", "choice4"],
+                                    "answer": "index number of the correct answer from choices"
                                 }
                             ]
                         }
@@ -410,7 +410,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                     """.trimIndent()
                 }
 
-                "Sa" -> {
+                "sa" -> {
                     guidelines.value = """
                         <guidelines>
                             <guidelines1>
@@ -457,8 +457,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                             [
                                 {
                                     "question": "question stem1",
-                                    "choice": ["choice1", "choice2", "choice3", "choice4"],
-                                    "answer": "index number of the correct answer from choices"
+                                    "answer": "correct answer"
                                 }
                             ]
                         }
@@ -491,7 +490,8 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                             [
                                 {
                                     "question": "question stem1",
-                                    "answer": "correct answer"
+                                    "choice": ["choice1", "choice2", "choice3", "choice4"],
+                                    "answer": "index number of the correct answer from choices"
                                 }
                             ]
                         }

@@ -51,7 +51,7 @@ class TViewModel : ViewModel() {
     ) {
         stopTimer()
         // adjust it for testing = 1000L, actual value = 30000L
-        timer = object : CountDownTimer((state.value.pTest.itemSet * 1000L) + 1000L, 1000L) {
+        timer = object : CountDownTimer((state.value.pTest.itemSet * 30000L) + 1000L, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
                 _state.update { it.copy(time = millisUntilFinished) }
             }
@@ -81,12 +81,9 @@ class TViewModel : ViewModel() {
                         ?.let { indexQ ->
                             questions[indexQ] = questions[indexQ].copy(
                                 shown = questions[indexQ].shown + 1,
-                                correct = questions[indexQ].correct + if (question.answer == state.value.answers[index]) 1 else 0
+                                correct = questions[indexQ].correct + if (question.answer.lowercase() == state.value.answers[index].lowercase()) 1 else 0
                             )
-                            if (question.answer.lowercase(Locale.getDefault()) == state.value.answers[index].lowercase(
-                                    Locale.getDefault()
-                                )
-                            ) 1 else 0
+                            if (question.answer.lowercase() == state.value.answers[index].lowercase()) 1 else 0
                         } ?: 0
                 }.sum()
 
