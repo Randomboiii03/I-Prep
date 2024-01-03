@@ -1,5 +1,6 @@
 package com.example.i_prep.presentation.home.composables.details
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -41,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
@@ -87,6 +89,8 @@ fun Details(
     var changeChart by rememberSaveable { mutableStateOf(true) }
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
+    var rowHeight by rememberSaveable { mutableStateOf(250) }
+
     if (showDialog) {
         DModifyDialog(
             pTest = pTest,
@@ -107,7 +111,7 @@ fun Details(
             placeholder = painterResource(R.drawable.ic_launcher_background),
             contentScale = ContentScale.Crop,
             modifier = modifier
-                .requiredHeight(250.dp)
+                .requiredHeight(rowHeight.dp)
                 .alpha(.5f)
         )
 
@@ -122,7 +126,7 @@ fun Details(
                         )
                     )
                 )
-                .requiredHeight(250.dp),
+                .requiredHeight(rowHeight.dp),
             content = {}
         )
 
@@ -148,7 +152,9 @@ fun Details(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.padding(horizontal = 16.dp)
+                    modifier = modifier.padding(horizontal = 16.dp).onGloballyPositioned {
+                        rowHeight = it.size.height - 185
+                    }
                 ) {
                     Column(
                         modifier = modifier

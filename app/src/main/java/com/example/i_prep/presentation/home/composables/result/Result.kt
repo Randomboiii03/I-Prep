@@ -41,13 +41,14 @@ import com.example.i_prep.presentation.home.model.HomeNav
 fun Result(
     score: Int,
     itemSet: Int,
-    navHostController: NavHostController,
+    onBack: () -> Unit,
+    onResult: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val percentage = ((score.toDouble() / itemSet.toDouble()) * 100).toInt()
 
     Scaffold(
-        topBar = { RTopBar { navHostController.popBackStack() } }
+        topBar = { RTopBar { onBack() } }
     ) { paddingValues ->
         Box(
             modifier = modifier
@@ -131,7 +132,7 @@ fun Result(
                 )
 
                 Button(
-                    onClick = { navHostController.navigate(HomeNav.View.title) },
+                    onClick = { onResult() },
                     shape = RoundedCornerShape(16.dp),
                     modifier = modifier.padding(bottom = 12.dp)
                 ) {

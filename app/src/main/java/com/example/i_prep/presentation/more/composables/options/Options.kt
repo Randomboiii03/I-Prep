@@ -25,6 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.i_prep.R
+import com.example.i_prep.common.githubRepo
+import com.example.i_prep.common.googleForm
 import com.example.i_prep.domain.app_updater.AppUpdater
 import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
 import com.example.i_prep.presentation.GlobalEvent
@@ -77,10 +79,11 @@ fun Options(
                         onClickItem = {
                             when (item.title) {
                                 MoreNav.Feedback.title -> context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("")
-                                    )
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(googleForm))
+                                )
+
+                                MoreNav.Report.title -> context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(githubRepo))
                                 )
 
                                 else -> navHostController.navigate(item.title)

@@ -17,6 +17,7 @@ import com.example.i_prep.presentation.history.composables.view.VVIewModel
 import com.example.i_prep.presentation.history.composables.view.mc.ViewMC
 import com.example.i_prep.presentation.history.model.HistoryNav
 import com.example.i_prep.presentation.home.composables.result.Result
+import com.example.i_prep.presentation.home.model.HomeNav
 
 @Composable
 fun HistoryNavHost(
@@ -59,7 +60,12 @@ fun HistoryNavHost(
             Result(
                 score = state.tHistory.score,
                 itemSet = state.tHistory.questionsTaken,
-                navHostController = historyNavHostController
+                onBack = { historyNavHostController.popBackStack() },
+                onResult = {
+                    historyNavHostController.navigate(HistoryNav.View.title) {
+                        popUpTo(HistoryNav.Archive.title)
+                    }
+                }
             )
         }
     }

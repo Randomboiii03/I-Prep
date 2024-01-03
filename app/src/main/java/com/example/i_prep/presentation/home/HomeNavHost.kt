@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
@@ -121,7 +122,12 @@ fun HomeNavHost(
             Result(
                 score = state.score,
                 itemSet = state.pTest.itemSet,
-                navHostController = homeNavHostController
+                onBack = { homeNavHostController.popBackStack() },
+                onResult = {
+                    homeNavHostController.navigate(HomeNav.View.title) {
+                        popUpTo(HomeNav.Library.title)
+                    }
+                }
             )
         }
 
