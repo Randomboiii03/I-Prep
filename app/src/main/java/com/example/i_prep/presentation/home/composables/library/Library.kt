@@ -24,7 +24,6 @@ import com.example.i_prep.common.dummyQuestions
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
-import com.example.i_prep.presentation.home.composables.library.components.HBottomSheet
 import com.example.i_prep.presentation.home.composables.library.components.HItem
 import com.example.i_prep.presentation.home.composables.library.components.HTopBar
 import com.example.i_prep.presentation.home.model.HomeNav
@@ -37,24 +36,6 @@ fun Library(
     modifier: Modifier = Modifier
 ) {
     LaunchedEffect(true) {
-//        for (i in 1..5) {
-//            globalEvent(
-//                GlobalEvent.UpsertTest(
-//                    PTest(
-//                        title = "Title $i",
-//                        description = "Description $i",
-//                        tags = listOf("Tag 01", "Tag 02", "Tag 03", "Tag 04"),
-//                        questionType = "mcq",
-//                        questions = dummyQuestions(50),
-//                        totalItems = 50,
-//                        language = "English",
-//                        reference = "Unknown.pdf",
-//                        image = "https://picsum.photos/400/600",
-//                        dateCreated = System.currentTimeMillis(),
-//                    )
-//                )
-//            )
-//        }
         globalEvent(GlobalEvent.ShowBottomNav(true))
     }
 
@@ -83,10 +64,6 @@ fun Library(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (state.showFilter) {
-                HBottomSheet(onDismiss = { onEvent(LEvent.Filter) })
-            }
-
             when (globalState.isLoading) {
                 true -> {
                     Box(
@@ -98,7 +75,8 @@ fun Library(
                 }
 
                 false -> {
-                    val list = (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList)
+                    val list =
+                        (if (state.isSearch) globalState.pTestListFiltered else globalState.pTestList)
                             .filter { it.isAvailable }
                             .reversed()
 

@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,7 +70,8 @@ fun Welcome(
 private fun Pager(onBoardingPage: OnBoardingPage, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -76,7 +79,8 @@ private fun Pager(onBoardingPage: OnBoardingPage, modifier: Modifier = Modifier)
             modifier = modifier
                 .fillMaxWidth(0.6f)
                 .fillMaxHeight(0.8f),
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = onBoardingPage.image),
+            contentScale = ContentScale.Fit,
             contentDescription = "Pager Image"
         )
 
@@ -84,7 +88,7 @@ private fun Pager(onBoardingPage: OnBoardingPage, modifier: Modifier = Modifier)
             modifier = modifier
                 .fillMaxWidth(),
             text = onBoardingPage.title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )

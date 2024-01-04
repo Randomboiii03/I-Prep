@@ -46,7 +46,7 @@ fun BottomNavItem(bottomNav: BottomNav, isSelected: Boolean, modifier: Modifier 
                     text = bottomNav.title,
                     modifier = Modifier.padding(start = 8.dp, end = 10.dp),
                     maxLines = 1,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.labelLarge
                 )
             }

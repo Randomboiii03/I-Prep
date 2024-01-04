@@ -38,7 +38,7 @@ fun OItem(title:String, icon: ImageVector, onClickItem: () -> Unit, modifier: Mo
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Icon(imageVector = icon, contentDescription = title)
+        Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary)
 
         Text(
             text = title,

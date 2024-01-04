@@ -31,13 +31,13 @@ fun BottomNavIcon(
     unselectedIcon: ImageVector,
     contentDescription: String,
 ) {
-    val animationRotation by animateFloatAsState(
-        targetValue = if (isSelected) 360f else 0f,
-        animationSpec = spring(
-            stiffness = Spring.StiffnessLow,
-            dampingRatio = Spring.DampingRatioMediumBouncy
-        )
-    )
+//    val animationRotation by animateFloatAsState(
+//        targetValue = if (isSelected) 360f else 0f,
+//        animationSpec = spring(
+//            stiffness = Spring.StiffnessLow,
+//            dampingRatio = Spring.DampingRatioMediumBouncy
+//        )
+//    )
 
     Box(
         modifier = modifier
@@ -46,16 +46,17 @@ fun BottomNavIcon(
                 RoundedCornerShape(24.dp)
             )
             .width(60.dp)
-            .padding(3.dp)
-            .graphicsLayer { rotationZ = animationRotation },
+            .padding(3.dp),
+//        .graphicsLayer { rotationZ = animationRotation }
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            rememberVectorPainter(
-                image = if (animationRotation > 90f) selectedIcon else unselectedIcon
-            ),
+//            rememberVectorPainter(
+//                image = if (animationRotation > 90f) selectedIcon else unselectedIcon
+//            ),
+            imageVector = if (isSelected) selectedIcon else unselectedIcon,
             contentDescription = contentDescription,
-            tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
+            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             modifier = modifier.size(26.dp)
         )
     }

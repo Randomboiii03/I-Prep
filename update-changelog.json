@@ -1,8 +1,8 @@
 {
-  "latestVersion": "1.0.0",
-  "latestVersionCode": 15,
+  "latestVersion": "0.1.0",
+  "latestVersionCode": 16,
   "url": "",
   "releaseNotes": [
-    "Test release"
+    "First release"
   ]
 }

@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -31,8 +33,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,28 +74,38 @@ fun HTopBar(
 
                         Column(
                             modifier = modifier
-                                .width(150.dp)
+                                .requiredWidth(250.dp)
                                 .horizontalScroll(rememberScrollState())
                         ) {
                             BasicTextField(
                                 value = searchText,
                                 onValueChange = { onSearch(it) },
                                 maxLines = 1,
-                                textStyle = MaterialTheme.typography.bodyLarge,
+                                textStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp),
                                 decorationBox = { innerTextField ->
                                     Box {
                                         if (searchText.isEmpty()) {
                                             Text(
                                                 text = "Search...",
-                                                style = MaterialTheme.typography.bodyLarge
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                         }
                                         innerTextField()
                                     }
-                                }
+                                },
+                                cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface)
                             )
                         }
                     }
+                }
+
+                AnimatedVisibility(visible = isSearch && searchText.isNotEmpty()) {
+                    LIconButton(
+                        icon = Icons.Default.Close,
+                        contentDesc = "Delete Search Text",
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
+                        onAction = { onSearch("") })
                 }
             }
         },
@@ -103,28 +118,21 @@ fun HTopBar(
                     LIconButton(
                         icon = Icons.Default.Search,
                         onAction = { showSearch() },
-                        contentDesc = "Search"
+                        contentDesc = "Search",
+                        modifier = modifier.padding(end = 16.dp)
                     )
                 }
 
-                AnimatedVisibility(visible = isSearch && searchText.isNotEmpty()) {
-                    LIconButton(
-                        icon = Icons.Default.Close,
-                        contentDesc = "Delete Search Text",
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .5f),
-                        onAction = { onSearch("") })
-                }
-
-                LIconButton(
-                    icon = Icons.Default.FilterList,
-                    contentDesc = "Show Filter List",
-                    onAction = { showFilter() })
-
-                LIconButton(
-                    icon = Icons.Default.MoreVert,
-                    contentDesc = "More Options",
-                    onAction = {  },
-                    modifier = modifier.padding(end = 16.dp))
+//                LIconButton(
+//                    icon = Icons.Default.FilterList,
+//                    contentDesc = "Show Filter List",
+//                    onAction = { showFilter() })
+//
+//                LIconButton(
+//                    icon = Icons.Default.MoreVert,
+//                    contentDesc = "More Options",
+//                    onAction = {  },
+//                    modifier = modifier.padding(end = 16.dp))
             }
         }
     )

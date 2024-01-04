@@ -1,22 +1,28 @@
 package com.example.i_prep.presentation.welcome.model
 
+import com.example.i_prep.R
+
 sealed class OnBoardingPage(
     val title: String,
-    val description: String
+    val description: String,
+    val image: Int
 ) {
     object First: OnBoardingPage(
-        title = "Title 1",
-        description = "Description 1"
+        title = "Prep Smarter, Ace Your Tests with I-Prep!",
+        description = "AI-powered Personalized Test Preparation",
+        image = R.drawable.logo
     )
 
     object Second: OnBoardingPage(
-        title = "Title 2",
-        description = "Description 2"
+        title = "Prep Your Way, Not the Textbook Way",
+        description = "Claude AI Tailors Your Learning Journey",
+        image = R.drawable.claude
     )
 
     object Third: OnBoardingPage(
-        title = "Title 3",
-        description = "Description 3"
+        title = "Reach Your Goals with Confidence",
+        description = "Personalized Support Every Step of the Way!",
+        image = R.drawable.trophy
     )
 }
 
