@@ -158,7 +158,7 @@ private fun TChoices(
                 true -> {
                     when (correctAnswer == answer) {
                         true -> MaterialTheme.colorScheme.primary
-                        false -> MaterialTheme.colorScheme.onErrorContainer
+                        false -> MaterialTheme.colorScheme.errorContainer
                     }
                 }
 
@@ -181,7 +181,7 @@ private fun TChoices(
                     true -> {
                         when (correctAnswer == answer) {
                             true -> MaterialTheme.colorScheme.onPrimary
-                            false -> MaterialTheme.colorScheme.errorContainer
+                            false -> MaterialTheme.colorScheme.onErrorContainer
                         }
                     }
 

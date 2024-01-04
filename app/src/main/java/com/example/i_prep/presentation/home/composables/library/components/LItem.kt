@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +32,8 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.example.i_prep.R
 import com.example.i_prep.data.local.model.PTest
+import com.example.i_prep.presentation.create.composables.form.model.questionTypes
+import com.example.i_prep.presentation.history.composables.archive.components.formatDateTime
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -38,7 +41,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(95.dp)
             .clickable { onClickItem(pTest) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -57,16 +60,25 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
                 placeholder=  painterResource(R.drawable.ic_launcher_background),
                 contentScale = ContentScale.Crop,
                 modifier = modifier
-                    .size(40.dp)
+                    .size(height = 75.dp, width = 50.dp)
                     .clip(RoundedCornerShape(6.dp))
             )
 
-            Text(
-                text = pTest.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    text = pTest.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = questionTypes.find { it.abbreviation == pTest.questionType }?.name ?: "",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
 
         Box(

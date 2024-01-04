@@ -174,8 +174,8 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
             
                 <guidelines>
                 - Use double quotes in the json; in the question text, substitute single quotes as needed to prevent breaking the json
-                - Read the full document from start to finish without skipping any sections
-                - Carefully skim the document to extract key points, facts, concepts, processes, formulas, etc. that could potentially be assessed on a test
+                - Read the full <document_content> from start to finish without skipping any sections
+                - Carefully skim the <document_content> to extract key points, facts, concepts, processes, formulas, etc. that could potentially be assessed on a test
                 - Strictly limit scope to only the information contained within the <document_content>
                 </guidelines>
             
@@ -510,8 +510,8 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                 
                 <rules>
                 - Use double quotes in the json; in the question text, substitute single quotes as needed to prevent breaking the json
-                - Read the full document from start to finish without skipping any sections
-                - Carefully skim the document to extract key points, facts, concepts, processes, formulas, etc. that could potentially be assessed on a test
+                - Read the full <document_content> from start to finish without skipping any sections
+                - Carefully skim the <document_content> to extract key points, facts, concepts, processes, formulas, etc. that could potentially be assessed on a test
                 - Strictly limit scope to only the information contained within the <document_content>
                 </rules>
             """.trimIndent()

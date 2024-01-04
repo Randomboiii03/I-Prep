@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,13 @@ import com.bumptech.glide.integration.compose.placeholder
 import com.example.i_prep.R
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -42,7 +50,7 @@ fun AITem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
+            .height(95.dp)
             .clickable { onClickItem(tHistory) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -61,16 +69,25 @@ fun AITem(
                 placeholder = painterResource(R.drawable.logo),
                 contentScale = ContentScale.Crop,
                 modifier = modifier
-                    .size(40.dp)
+                    .size(height = 75.dp, width = 50.dp)
                     .clip(RoundedCornerShape(6.dp))
             )
 
-            Text(
-                text = pTest.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Text(
+                    text = pTest.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = formatDateTime(tHistory.dateTaken),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
 
         Row(
@@ -114,4 +131,10 @@ fun AITem(
             }
         }
     }
+}
+
+fun formatDateTime(longDate: Long): String {
+    val date = Date(longDate)
+    val dateFormat = SimpleDateFormat("dd MMMM, yyyy - hh:mm a", Locale.US) // Locale ensures month name in English
+    return dateFormat.format(date)
 }

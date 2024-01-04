@@ -73,7 +73,7 @@ class GViewModel : ViewModel() {
             delay(3000)
             val attachment = api.uploadAttachment(File(state.filePath))
 
-            when (attachment != null) {
+            when (attachment != null && attachment.extracted_content.length >= 75) {
                 true -> {
                     val conversationId = api.createNewChat().toString()
 
@@ -90,71 +90,79 @@ class GViewModel : ViewModel() {
 
                     var testInfo = parseJson(message)
 
-                    when (testInfo != null) {
-                        true -> {
-                            val number =
-                                Regex("\\d+").findAll(testInfo.description).map { it.value }
-                                    .toList()
+                    if (testInfo != null) {
+                        val number =
+                            Regex("\\d+").findAll(testInfo.description).map { it.value }
+                                .toList()
 
-                            if (number.isNotEmpty()) {
-                                testInfo = testInfo.copy(
-                                    description = testInfo.description.replace(
-                                        number[0],
-                                        testInfo.questions.size.toString()
-                                    )
+                        if (number.isNotEmpty()) {
+                            testInfo = testInfo.copy(
+                                description = testInfo.description.replace(
+                                    number[0],
+                                    testInfo.questions.size.toString()
                                 )
-                            }
-
-                            val image = api.getRandomImage()
-
-                            if (state.questionType == "tof") {
-                                testInfo = testInfo.copy(
-                                    questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) }
-                                )
-                            }
-
-                            if (testInfo.questions.all { it.answer.length == 1 }) {
-                                if (state.questionType == "mcq" || state.questionType == "fitb") {
-                                    testInfo = testInfo.copy(
-                                        questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt()]) }
-                                    )
-                                }
-                            }
-
-                            val pTest = PTest(
-                                title = testInfo.title,
-                                description = testInfo.description,
-                                tags = testInfo.tags,
-                                questionType = state.questionType,
-                                questions = testInfo.questions,
-                                totalItems = testInfo.questions.size,
-                                language = state.language,
-                                reference = state.fileName,
-                                image = image,
-                                dateCreated = System.currentTimeMillis(),
                             )
-
-                            globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
-
-                            notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
                         }
 
-                        false -> notification.showNotification(
-                            "Test failed to parse into JSON. Please try again.",
-                            true
+                        val image = api.getRandomImage()
+
+                        if (state.questionType == "tof") {
+                            testInfo = testInfo.copy(
+                                questions = testInfo.questions.map {
+                                    it.copy(
+                                        choices = listOf(
+                                            "True",
+                                            "False"
+                                        )
+                                    )
+                                }
+                            )
+                        }
+
+                        if (testInfo.questions.all { it.answer.length == 1 }) {
+                            if (state.questionType == "mcq" || state.questionType == "fitb") {
+                                testInfo = testInfo.copy(
+                                    questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt()]) }
+                                )
+                            }
+                        }
+
+                        val pTest = PTest(
+                            title = testInfo.title,
+                            description = testInfo.description,
+                            tags = testInfo.tags,
+                            questionType = state.questionType,
+                            questions = testInfo.questions,
+                            totalItems = testInfo.questions.size,
+                            language = state.language,
+                            reference = state.fileName,
+                            image = image,
+                            dateCreated = System.currentTimeMillis(),
                         )
+
+                        globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
+
+                        notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
                     }
                 }
 
                 false -> notification.showNotification(
-                    "No text extracted from reference file.",
+                    "No text extracted or text extracted is too short from reference file.",
                     true
                 )
             }
 
         } catch (throwable: Throwable) {
             Log.v("TAG - GViewModel", "$throwable")
-            notification.showNotification("Error: $throwable", true)
+
+            if (throwable.toString().contains("com.google.gson")) {
+                notification.showNotification(
+                    "Test failed to parse into JSON. Please try again.",
+                    true
+                )
+            } else {
+                notification.showNotification("Error: $throwable", true)
+            }
         }
 
         withContext(Dispatchers.Main) {

@@ -7,7 +7,6 @@ sealed class AboutNav(
 
     object Version: AboutNav(title = "Version")
 
-
     object CheckUpdate: AboutNav(title = "Check for Updates")
 
     object FAQ: AboutNav(title = "FAQ")
@@ -18,6 +17,5 @@ sealed class AboutNav(
 val aboutNav = listOf(
     AboutNav.Version,
     AboutNav.CheckUpdate,
-    AboutNav.FAQ,
     AboutNav.PrivacyPolicy
 )

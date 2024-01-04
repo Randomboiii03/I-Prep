@@ -13,6 +13,7 @@ import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.composables.form.Form
 import com.example.i_prep.presentation.create.composables.generate.Generate
 import com.example.i_prep.presentation.create.model.CreateNav
+import com.example.i_prep.presentation.more.composables.help.Help
 import com.example.i_prep.presentation.navigation.model.BottomNav
 
 @Composable
@@ -61,6 +62,24 @@ fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit, navHostController: NavHost
                 globalEvent = globalEvent,
                 navHostController = createNavHostController
             )
+        }
+
+        composable(
+            route = CreateNav.Help.title,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
+        ) {
+            Help(globalEvent = globalEvent, onBack = { createNavHostController.popBackStack() })
         }
     }
 }

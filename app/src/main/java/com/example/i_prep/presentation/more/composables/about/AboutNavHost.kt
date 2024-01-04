@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.more.composables.about.composables.FAQ
 import com.example.i_prep.presentation.more.composables.about.composables.PrivacyPolicy
 import com.example.i_prep.presentation.more.composables.about.model.AboutNav
 
@@ -42,24 +41,6 @@ fun AboutNavHost(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit) {
             }
         ) {
             PrivacyPolicy(onBack = { aboutNavHostController.popBackStack() })
-        }
-
-        composable(
-            route = AboutNav.FAQ.title,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(700)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(700)
-                )
-            }
-        ) {
-            FAQ(onBack = { aboutNavHostController.popBackStack() })
         }
     }
 }

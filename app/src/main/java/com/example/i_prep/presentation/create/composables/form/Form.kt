@@ -59,7 +59,7 @@ fun Form(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(true) {
-        if (state.isGenerate){
+        if (state.isGenerate) {
             onEvent(CEvent.Generate(false))
             onEvent(CEvent.Reset)
             showList()
@@ -67,7 +67,13 @@ fun Form(
     }
 
     Scaffold(
-        topBar = { FTopBar(onReset = {}) },
+        topBar = {
+            FTopBar(onHelp = {
+                navHostController.navigate(CreateNav.Help.title) {
+                    popUpTo(CreateNav.Form.title)
+                }
+            })
+        },
         floatingActionButton = {
             if (!isConnected) {
                 scope.launch {

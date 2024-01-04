@@ -157,9 +157,7 @@ fun Details(
                     }
                 ) {
                     Column(
-                        modifier = modifier
-                            .height(150.dp)
-                            .width(100.dp)
+                        modifier = modifier.size(height = 150.dp, width = 100.dp)
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current).data(pTest.image)
@@ -172,7 +170,8 @@ fun Details(
                     }
 
                     Column(
-                        modifier = modifier.padding(start = 16.dp)
+                        modifier = modifier.padding(start = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(3.dp)
                     ) {
                         Text(text = pTest.title, style = MaterialTheme.typography.titleLarge)
 
@@ -180,6 +179,7 @@ fun Details(
                             text = "${formatDate(pTest.dateCreated)}",
                             icon = Icons.Outlined.CalendarMonth
                         )
+
                         DMoreDetail(text = pTest.reference, icon = Icons.Outlined.AttachFile)
                         DMoreDetail(text = pTest.language, icon = Icons.Outlined.Language)
                     }

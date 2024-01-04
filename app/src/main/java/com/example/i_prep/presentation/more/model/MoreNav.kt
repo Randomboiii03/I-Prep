@@ -26,15 +26,12 @@ sealed class MoreNav(
     object About: MoreNav(title = "About", icon = Icons.Outlined.Info)
 
     object Feedback: MoreNav(title = "Feedback", icon = Icons.Outlined.Feedback)
-
-    object Report: MoreNav(title = "Report Bug", icon = Icons.Outlined.BugReport)
 }
 
 val moreNav = listOf(
     MoreNav.Statistics,
     MoreNav.UploadedFiles,
     MoreNav.Feedback,
-    MoreNav.Report,
     MoreNav.Help,
     MoreNav.About,
 )

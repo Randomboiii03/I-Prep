@@ -16,14 +16,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.example.i_prep.common.about1
 import com.example.i_prep.common.about2_1
@@ -36,29 +39,6 @@ import com.example.i_prep.presentation.more.components.MTopBar
 
 @Composable
 fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val annotatedString_1 = buildAnnotatedString {
-        append(about2_1 + "\n")
-
-        append(about2_2 + "\n\n• ")
-
-        pushStringAnnotation(tag = "anthropic", annotation = claudePrivPol)
-        withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) {
-            append("Anthropic")
-        }
-        pop()
-    }
-
-    val annotatedString_2 = buildAnnotatedString {
-        append(about4)
-
-        pushStringAnnotation(tag = "github", annotation = githubRepo)
-        withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) {
-            append("Github")
-        }
-        pop()
-
-        append(".")
-    }
 
     Scaffold(
         topBar = { MTopBar(onBack = { onBack() }, title = "Privacy Policy") }
@@ -77,7 +57,25 @@ fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
             InfoSectionWithLink(
                 title = "Use of Personal Account and Use",
-                annotatedString = annotatedString_1,
+                annotatedString = buildAnnotatedString {
+
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(about2_1 + "\n")
+
+                        append(about2_2 + "\n\n• ")
+                    }
+
+                    pushStringAnnotation(tag = "anthropic", annotation = claudePrivPol)
+                    withStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Anthropic")
+                    }
+                    pop()
+                },
                 tag = "anthropic",
                 link = claudePrivPol
             )
@@ -90,7 +88,27 @@ fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
 
             InfoSectionWithLink(
                 title = "Contact Us",
-                annotatedString = annotatedString_2,
+                annotatedString = buildAnnotatedString {
+
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(about4)
+                    }
+
+                    pushStringAnnotation(tag = "github", annotation = githubRepo)
+                    withStyle(
+                        SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Github")
+                    }
+                    pop()
+
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(".")
+                    }
+                },
                 tag = "github",
                 link = githubRepo
             )

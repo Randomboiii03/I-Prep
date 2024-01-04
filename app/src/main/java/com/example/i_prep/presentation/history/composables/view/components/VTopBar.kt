@@ -25,7 +25,7 @@ fun VTopBar(onBack: () -> Unit, title: String, modifier: Modifier = Modifier) {
                 text = title,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = modifier.padding(16.dp)
+                modifier = modifier.padding(start = 16.dp)
             )
         },
         navigationIcon = {
