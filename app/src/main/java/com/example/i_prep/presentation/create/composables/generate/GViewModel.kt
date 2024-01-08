@@ -73,7 +73,7 @@ class GViewModel : ViewModel() {
             delay(3000)
             val attachment = api.uploadAttachment(File(state.filePath))
 
-            when (attachment != null && attachment.extracted_content.length >= 75) {
+            when (attachment != null) {
                 true -> {
                     val conversationId = api.createNewChat().toString()
 
@@ -157,7 +157,7 @@ class GViewModel : ViewModel() {
 
             if (throwable.toString().contains("com.google.gson")) {
                 notification.showNotification(
-                    "Test failed to parse into JSON. Please try again.",
+                    "Test failed to parse into JSON.\nSorry for inconvenience we will try to fix it soon. Please try again.",
                     true
                 )
             } else {

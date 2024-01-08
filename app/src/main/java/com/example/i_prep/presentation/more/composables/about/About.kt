@@ -40,7 +40,9 @@ import com.example.i_prep.presentation.more.composables.about.model.aboutNav
 import com.example.i_prep.presentation.more.components.MTopBar
 import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun About(
     onBack: () -> Unit,

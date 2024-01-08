@@ -135,6 +135,6 @@ fun AITem(
 
 fun formatDateTime(longDate: Long): String {
     val date = Date(longDate)
-    val dateFormat = SimpleDateFormat("dd MMMM, yyyy - hh:mm a", Locale.US) // Locale ensures month name in English
+    val dateFormat = SimpleDateFormat("dd MMMM, yyyy • hh:mm a", Locale.US) // Locale ensures month name in English
     return dateFormat.format(date)
 }

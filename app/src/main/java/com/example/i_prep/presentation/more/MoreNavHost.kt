@@ -40,7 +40,7 @@ fun MoreNavHost(globalState: GlobalState, globalEvent: (GlobalEvent) -> Unit) {
                 )
             }
         ) {
-            Statistics(globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
+            Statistics(globalState = globalState, globalEvent = globalEvent, onBack = { moreNavHostController.popBackStack() })
         }
 
         composable(

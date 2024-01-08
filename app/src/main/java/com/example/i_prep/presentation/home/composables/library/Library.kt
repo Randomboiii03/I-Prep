@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.i_prep.common.dummyQuestions
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState

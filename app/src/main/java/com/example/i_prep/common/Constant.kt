@@ -6,21 +6,6 @@ import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.domain.api.model.dto.Question
 import kotlin.random.Random
 
-fun dummyQuestions(item: Int): List<Question> {
-    val questions = mutableStateOf(emptyList<Question>())
-    for (i in 1..item) {
-        val num = Random.nextInt(1, 5)
-        questions.value += Question(
-            question = "Question $i",
-            answer = "Choice $num",
-            choices = listOf("Choice 1", "Choice 2", "Choice 3", "Choice 4")
-        )
-    }
-
-    return questions.value
-}
-
-val emptyQuestion: Question = Question("", emptyList(), "", 0, 0)
 val emptyPTest: PTest = PTest(
     0,
     "",
@@ -39,7 +24,6 @@ val emptyPTest: PTest = PTest(
 val emptyTHistory: THistory = THistory(0, 0, emptyList(), emptyList(), 0, 0, 0)
 
 const val updateJSON = "https://raw.githubusercontent.com/Randomboiii03/I-Prep/master/update-changelog.json"
-const val latestVersion = "1.0.0"
 
 const val googleForm = "https://forms.gle/dqFPQ5un5FHfYftr8"
 
