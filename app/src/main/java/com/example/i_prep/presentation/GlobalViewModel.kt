@@ -1,6 +1,7 @@
 package com.example.i_prep.presentation
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -169,30 +171,49 @@ class GlobalViewModel @Inject constructor(
 
                     when (updateChangeLog != null) {
                         true -> {
-                            when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
+                            val existingFileExists = File(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                updateChangeLog.url.split("/").last()
+                            ).exists()
+
+                            Log.v("TAG", existingFileExists.toString())
+
+                            when (existingFileExists) {
                                 true -> {
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             event.context,
-                                            "Downloading latest version",
-                                            Toast.LENGTH_SHORT
+                                            "The latest version is downloaded and waiting for you to install.",
+                                            Toast.LENGTH_LONG
                                         ).show()
                                     }
-
-                                    downloader.downloadFIle(
-                                        url = updateChangeLog.url,
-                                        desc = updateChangeLog.releaseNotes.joinToString("\n• ")
-                                    )
                                 }
 
                                 false -> {
-                                    if (event.showToast) {
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(
-                                                event.context,
-                                                "App is up-to-date",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
+                                    when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
+                                        true -> {
+                                            withContext(Dispatchers.Main) {
+                                                Toast.makeText(
+                                                    event.context,
+                                                    "Downloading latest version",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+
+                                            downloader.downloadFIle(
+                                                url = updateChangeLog.url)
+                                        }
+
+                                        false -> {
+                                            if (event.showToast) {
+                                                withContext(Dispatchers.Main) {
+                                                    Toast.makeText(
+                                                        event.context,
+                                                        "App is up-to-date",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            }
                                         }
                                     }
                                 }

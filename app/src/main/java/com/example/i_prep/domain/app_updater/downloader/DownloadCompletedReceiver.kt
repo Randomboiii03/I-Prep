@@ -11,10 +11,10 @@ class DownloadCompletedReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
         if (intent?.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
-            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
+            val downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
 
-            if (id == -1L) {
-                Log.v("TAG","Download with ID $id finished!")
+            if (downloadId != -1L) {
+                Log.v("TAG","Download with ID $downloadId finished!")
             }
         }
     }
