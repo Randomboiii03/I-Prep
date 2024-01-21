@@ -54,7 +54,9 @@ fun Archive(
                 }
 
                 false -> {
-                    when (globalState.tHistoryList.isEmpty()) {
+                    val tHistoryList = globalState.tHistoryList.filter { it.isAvailable }.reversed()
+
+                    when (tHistoryList.isEmpty()) {
                         true -> {
                             Box(
                                 modifier = modifier
@@ -78,11 +80,12 @@ fun Archive(
                             ) {
                                 LazyColumn {
                                     items(
-                                        items = globalState.tHistoryList.filter { it.isAvailable }.reversed(),
+                                        items = tHistoryList,
                                         key = { it.historyId }
                                     ) { item ->
                                         val pTest =
-                                            globalState.pTestList.find { it.testId == item.testId } ?: emptyPTest
+                                            globalState.pTestList.find { it.testId == item.testId }
+                                                ?: emptyPTest
 
                                         AITem(
                                             pTest = pTest,
@@ -90,7 +93,7 @@ fun Archive(
                                             onClickItem = {
                                                 globalEvent(
                                                     GlobalEvent.GetHistory(
-                                                        tHistory = item,
+                                                        tHistory = it,
                                                         pTest = pTest
                                                     )
                                                 )
@@ -98,6 +101,9 @@ fun Archive(
                                                 navHostController.navigate(HistoryNav.View.title) {
                                                     popUpTo(HistoryNav.Archive.title)
                                                 }
+                                            },
+                                            onLongItem = {
+                                                globalEvent(GlobalEvent.DeleteHistory(it))
                                             })
                                     }
                                 }

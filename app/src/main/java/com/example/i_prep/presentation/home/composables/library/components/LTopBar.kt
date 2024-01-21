@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -144,10 +146,13 @@ fun HTopBar(
                     )
 
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
-                        DDropDownItem(icon = Icons.Default.ImportExport, text = "Import Test") {
-                            expanded = !expanded
-                            importTest()
-                        }
+                        LDropDownItem(
+                            icon = Icons.Default.ImportExport,
+                            text = "Import Test",
+                            onClick = {
+                                expanded = !expanded
+                                importTest()
+                            })
                     }
                 }
             }
@@ -178,7 +183,12 @@ private fun LIconButton(
 }
 
 @Composable
-private fun DDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun LDropDownItem(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     DropdownMenuItem(
         text = {
             Row(
@@ -188,5 +198,8 @@ private fun DDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) 
                 Icon(imageVector = icon, contentDescription = text)
                 Text(text = text)
             }
-        }, onClick = { onClick() })
+        },
+        onClick = { onClick() },
+        modifier = modifier.heightIn(max = 40.dp).widthIn(max=130.dp)
+    )
 }

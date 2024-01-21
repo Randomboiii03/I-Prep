@@ -168,12 +168,13 @@ private fun TChoices(
         ),
         modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = 6.dp)
             .clickable { onClickItem(choice) }
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(12.dp)
         ) {
             Text(
                 text = choice,

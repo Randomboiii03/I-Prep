@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -114,7 +115,12 @@ fun DTopBar(
 }
 
 @Composable
-private fun DDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun DDropDownItem(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     DropdownMenuItem(
         text = {
             Row(
@@ -124,5 +130,8 @@ private fun DDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) 
                 Icon(imageVector = icon, contentDescription = text)
                 Text(text = text)
             }
-        }, onClick = { onClick() })
+        },
+        onClick = { onClick() },
+        modifier = modifier.heightIn(max = 40.dp)
+    )
 }

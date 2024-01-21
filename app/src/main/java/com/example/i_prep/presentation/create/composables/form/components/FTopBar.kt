@@ -7,11 +7,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.Flag
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -33,29 +35,12 @@ import com.example.i_prep.common.githubRepo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FTopBar(onHelp: () -> Unit,modifier: Modifier = Modifier) {
+fun FTopBar(onHelp: () -> Unit, modifier: Modifier = Modifier) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 
     CenterAlignedTopAppBar(
-        title = {
-//            Text(text = "Create Test")
-        },
-//        navigationIcon = {
-//            Text(
-//                text = "Reset",
-//                style = MaterialTheme.typography.labelLarge,
-//                color = MaterialTheme.colorScheme.primary,
-//                modifier = modifier
-//                    .padding(16.dp)
-//                    .clickable(
-//                        indication = null,
-//                        interactionSource = remember { MutableInteractionSource() }
-//                    ) {
-//                        onReset()
-//                    }
-//            )
-//        },
+        title = { },
         actions = {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -77,7 +62,7 @@ fun FTopBar(onHelp: () -> Unit,modifier: Modifier = Modifier) {
 
                     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
                         FDropDownItem(
-                            icon = Icons.Outlined.HelpOutline,
+                            icon = Icons.AutoMirrored.Outlined.HelpOutline,
                             text = "Help",
                             onClick = {
                                 expanded = !expanded
@@ -85,11 +70,16 @@ fun FTopBar(onHelp: () -> Unit,modifier: Modifier = Modifier) {
                             })
 
                         FDropDownItem(
-                            icon = Icons.Outlined.BugReport,
-                            text = "Report Bug",
+                            icon = Icons.Outlined.Flag,
+                            text = "Report",
                             onClick = {
                                 expanded = !expanded
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(githubRepo)))
+                                context.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse(githubRepo)
+                                    )
+                                )
                             })
                     }
                 }
@@ -98,7 +88,12 @@ fun FTopBar(onHelp: () -> Unit,modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun FDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) {
+private fun FDropDownItem(
+    icon: ImageVector,
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     DropdownMenuItem(
         text = {
             Row(
@@ -108,5 +103,8 @@ private fun FDropDownItem(icon: ImageVector, text: String, onClick: () -> Unit) 
                 Icon(imageVector = icon, contentDescription = text)
                 Text(text = text)
             }
-        }, onClick = { onClick() })
+        },
+        onClick = { onClick() },
+        modifier = modifier.heightIn(max = 40.dp).widthIn(max=98.dp)
+    )
 }

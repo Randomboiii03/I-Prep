@@ -40,6 +40,17 @@ class TViewModel : ViewModel() {
         return questionList.value
     }
 
+//    private fun getQuestionList(pTest: PTest): List<Question> {
+//        val sortedQuestions = if (pTest.questions.any { it.shown > 0 }) {
+//            pTest.questions.shuffled().sortedBy { it.shown }
+//        } else {
+//            pTest.questions.shuffled()
+//        }
+//
+//        return sortedQuestions.take(pTest.itemSet)
+//            .map { it.copy(choices = it.choices.shuffled()) }
+//    }
+
     private fun initializeAnswers(items: Int): List<String> {
         return List(items) { "" }
     }

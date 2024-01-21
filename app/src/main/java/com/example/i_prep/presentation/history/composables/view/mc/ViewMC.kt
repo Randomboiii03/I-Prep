@@ -25,7 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.i_prep.presentation.history.composables.view.VEvent
@@ -126,11 +130,18 @@ fun TCount(
             .fillMaxWidth()
             .padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Question ${currentIndex + 1} of $totalItems",
-            style = MaterialTheme.typography.titleMedium
+            text = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append("Question ${currentIndex + 1}")
+                }
+
+                append(" of $totalItems")
+            },
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            modifier = modifier.fillMaxWidth()
         )
 
         LinearProgressIndicator(
@@ -167,11 +178,12 @@ private fun TChoices(
         ),
         modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = 6.dp)
     ) {
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(12.dp)
         ) {
             Text(
                 text = choice,

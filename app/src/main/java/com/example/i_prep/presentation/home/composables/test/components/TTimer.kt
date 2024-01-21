@@ -14,6 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -33,7 +37,15 @@ fun TTimer(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Question ${currentIndex + 1} of $totalItems",
+                text = buildAnnotatedString {
+                    append("Question ")
+
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("${currentIndex + 1}")
+                    }
+
+                    append(" of $totalItems")
+                },
                 style = MaterialTheme.typography.titleMedium
             )
             Text(

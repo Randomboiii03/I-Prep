@@ -194,12 +194,9 @@ fun Details(
                     AnimatedVisibility(visible = changeChart) {
                         DChart(
                             pointData = pTest.questions.mapIndexed { index, question ->
-                                Point(
-                                    index.toFloat(),
-                                    question.shown.toFloat()
-                                )
+                                Point(index.toFloat(), question.shown.toFloat())
                             },
-                            yScale = pTest.questions.maxBy { it.shown }.shown,
+                            yScale = pTest.questions.map { it.shown }.max(),
                             label = "Viewed Question"
                         )
                     }
