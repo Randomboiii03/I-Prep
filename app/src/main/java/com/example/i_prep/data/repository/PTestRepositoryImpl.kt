@@ -36,8 +36,8 @@ class PTestRepositoryImpl @Inject constructor(private val pTestDao: PTestDao): R
         return pTestDao.getLastHistory()
     }
 
-    override suspend fun insertHistory(tHistory: THistory) {
-        return pTestDao.insertHistory(tHistory)
+    override suspend fun upsertHistory(tHistory: THistory) {
+        return pTestDao.upsertHistory(tHistory)
     }
 
     override suspend fun deleteHistory(tHistory: THistory) {

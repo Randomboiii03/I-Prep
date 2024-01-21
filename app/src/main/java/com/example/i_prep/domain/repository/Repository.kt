@@ -13,6 +13,6 @@ interface Repository {
     fun getAllHistory(): Flow<List<THistory>>
     fun getHistoryById(historyId: Int): Flow<THistory>
     fun getLastHistory(): Flow<THistory>
-    suspend fun insertHistory(tHistory: THistory)
+    suspend fun upsertHistory(tHistory: THistory)
     suspend fun deleteHistory(tHistory: THistory)
 }

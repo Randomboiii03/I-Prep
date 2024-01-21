@@ -35,7 +35,6 @@ import com.example.i_prep.presentation.history.composables.view.components.VTopB
 import com.example.i_prep.presentation.history.model.HistoryNav
 import com.example.i_prep.presentation.home.composables.test.components.TBottomBar
 import com.example.i_prep.presentation.home.composables.test.components.TQuestion
-import com.example.i_prep.presentation.home.composables.test.components.TTopBar
 
 @Composable
 fun ViewMC(
@@ -126,7 +125,8 @@ fun TCount(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Question ${currentIndex + 1} of $totalItems",

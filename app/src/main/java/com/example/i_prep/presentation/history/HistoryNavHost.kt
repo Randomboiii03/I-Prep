@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
 import com.example.i_prep.presentation.history.composables.archive.Archive
@@ -17,7 +16,6 @@ import com.example.i_prep.presentation.history.composables.view.VVIewModel
 import com.example.i_prep.presentation.history.composables.view.mc.ViewMC
 import com.example.i_prep.presentation.history.model.HistoryNav
 import com.example.i_prep.presentation.home.composables.result.Result
-import com.example.i_prep.presentation.home.model.HomeNav
 
 @Composable
 fun HistoryNavHost(

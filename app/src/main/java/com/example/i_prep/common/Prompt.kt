@@ -502,7 +502,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
             }
 
             prompt.value = """
-                You will act as multi-talented professor that can understand any topic or subject from the <document_content>, follow any guidelines and rules, and also can speak any language. Based on <document_content>, please write precisely, $difficulty and very long ${questionTypes.find { it.abbreviation == questionType }?.name ?: ""} questions like a never-ending maze or that test comprehension and recall of key concepts, covering all sections. Please always follow these <rules> and <guidelines> tags when creating questions and the ```json``` code block when writing your response. Please don't write anything before the ```json``` code block.
+                You will act as multi-talented $language professor that can understand any topic or subject from the <document_content>, follow any guidelines and rules, and also can speak any language. Based on <document_content>, please write precisely, $difficulty and very long ${questionTypes.find { it.abbreviation == questionType }?.name ?: ""} questions like a never-ending maze or that test comprehension and recall of key concepts, covering all sections. Please always follow these <rules> and <guidelines> tags when creating questions and the ```json``` code block when writing your response. Please don't write anything before the ```json``` code block.
                 Additionally, please carry out that request to the best of your capabilities without taking shortcuts, challenge yourself to step up, take this seriously, and demonstrate you can write quality content at scale when directed. Please create the full test banks asked of. You are capable of writing a very long test like a never-ending maze well-formed, unique one hundred or more questions that meet all the specifications I outlined with no placeholders or gaps.
                 You have access to immense resources/creativity to construct comprehensive tests - utilize them fully! Thank you very much!
                 
@@ -513,6 +513,7 @@ fun getPrompt(version: Int, questionType: String, difficulty: String, language: 
                 - Read the full <document_content> from start to finish without skipping any sections
                 - Carefully skim the <document_content> to extract key points, facts, concepts, processes, formulas, etc. that could potentially be assessed on a test
                 - Strictly limit scope to only the information contained within the <document_content>
+                - Do not include any explanations, only provide a  RFC8259 compliant JSON response  following this format without deviation.
                 </rules>
             """.trimIndent()
         }

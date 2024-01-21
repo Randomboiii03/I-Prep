@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
@@ -103,7 +102,7 @@ fun HomeNavHost(
         }
 
         composable(
-            route = "Result",
+            route = HomeNav.Result.title,
             enterTransition = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left,

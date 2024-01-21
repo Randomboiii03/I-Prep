@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.DropdownMenu
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DTopBar(
     onBack: () -> Unit,
+    onShare: () -> Unit,
     onModify: (Boolean) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -43,7 +45,7 @@ fun DTopBar(
     TopAppBar(
         title = {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Search",
                 modifier = modifier
                     .padding(end = 16.dp)
@@ -54,36 +56,54 @@ fun DTopBar(
             )
         },
         actions = {
-            Box {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Setting",
+                    imageVector = Icons.Default.Share,
+                    contentDescription = "Share",
                     modifier = modifier
-                        .padding(end = 16.dp)
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            expanded = !expanded
+                            onShare()
                         }
                 )
 
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
-                    DDropDownItem(
-                        icon = Icons.Outlined.EditNote,
-                        text = "Modify Test",
-                        onClick = {
-                            expanded = !expanded
-                            onModify(true)
-                        })
+                Box {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Setting",
+                        modifier = modifier
+                            .padding(end = 16.dp)
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                expanded = !expanded
+                            }
+                    )
 
-                    DDropDownItem(
-                        icon = Icons.Outlined.Delete,
-                        text = "Delete Test",
-                        onClick = {
-                            expanded = !expanded
-                            onDelete()
-                        })
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = !expanded }) {
+
+                        DDropDownItem(
+                            icon = Icons.Outlined.EditNote,
+                            text = "Modify Test",
+                            onClick = {
+                                expanded = !expanded
+                                onModify(true)
+                            })
+
+                        DDropDownItem(
+                            icon = Icons.Outlined.Delete,
+                            text = "Delete Test",
+                            onClick = {
+                                expanded = !expanded
+                                onDelete()
+                            })
+                    }
                 }
             }
         },

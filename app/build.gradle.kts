@@ -73,6 +73,19 @@ dependencies {
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.android.core)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.core)
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.barcode.scanning)
+    implementation(libs.compose.qr.code)
+    implementation(libs.commons.compress)
+    implementation(libs.lz4.java)
+    implementation(libs.dec)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,8 +95,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 //    kapt("groupId:artifactId:version")
-    implementation("com.google.dagger:hilt-android:2.49")
-    kapt("com.google.dagger:hilt-compiler:2.49")
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 //    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2")
 
@@ -91,7 +104,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    val room_version = "2.6.0"
+    val room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
@@ -102,7 +115,7 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-    val nav_version = "2.7.5"
+    val nav_version = "2.7.6"
 
     // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -117,12 +130,12 @@ dependencies {
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    val lottieVersion = "6.2.0"
+    val lottieVersion = "6.3.0"
     implementation("com.airbnb.android:lottie-compose:$lottieVersion")
 
     implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
 
-    val lifecycle_version = "2.6.2"
+    val lifecycle_version = "2.7.0"
 
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
@@ -147,17 +160,17 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
 
     // define a BOM and its version
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
 
     // define any required OkHttp artifacts without version
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.12")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // https://mvnrepository.com/artifact/com.google.accompanist/accompanist-systemuicontroller
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.2-alpha")
-    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
     implementation("co.yml:ycharts:2.1.0")
 

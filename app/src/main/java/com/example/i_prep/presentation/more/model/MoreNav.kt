@@ -1,14 +1,12 @@
 package com.example.i_prep.presentation.more.model
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.QueryStats
-import androidx.compose.material.icons.outlined.Update
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class MoreNav(

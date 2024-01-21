@@ -31,8 +31,9 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Navigation(mGlobalViewModel: GlobalViewModel) {

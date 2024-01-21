@@ -34,10 +34,10 @@ import com.example.i_prep.R
 import com.example.i_prep.common.githubRepo
 import com.example.i_prep.common.latestVersion
 import com.example.i_prep.presentation.GlobalEvent
+import com.example.i_prep.presentation.more.components.MTopBar
 import com.example.i_prep.presentation.more.composables.about.components.BItem
 import com.example.i_prep.presentation.more.composables.about.model.AboutNav
 import com.example.i_prep.presentation.more.composables.about.model.aboutNav
-import com.example.i_prep.presentation.more.components.MTopBar
 import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
 import kotlinx.coroutines.ExperimentalCoroutinesApi

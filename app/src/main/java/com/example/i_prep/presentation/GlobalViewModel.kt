@@ -2,7 +2,6 @@ package com.example.i_prep.presentation
 
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,19 +11,16 @@ import com.example.i_prep.common.emptyTHistory
 import com.example.i_prep.common.latestVersion
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.data.repository.DataStoreRepository
 import com.example.i_prep.domain.app_updater.AppUpdater
 import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
 import com.example.i_prep.domain.use_cases.DeleteHistory
 import com.example.i_prep.domain.use_cases.DeleteTest
 import com.example.i_prep.domain.use_cases.GetAllHistory
 import com.example.i_prep.domain.use_cases.GetAllTest
-import com.example.i_prep.domain.use_cases.GetLastHistory
-import com.example.i_prep.domain.use_cases.InsertHistory
+import com.example.i_prep.domain.use_cases.UpsertHistory
 import com.example.i_prep.domain.use_cases.UpsertTest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -42,7 +38,7 @@ class GlobalViewModel @Inject constructor(
     private val getAllHistory: GetAllHistory,
 //    private val getHistoryById: GetHistoryById,
 //    private val getLastHistory: GetLastHistory,
-    private val insertHistory: InsertHistory,
+    private val upsertHistory: UpsertHistory,
     private val deleteHistory: DeleteHistory,
     private val downloader: IPrepDownloader
 ) : ViewModel() {
@@ -58,19 +54,17 @@ class GlobalViewModel @Inject constructor(
         when (event) {
             is GlobalEvent.DeleteHistory -> {
                 viewModelScope.launch {
-                    deleteHistory(event.tHistory)
+                    onEvent(GlobalEvent.UpsertHistory(event.tHistory.copy(isAvailable = false)))
 
                     _state.update { it.copy(tHistory = emptyTHistory) }
+
+                    onEvent(GlobalEvent.GetAllHistory)
                 }
             }
 
             is GlobalEvent.DeleteTest -> {
                 viewModelScope.launch {
-                    if (state.value.tHistoryList.any { tHistory -> tHistory.testId == event.pTest.testId }) {
-                        onEvent(GlobalEvent.UpsertTest(event.pTest.copy(isAvailable = false)))
-                    } else {
-                        deleteTest(event.pTest)
-                    }
+                    onEvent(GlobalEvent.UpsertTest(event.pTest.copy(isAvailable = false)))
 
                     _state.update { it.copy(pTest = emptyPTest) }
 
@@ -129,9 +123,9 @@ class GlobalViewModel @Inject constructor(
                 }
             }
 
-            is GlobalEvent.InsertHistory -> {
+            is GlobalEvent.UpsertHistory -> {
                 viewModelScope.launch {
-                    insertHistory(event.tHistory)
+                    upsertHistory(event.tHistory)
                     onEvent(GlobalEvent.GetAllHistory)
                 }
             }
@@ -175,8 +169,6 @@ class GlobalViewModel @Inject constructor(
                                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                                 updateChangeLog.url.split("/").last()
                             ).exists()
-
-                            Log.v("TAG", existingFileExists.toString())
 
                             when (existingFileExists) {
                                 true -> {
@@ -252,7 +244,7 @@ sealed interface GlobalEvent {
     data class DeleteTest(val pTest: PTest) : GlobalEvent
 
     object GetAllHistory : GlobalEvent
-    data class InsertHistory(val tHistory: THistory) : GlobalEvent
+    data class UpsertHistory(val tHistory: THistory) : GlobalEvent
     data class DeleteHistory(val tHistory: THistory) : GlobalEvent
 
     data class SearchTest(val query: String) : GlobalEvent

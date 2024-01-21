@@ -1,13 +1,13 @@
 package com.example.i_prep
 
+//import com.github.javiersantos.appupdater.AppUpdater
+//import com.github.javiersantos.appupdater.enums.UpdateFrom
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -20,15 +20,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.compose.IPrepTheme
-import com.example.i_prep.common.updateJSON
 import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.navigation.Navigation
 import com.example.i_prep.presentation.splash.SplashViewModel
 import com.example.i_prep.presentation.welcome.Welcome
-import com.randomboiii.i_prep.presentation.use_case.ConnectionState
-import com.randomboiii.i_prep.presentation.use_case.connectivityState
-//import com.github.javiersantos.appupdater.AppUpdater
-//import com.github.javiersantos.appupdater.enums.UpdateFrom
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,6 +32,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var splashViewModel: SplashViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         installSplashScreen().setKeepOnScreenCondition {

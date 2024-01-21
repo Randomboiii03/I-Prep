@@ -8,16 +8,15 @@ import androidx.navigation.NavHostController
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
+import com.example.i_prep.domain.api.model.dto.Question
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.home.model.HomeNav
-import com.example.i_prep.domain.api.model.dto.Question
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class TViewModel : ViewModel() {
     private var timer: CountDownTimer? = null
@@ -96,7 +95,7 @@ class TViewModel : ViewModel() {
 
                 viewModelScope.launch {
                     event.globalEvent(
-                        GlobalEvent.InsertHistory(
+                        GlobalEvent.UpsertHistory(
                             tHistory = THistory(
                                 testId = state.value.pTest.testId,
                                 questions = state.value.questions,

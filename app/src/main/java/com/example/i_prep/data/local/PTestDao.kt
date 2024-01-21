@@ -2,8 +2,6 @@ package com.example.i_prep.data.local
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.i_prep.data.local.model.PTest
@@ -37,8 +35,8 @@ interface PTestDao {
     @Query("SELECT * FROM history ORDER BY historyId DESC LIMIT 1")
     fun getLastHistory(): Flow<THistory>
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertHistory(tHistory: THistory)
+    @Upsert
+    suspend fun upsertHistory(tHistory: THistory)
 
     @Delete
     suspend fun deleteHistory(tHistory: THistory)

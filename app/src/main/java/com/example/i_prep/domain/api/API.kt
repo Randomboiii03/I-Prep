@@ -5,22 +5,30 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.i_prep.common.gson
 import com.example.i_prep.domain.api.model.dto.TokenStream
 import com.example.i_prep.domain.api.model.payload.AppendMessagePayload
+import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.example.i_prep.domain.api.model.payload.Completion
 import com.example.i_prep.domain.api.model.payload.ConversationPayload
-import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.JsonParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.http.HttpHeaders
-import io.ktor.client.request.*
+import io.ktor.client.request.delete
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.request.post
+import io.ktor.client.request.preparePost
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.*
+import io.ktor.http.ContentType
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
+import io.ktor.http.headers
+import io.ktor.http.isSuccess
 import io.ktor.serialization.gson.gson
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
@@ -28,9 +36,7 @@ import io.ktor.utils.io.readUTF8Line
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.Writer
 import java.util.UUID
 
 class IPrepAPI(private val cookie: String) {
@@ -239,6 +245,6 @@ class IPrepAPI(private val cookie: String) {
     }
 
     suspend fun getRandomImage(): String {
-        return HttpClient().get("https://random.imagecdn.app/v1/image?width=400&height=600").bodyAsText()
+        return HttpClient().get("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature").bodyAsText()
     }
 }

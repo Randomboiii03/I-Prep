@@ -33,17 +33,17 @@ fun SQuestion(globalState: GlobalState, modifier: Modifier = Modifier) {
             PieChartData.Slice(
                 "Multiple Choice",
                 globalState.pTestList.count { it.questionType == "mcq" }.toFloat(),
-                MaterialTheme.colorScheme.primary
+                MaterialTheme.colorScheme.primaryContainer
             ),
             PieChartData.Slice(
                 "True or False",
                 globalState.pTestList.count { it.questionType == "tof" }.toFloat(),
-                MaterialTheme.colorScheme.secondary
+                MaterialTheme.colorScheme.secondaryContainer
             ),
             PieChartData.Slice(
                 "Fill-in-the-Blanks",
                 globalState.pTestList.count { it.questionType == "fitb" }.toFloat(),
-                MaterialTheme.colorScheme.tertiary
+                MaterialTheme.colorScheme.tertiaryContainer
             ),
         ),
         plotType = PlotType.Pie

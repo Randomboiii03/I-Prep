@@ -2,8 +2,6 @@ package com.example.i_prep.common
 
 import android.app.NotificationManager
 import android.content.Context
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.NotificationImportant
 import androidx.core.app.NotificationCompat
 import com.example.i_prep.R
 import kotlin.random.Random

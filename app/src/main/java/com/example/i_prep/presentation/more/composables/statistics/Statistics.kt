@@ -12,10 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import co.yml.charts.common.model.Point
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
-import com.example.i_prep.presentation.home.composables.details.formatDate
 import com.example.i_prep.presentation.more.components.MTopBar
 import com.example.i_prep.presentation.more.composables.statistics.components.SHistory
 import com.example.i_prep.presentation.more.composables.statistics.components.SQuestion

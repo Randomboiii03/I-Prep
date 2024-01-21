@@ -185,7 +185,7 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                         "3. AI can't understand the prompt\n\n" +
                         "- Due to the length of prompt, added extracted text from the reference file or some privacy policy of the company of the Anthropic, it refused to follow the prompt that the app send.\n\n" +
                         "4. Bug\n\n" +
-                        "- The developer of this app is a student with not enough knowledge in this particular field, some of the error can't be patch or find to fix.\n\n" +
+                        "- The developer of this app has not enough knowledge in this particular field, some of the error can't be patch or find to fix as of now.\n\n" +
                         "We our open for collaboration to improve this app, our contact is in About > Github."
             )
 

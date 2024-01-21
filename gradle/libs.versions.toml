@@ -5,7 +5,7 @@ coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
-lifecycleRuntimeKtx = "2.6.2"
+lifecycleRuntimeKtx = "2.7.0"
 activityCompose = "1.8.2"
 composeBom = "2023.08.00"
 ktorClientCore = "3.0.0-beta-1"
@@ -19,6 +19,19 @@ ktorClientCio = "3.0.0-beta-1"
 accompanistPager = "0.33.2-alpha"
 accompanistPagerIndicators = "0.33.2-alpha"
 datastorePreferences = "1.0.0"
+androidCore = "3.3.0"
+cameraLifecycle = "1.3.1"
+cameraCore = "1.3.1"
+cameraCamera2 = "1.4.0-alpha03"
+cameraLifecycleVersion = "1.4.0-alpha03"
+cameraView = "1.4.0-alpha03"
+core = "3.5.2"
+zxingAndroidEmbedded = "4.3.0"
+barcodeScanning = "17.2.0"
+composeQrCode = "1.0.1"
+commonsCompress = "1.25.0"
+lz4Java = "1.8.0"
+dec = "0.1.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,7 +40,7 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version = "2023.10.01" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -46,6 +59,19 @@ ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "
 accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { group = "com.google.accompanist", name = "accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+android-core = { group = "com.google.zxing", name = "android-core", version.ref = "androidCore" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraLifecycle" }
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "cameraCore" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraCamera2" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraLifecycleVersion" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
+core = { group = "com.google.zxing", name = "core", version.ref = "core" }
+zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "barcodeScanning" }
+compose-qr-code = { group = "com.lightspark", name = "compose-qr-code", version.ref = "composeQrCode" }
+commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
+lz4-java = { group = "org.lz4", name = "lz4-java", version.ref = "lz4Java" }
+dec = { group = "org.brotli", name = "dec", version.ref = "dec" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

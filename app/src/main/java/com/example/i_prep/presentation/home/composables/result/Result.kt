@@ -10,14 +10,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,14 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.example.i_prep.R
-import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.GlobalState
 import com.example.i_prep.presentation.home.composables.result.components.RTopBar
-import com.example.i_prep.presentation.home.composables.test.TEvent
-import com.example.i_prep.presentation.home.composables.test.TViewModel
-import com.example.i_prep.presentation.home.model.HomeNav
 
 @Composable
 fun Result(

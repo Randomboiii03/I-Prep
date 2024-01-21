@@ -10,9 +10,10 @@ import com.example.i_prep.common.getPrompt
 import com.example.i_prep.common.gson
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.domain.api.IPrepAPI
+import com.example.i_prep.domain.api.model.dto.TestInfo
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.CState
-import com.example.i_prep.domain.api.model.dto.TestInfo
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,11 +46,11 @@ class GViewModel : ViewModel() {
         if (message != null) {
             try {
                 val startIndex = message.indexOf('{')
-                val endIndex = message.lastIndexOf('}') + 1
+                val endIndex = message.lastIndexOf("}") + 1
                 jsonData.value = message.substring(startIndex, endIndex)
 
                 jsonData.value = fixEscapes(jsonData.value)
-
+                Log.v("TAG - parseJSON", jsonData.value)
                 return gson.fromJson(jsonData.value, TestInfo::class.java)
 
             } catch (e: Exception) {
@@ -90,59 +91,69 @@ class GViewModel : ViewModel() {
 
                     var testInfo = parseJson(message)
 
-                    if (testInfo != null) {
-                        val number =
-                            Regex("\\d+").findAll(testInfo.description).map { it.value }
-                                .toList()
+                    when (testInfo != null && testInfo.questions.size >= 20) {
+                        true -> {
+                            val number =
+                                Regex("\\d+").findAll(testInfo.description).map { it.value }
+                                    .toList()
 
-                        if (number.isNotEmpty()) {
-                            testInfo = testInfo.copy(
-                                description = testInfo.description.replace(
-                                    number[0],
-                                    testInfo.questions.size.toString()
-                                )
-                            )
-                        }
-
-                        val image = api.getRandomImage()
-
-                        if (state.questionType == "tof") {
-                            testInfo = testInfo.copy(
-                                questions = testInfo.questions.map {
-                                    it.copy(
-                                        choices = listOf(
-                                            "True",
-                                            "False"
-                                        )
-                                    )
-                                }
-                            )
-                        }
-
-                        if (testInfo.questions.all { it.answer.length == 1 }) {
-                            if (state.questionType == "mcq" || state.questionType == "fitb") {
+                            if (number.isNotEmpty()) {
                                 testInfo = testInfo.copy(
-                                    questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt()]) }
+                                    description = testInfo.description.replace(
+                                        number[0],
+                                        testInfo.questions.size.toString()
+                                    )
                                 )
                             }
+
+                            val image = api.getRandomImage()
+
+                            if (state.questionType == "tof") {
+                                testInfo = testInfo.copy(
+                                    questions = testInfo.questions.map {
+                                        it.copy(
+                                            choices = listOf(
+                                                "True",
+                                                "False"
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+
+                            if (testInfo.questions.all { it.answer.length == 1 }) {
+                                if (state.questionType == "mcq" || state.questionType == "fitb") {
+                                    testInfo = testInfo.copy(
+                                        questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt()]) }
+                                    )
+                                }
+                            }
+
+                            val pTest = PTest(
+                                title = testInfo.title,
+                                description = testInfo.description,
+                                tags = testInfo.tags,
+                                questionType = state.questionType,
+                                questions = testInfo.questions,
+                                totalItems = testInfo.questions.size,
+                                language = state.language,
+                                reference = state.fileName,
+                                image = image,
+                                dateCreated = System.currentTimeMillis(),
+                            )
+
+                            globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
+
+                            notification.showNotification(
+                                "${pTest.title} successfully created with ${pTest.totalItems} questions.",
+                                false
+                            )
                         }
 
-                        val pTest = PTest(
-                            title = testInfo.title,
-                            description = testInfo.description,
-                            tags = testInfo.tags,
-                            questionType = state.questionType,
-                            questions = testInfo.questions,
-                            totalItems = testInfo.questions.size,
-                            language = state.language,
-                            reference = state.fileName,
-                            image = image,
-                            dateCreated = System.currentTimeMillis(),
+                        false -> notification.showNotification(
+                            "Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.",
+                            false
                         )
-
-                        globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
-
-                        notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
                     }
                 }
 
@@ -151,6 +162,9 @@ class GViewModel : ViewModel() {
                     true
                 )
             }
+
+        } catch (e: CancellationException) {
+            e.printStackTrace()
 
         } catch (throwable: Throwable) {
             Log.v("TAG - GViewModel", "$throwable")

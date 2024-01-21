@@ -1,7 +1,6 @@
 package com.example.i_prep.presentation.create.composables.form
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -89,7 +88,7 @@ fun Form(
                 hostState = snackbarHostState,
                 modifier
                     .navigationBarsPadding()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 32.dp)
             )
         }
     ) { paddingValues ->
@@ -100,7 +99,7 @@ fun Form(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(text = "Create Test", style = MaterialTheme.typography.titleLarge)
+            Text(text = "Create Test", style = MaterialTheme.typography.headlineSmall)
 
             Divider(modifier = modifier.padding(horizontal = 16.dp))
 

@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -21,8 +19,6 @@ import androidx.compose.ui.unit.dp
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
-import com.example.i_prep.presentation.home.composables.library.components.HItem
-import com.example.i_prep.presentation.home.model.HomeNav
 import com.example.i_prep.presentation.more.components.MTopBar
 import com.example.i_prep.presentation.more.composables.uploaded.components.UITem
 import java.io.File

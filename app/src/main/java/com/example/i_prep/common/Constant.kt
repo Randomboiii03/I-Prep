@@ -1,10 +1,7 @@
 package com.example.i_prep.common
 
-import androidx.compose.runtime.mutableStateOf
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.domain.api.model.dto.Question
-import kotlin.random.Random
 
 val emptyPTest: PTest = PTest(
     0,

@@ -1,6 +1,5 @@
 package com.example.i_prep.presentation.more.composables.statistics.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.LibraryBooks
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.outlined.Book
 import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults

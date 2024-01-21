@@ -14,7 +14,6 @@ import com.example.i_prep.presentation.more.composables.options.Options
 import com.example.i_prep.presentation.more.composables.statistics.Statistics
 import com.example.i_prep.presentation.more.composables.uploaded.UploadedFile
 import com.example.i_prep.presentation.more.model.MoreNav
-import kotlin.reflect.KFunction1
 
 @Composable
 fun MoreNavHost(globalState: GlobalState, globalEvent: (GlobalEvent) -> Unit) {

@@ -17,5 +17,5 @@ val homeNavs = listOf(
     HomeNav.Details,
     HomeNav.Test,
     HomeNav.Result,
-    HomeNav.View
+    HomeNav.View,
 )

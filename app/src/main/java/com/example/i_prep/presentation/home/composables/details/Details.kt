@@ -1,24 +1,16 @@
 package com.example.i_prep.presentation.home.composables.details
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,27 +36,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import co.yml.charts.common.model.Point
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.GlideSubcomposition
-import com.bumptech.glide.integration.compose.RequestState
-import com.bumptech.glide.integration.compose.placeholder
 import com.example.i_prep.R
+import com.example.i_prep.common.compressAndEncode
+import com.example.i_prep.common.gson
+import com.example.i_prep.common.shareFile
 import com.example.i_prep.data.local.model.PTest
-import com.example.i_prep.data.local.model.THistory
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
-import com.example.i_prep.presentation.home.composables.details.components.DFAB
-import com.example.i_prep.presentation.home.composables.details.components.DMoreDetail
 import com.example.i_prep.presentation.home.composables.details.components.DChart
 import com.example.i_prep.presentation.home.composables.details.components.DDescription
+import com.example.i_prep.presentation.home.composables.details.components.DFAB
 import com.example.i_prep.presentation.home.composables.details.components.DModifyDialog
+import com.example.i_prep.presentation.home.composables.details.components.DMoreDetail
 import com.example.i_prep.presentation.home.composables.details.components.DStatistics
 import com.example.i_prep.presentation.home.composables.details.components.DTags
 import com.example.i_prep.presentation.home.composables.details.components.DTopBar
@@ -74,7 +60,6 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun Details(
     globalState: GlobalState,
@@ -87,14 +72,16 @@ fun Details(
     val historyList = globalState.tHistoryList
 
     var changeChart by rememberSaveable { mutableStateOf(true) }
-    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var showModifyDialog by rememberSaveable { mutableStateOf(false) }
 
     var rowHeight by rememberSaveable { mutableStateOf(250) }
 
-    if (showDialog) {
+    val context = LocalContext.current
+
+    if (showModifyDialog) {
         DModifyDialog(
             pTest = pTest,
-            onDismiss = { showDialog = it },
+            onDismiss = { showModifyDialog = it },
             onModify = {
                 globalEvent(GlobalEvent.UpsertTest(it))
             })
@@ -134,10 +121,13 @@ fun Details(
             topBar = {
                 DTopBar(
                     onBack = { onBack() },
-                    onModify = { showDialog = it },
+                    onModify = { showModifyDialog = it },
                     onDelete = {
                         globalEvent(GlobalEvent.DeleteTest(pTest))
                         onBack()
+                    },
+                    onShare = {
+                        shareFile(context, pTest.title, compressAndEncode(gson.toJson(pTest)))
                     })
             },
             floatingActionButton = { DFAB(onClickFAB = { takeTest(globalState.pTest) }) },
@@ -152,9 +142,11 @@ fun Details(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier.padding(horizontal = 16.dp).onGloballyPositioned {
-                        rowHeight = it.size.height - 185
-                    }
+                    modifier = modifier
+                        .padding(horizontal = 16.dp)
+                        .onGloballyPositioned {
+                            rowHeight = it.size.height - 185
+                        }
                 ) {
                     Column(
                         modifier = modifier.size(height = 150.dp, width = 100.dp)

@@ -5,8 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.GlobalState
 import com.example.i_prep.presentation.home.composables.test.TEvent
 import com.example.i_prep.presentation.home.composables.test.TViewModel
 

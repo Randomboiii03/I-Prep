@@ -14,4 +14,5 @@ data class THistory(
     @ColumnInfo(name = "questionsTaken") val questionsTaken: Int,
     @ColumnInfo(name = "score") val score: Int,
     @ColumnInfo(name = "dateTaken") val dateTaken: Long,
+    @ColumnInfo(name = "isAvailable") val isAvailable: Boolean = true
 )
