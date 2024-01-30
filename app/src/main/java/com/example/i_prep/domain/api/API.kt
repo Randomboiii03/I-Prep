@@ -74,11 +74,7 @@ class IPrepAPI(private val cookie: String) {
         }
     }
 
-    init {
-        getOrganizationId()
-    }
-
-    private fun getOrganizationId() {
+    suspend fun getOrganizationId() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = client.get("https://claude.ai/api/organizations") {

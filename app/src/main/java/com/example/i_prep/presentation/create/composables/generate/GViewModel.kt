@@ -76,16 +76,15 @@ class GViewModel : ViewModel() {
         notification: NotificationService,
         navHostController: NavHostController
     ) {
-        val api = IPrepAPI(cookie)
-        var attachment: AttachmentPayload? = null
         val conversationId: String?
-        var message: String? = null
-        var jsonData: String = ""
+        val message: String?
+        var jsonData: String
         var testInfo: TestInfo? = null
 
-        delay(3000)
+        val api = IPrepAPI(cookie)
+        api.getOrganizationId()
 
-        attachment = api.uploadAttachment(File(state.filePath))
+        val attachment: AttachmentPayload? = api.uploadAttachment(File(state.filePath))
 
         when (attachment.isNotNull()) {
             true -> {
@@ -193,17 +192,6 @@ class GViewModel : ViewModel() {
             false -> notification.showNotification("Failed to upload reference file. Please try again.", true)
         }
 
-//        if (throwable.toString().contains("com.google.gson")) {
-//                notification.showNotification(
-//                    "Test failed to parse into JSON.\nSorry for inconvenience we will try to fix it soon. Please try again.",
-//                    true
-//                )
-//            } else {
-//                notification.showNotification("Error: $throwable", true)
-//            }
-//
-//            api.chatFeedback(conversationId, "reply of AI cannot parse into JSON", "flag/other")
-
         withContext(Dispatchers.Main) {
             navHostController.popBackStack()
         }
@@ -235,7 +223,7 @@ class GViewModel : ViewModel() {
                         )
                     } catch (throwable: Throwable) {
                         event.notification.showNotification(
-                            "Failed to properly connect in Claude. Please try again.",
+                            "Failed to properly connect in Claude. Please try again.\n\nError:\n$throwable",
                             false
                         )
                         withContext(Dispatchers.Main) {
