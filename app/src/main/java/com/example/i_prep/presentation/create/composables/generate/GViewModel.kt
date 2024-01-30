@@ -1,16 +1,19 @@
 package com.example.i_prep.presentation.create.composables.generate
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import co.yml.charts.common.extensions.isNotNull
 import com.example.i_prep.common.NotificationService
 import com.example.i_prep.common.getPrompt
 import com.example.i_prep.common.gson
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.domain.api.IPrepAPI
 import com.example.i_prep.domain.api.model.dto.TestInfo
+import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.CState
 import kotlinx.coroutines.CancellationException
@@ -41,30 +44,30 @@ class GViewModel : ViewModel() {
         return newText
     }
 
-    private fun parseJson(message: String?): TestInfo? {
-        val jsonData = mutableStateOf("")
-
-        if (message != null) {
-            val startIndex = message.indexOf('{')
-            val endIndex = message.lastIndexOf("}") + 1
-            jsonData.value = message.substring(startIndex, endIndex)
-
-            jsonData.value = fixEscapes(jsonData.value)
-
-            return try {
-                Log.v("TAG - parseJSON", jsonData.value)
-                gson.fromJson(jsonData.value, TestInfo::class.java)
-
-            } catch (e: EOFException) {
-                val modifiedJson = jsonData.value + "]}"
-                Log.v("TAG - parseJSON2", modifiedJson)
-
-                gson.fromJson(modifiedJson, TestInfo::class.java)
-            }
-        }
-
-        return null
-    }
+//    private fun parseJson(message: String?): TestInfo? {
+//        val jsonData = mutableStateOf("")
+//
+//        if (message != null) {
+//            val startIndex = message.indexOf('{')
+//            val endIndex = message.lastIndexOf("}") + 1
+//            jsonData.value = message.substring(startIndex, endIndex)
+//
+//            jsonData.value = fixEscapes(jsonData.value)
+//
+//            return try {
+//                Log.v("TAG - parseJSON", jsonData.value)
+//                gson.fromJson(jsonData.value, TestInfo::class.java)
+//
+//            } catch (e: EOFException) {
+//                val modifiedJson = jsonData.value + "]}"
+//                Log.v("TAG - parseJSON2", modifiedJson)
+//
+//                gson.fromJson(modifiedJson, TestInfo::class.java)
+//            }
+//        }
+//
+//        return null
+//    }
 
     private suspend fun iPrepAPI(
         state: CState,
@@ -73,19 +76,23 @@ class GViewModel : ViewModel() {
         notification: NotificationService,
         navHostController: NavHostController
     ) {
-
         val api = IPrepAPI(cookie)
-        var conversationId = ""
+        var attachment: AttachmentPayload? = null
+        val conversationId: String?
+        var message: String? = null
+        var jsonData: String = ""
+        var testInfo: TestInfo? = null
 
-        try {
-            delay(3000)
-            val attachment = api.uploadAttachment(File(state.filePath))
+        delay(3000)
 
-            when (attachment != null) {
-                true -> {
-                    conversationId = api.createNewChat().toString()
+        attachment = api.uploadAttachment(File(state.filePath))
 
-                    val message = api.sendMessage(
+        when (attachment.isNotNull()) {
+            true -> {
+                conversationId = api.createNewChat()
+
+                if (conversationId != null) {
+                    message = api.sendMessage(
                         conversationId = conversationId,
                         prompt = getPrompt(
                             version = 2,
@@ -96,107 +103,106 @@ class GViewModel : ViewModel() {
                         attachments = listOf(attachment)
                     )
 
-                    var testInfo = parseJson(message)
+                    if (message != null) {
+                        val startIndex = message.indexOf('{')
+                        val endIndex = message.lastIndexOf("}") + 1
+                        jsonData = message.substring(startIndex, endIndex)
 
-                    when (testInfo != null && testInfo.questions.size >= 20) {
-                        true -> {
-                            val number =
-                                Regex("\\d+").findAll(testInfo.description).map { it.value }
-                                    .toList()
+                        jsonData = fixEscapes(jsonData)
 
-                            if (number.isNotEmpty()) {
-                                testInfo = testInfo.copy(
-                                    description = testInfo.description.replace(
-                                        number[0],
-                                        testInfo.questions.size.toString()
-                                    )
-                                )
+                        try {
+                            testInfo = try {
+                                Log.v("TAG - parseJSON", jsonData)
+                                gson.fromJson(jsonData, TestInfo::class.java)
+
+                            } catch (throwable: Throwable) {
+                                val modifiedJson = "$jsonData]}"
+                                Log.v("TAG - parseJSON", "Error: $throwable")
+                                Log.v("TAG - parseJSON2", modifiedJson)
+
+                                gson.fromJson(modifiedJson, TestInfo::class.java)
+                            }
+                        } catch (throwable: Throwable) {
+                            Log.v("TAG - parseJSON2", "Error: $throwable")
+                        }
+
+                        if (testInfo != null && testInfo.questions.size > 20) {
+                            try {
+                                val number = Regex("\\d+").findAll(testInfo.description).map { it.value }.toList()
+
+                                if (number.isNotEmpty()) {
+                                    testInfo = testInfo.copy(description = testInfo.description.replace(number[0], testInfo.questions.size.toString()))
+                                }
+                            } catch (throwable: Throwable) {
+                                Log.v("TAG - parseJSON2", "Error: $throwable")
+                                notification.showNotification("Failed to edit description.", true)
                             }
 
                             val image = api.getRandomImage()
 
-                            if (state.questionType == "tof") {
-                                testInfo = testInfo.copy(
-                                    questions = testInfo.questions.map {
-                                        it.copy(
-                                            choices = listOf(
-                                                "True",
-                                                "False"
-                                            )
-                                        )
-                                    }
-                                )
-                            }
-
-                            if (testInfo.questions.all { it.answer.length == 1 }) {
-                                if (state.questionType == "mcq" || state.questionType == "fitb") {
-                                    val maxIndex =
-                                        testInfo.questions.maxOfOrNull { it.answer.toInt() }
-                                    val maxChoices =
-                                        testInfo.questions.maxOfOrNull { it.choices.count() }
-
-                                    testInfo = testInfo.copy(
-                                        questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0]) }
-                                    )
+                            if (testInfo != null) {
+                                if (state.questionType == "tof") {
+                                    testInfo = testInfo.copy(questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) })
                                 }
+
+                                if (testInfo.questions.all { it.answer.length == 1 }) {
+                                    if (state.questionType == "mcq" || state.questionType == "fitb") {
+                                        val maxIndex = testInfo.questions.maxOfOrNull { it.answer.toInt() }
+                                        val maxChoices = testInfo.questions.maxOfOrNull { it.choices.count() }
+
+                                        testInfo = testInfo.copy(questions = testInfo.questions.map {
+                                            it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0])
+                                        })
+                                    }
+                                }
+
+                                val pTest = PTest(
+                                    title = testInfo.title,
+                                    description = testInfo.description,
+                                    tags = testInfo.tags,
+                                    questionType = state.questionType,
+                                    questions = testInfo.questions,
+                                    totalItems = testInfo.questions.size,
+                                    language = state.language,
+                                    reference = state.fileName,
+                                    image = image,
+                                    dateCreated = System.currentTimeMillis(),
+                                )
+
+                                globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
+
+                                api.chatFeedback(conversationId, "nice response", "upvote")
+
+                                notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
+
+                            } else {
+                                notification.showNotification("Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.", false)
+
+                                api.deleteConversation(conversationId)
                             }
 
-                            val pTest = PTest(
-                                title = testInfo.title,
-                                description = testInfo.description,
-                                tags = testInfo.tags,
-                                questionType = state.questionType,
-                                questions = testInfo.questions,
-                                totalItems = testInfo.questions.size,
-                                language = state.language,
-                                reference = state.fileName,
-                                image = image,
-                                dateCreated = System.currentTimeMillis(),
-                            )
+                        } else {
+                            notification.showNotification("Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.", false)
 
-                            globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
-
-                            api.chatFeedback(conversationId, "nice response", "upvote")
-
-                            notification.showNotification(
-                                "${pTest.title} successfully created with ${pTest.totalItems} questions.",
-                                false
-                            )
-                        }
-
-                        false -> {
-                            notification.showNotification(
-                                "Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.",
-                                false
-                            )
                             api.deleteConversation(conversationId)
                         }
                     }
-                }
-
-                false -> notification.showNotification(
-                    "No text extracted or text extracted is too short from reference file.",
-                    true
-                )
+                } else notification.showNotification("Failed to conversation ID.\nCheck internet connection and please try again.", true)
             }
 
-        } catch (e: CancellationException) {
-            e.printStackTrace()
-
-        } catch (throwable: Throwable) {
-            Log.v("TAG - GViewModel", "$throwable")
-
-            if (throwable.toString().contains("com.google.gson")) {
-                notification.showNotification(
-                    "Test failed to parse into JSON.\nSorry for inconvenience we will try to fix it soon. Please try again.",
-                    true
-                )
-            } else {
-                notification.showNotification("Error: $throwable", true)
-            }
-
-            api.chatFeedback(conversationId, "reply of AI cannot parse into JSON", "flag/other")
+            false -> notification.showNotification("Failed to upload reference file. Please try again.", true)
         }
+
+//        if (throwable.toString().contains("com.google.gson")) {
+//                notification.showNotification(
+//                    "Test failed to parse into JSON.\nSorry for inconvenience we will try to fix it soon. Please try again.",
+//                    true
+//                )
+//            } else {
+//                notification.showNotification("Error: $throwable", true)
+//            }
+//
+//            api.chatFeedback(conversationId, "reply of AI cannot parse into JSON", "flag/other")
 
         withContext(Dispatchers.Main) {
             navHostController.popBackStack()
