@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.EOFException
 import java.io.File
 
 class GViewModel : ViewModel() {
@@ -44,18 +45,21 @@ class GViewModel : ViewModel() {
         val jsonData = mutableStateOf("")
 
         if (message != null) {
-            try {
-                val startIndex = message.indexOf('{')
-                val endIndex = message.lastIndexOf("}") + 1
-                jsonData.value = message.substring(startIndex, endIndex)
+            val startIndex = message.indexOf('{')
+            val endIndex = message.lastIndexOf("}") + 1
+            jsonData.value = message.substring(startIndex, endIndex)
 
-                jsonData.value = fixEscapes(jsonData.value)
+            jsonData.value = fixEscapes(jsonData.value)
+
+            return try {
                 Log.v("TAG - parseJSON", jsonData.value)
-                return gson.fromJson(jsonData.value, TestInfo::class.java)
+                gson.fromJson(jsonData.value, TestInfo::class.java)
 
-            } catch (e: Exception) {
+            } catch (e: EOFException) {
                 val modifiedJson = jsonData.value + "]}"
-                return gson.fromJson(modifiedJson, TestInfo::class.java)
+                Log.v("TAG - parseJSON2", modifiedJson)
+
+                gson.fromJson(modifiedJson, TestInfo::class.java)
             }
         }
 
@@ -69,14 +73,17 @@ class GViewModel : ViewModel() {
         notification: NotificationService,
         navHostController: NavHostController
     ) {
+
+        val api = IPrepAPI(cookie)
+        var conversationId = ""
+
         try {
-            val api = IPrepAPI(cookie)
             delay(3000)
             val attachment = api.uploadAttachment(File(state.filePath))
 
             when (attachment != null) {
                 true -> {
-                    val conversationId = api.createNewChat().toString()
+                    conversationId = api.createNewChat().toString()
 
                     val message = api.sendMessage(
                         conversationId = conversationId,
@@ -123,8 +130,13 @@ class GViewModel : ViewModel() {
 
                             if (testInfo.questions.all { it.answer.length == 1 }) {
                                 if (state.questionType == "mcq" || state.questionType == "fitb") {
+                                    val maxIndex =
+                                        testInfo.questions.maxOfOrNull { it.answer.toInt() }
+                                    val maxChoices =
+                                        testInfo.questions.maxOfOrNull { it.choices.count() }
+
                                     testInfo = testInfo.copy(
-                                        questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt()]) }
+                                        questions = testInfo.questions.map { it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0]) }
                                     )
                                 }
                             }
@@ -144,16 +156,21 @@ class GViewModel : ViewModel() {
 
                             globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
 
+                            api.chatFeedback(conversationId, "nice response", "upvote")
+
                             notification.showNotification(
                                 "${pTest.title} successfully created with ${pTest.totalItems} questions.",
                                 false
                             )
                         }
 
-                        false -> notification.showNotification(
-                            "Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.",
-                            false
-                        )
+                        false -> {
+                            notification.showNotification(
+                                "Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.",
+                                false
+                            )
+                            api.deleteConversation(conversationId)
+                        }
                     }
                 }
 
@@ -177,6 +194,8 @@ class GViewModel : ViewModel() {
             } else {
                 notification.showNotification("Error: $throwable", true)
             }
+
+            api.chatFeedback(conversationId, "reply of AI cannot parse into JSON", "flag/other")
         }
 
         withContext(Dispatchers.Main) {
@@ -199,13 +218,24 @@ class GViewModel : ViewModel() {
 
                 viewModelScope.launch(Dispatchers.IO) {
                     delay(3000)
-                    iPrepAPI(
-                        state = event.state,
-                        cookie = event.cookie,
-                        globalEvent = event.globalEvent,
-                        notification = event.notification,
-                        navHostController = event.navHostController
-                    )
+
+                    try {
+                        iPrepAPI(
+                            state = event.state,
+                            cookie = event.cookie,
+                            globalEvent = event.globalEvent,
+                            notification = event.notification,
+                            navHostController = event.navHostController
+                        )
+                    } catch (throwable: Throwable) {
+                        event.notification.showNotification(
+                            "Failed to properly connect in Claude. Please try again.",
+                            false
+                        )
+                        withContext(Dispatchers.Main) {
+                            event.navHostController.popBackStack()
+                        }
+                    }
                 }
             }
         }

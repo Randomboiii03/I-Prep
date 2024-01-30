@@ -24,6 +24,6 @@ fun DMoreDetail(text: String, icon: ImageVector, modifier: Modifier = Modifier) 
             modifier = modifier.size(16.dp)
         )
 
-        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+        Text(text = text, style = MaterialTheme.typography.bodySmall)
     }
 }

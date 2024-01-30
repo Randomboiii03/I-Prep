@@ -32,6 +32,11 @@ composeQrCode = "1.0.1"
 commonsCompress = "1.25.0"
 lz4Java = "1.8.0"
 dec = "0.1.2"
+compose = "2.0.0-alpha.6"
+composeM2 = "2.0.0-alpha.6"
+composeM3 = "2.0.0-alpha.6"
+coreVersion = "2.0.0-alpha.6"
+views = "2.0.0-alpha.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +77,11 @@ compose-qr-code = { group = "com.lightspark", name = "compose-qr-code", version.
 commons-compress = { group = "org.apache.commons", name = "commons-compress", version.ref = "commonsCompress" }
 lz4-java = { group = "org.lz4", name = "lz4-java", version.ref = "lz4Java" }
 dec = { group = "org.brotli", name = "dec", version.ref = "dec" }
+compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "compose" }
+compose-m2 = { group = "com.patrykandpatrick.vico", name = "compose-m2", version.ref = "composeM2" }
+compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "composeM3" }
+vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "coreVersion" }
+views = { group = "com.patrykandpatrick.vico", name = "views", version.ref = "views" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -25,12 +25,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.i_prep.R
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.presentation.create.composables.form.model.questionTypes
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modifier) {
     Row(
@@ -70,7 +68,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
                 )
 
                 Text(
-                    text = questionTypes.find { it.abbreviation == pTest.questionType }?.name ?: "",
+                    text = "${questionTypes.find { it.abbreviation == pTest.questionType }?.name ?: ""} • ${pTest.language}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

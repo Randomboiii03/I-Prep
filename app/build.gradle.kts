@@ -86,6 +86,11 @@ dependencies {
     implementation(libs.commons.compress)
     implementation(libs.lz4.java)
     implementation(libs.dec)
+    implementation(libs.compose)
+    implementation(libs.compose.m2)
+    implementation(libs.compose.m3)
+    implementation(libs.vico.core)
+    implementation(libs.views)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -130,11 +135,6 @@ dependencies {
     // Jetpack Compose Integration
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    val lottieVersion = "6.3.0"
-    implementation("com.airbnb.android:lottie-compose:$lottieVersion")
-
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
-
     val lifecycle_version = "2.7.0"
 
     // ViewModel
@@ -159,13 +159,6 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.10.1")
 
-    // define a BOM and its version
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
-
-    // define any required OkHttp artifacts without version
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.12")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.12")
-
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // https://mvnrepository.com/artifact/com.google.accompanist/accompanist-systemuicontroller
@@ -174,7 +167,6 @@ dependencies {
 
     implementation("co.yml:ycharts:2.1.0")
 
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
     implementation("io.coil-kt:coil-compose:2.5.0")
 }
 
