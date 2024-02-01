@@ -1,13 +1,12 @@
 package com.example.i_prep.presentation.create.composables.generate
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import co.yml.charts.common.extensions.isNotNull
 import com.example.i_prep.common.NotificationService
+import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.getPrompt
 import com.example.i_prep.common.gson
 import com.example.i_prep.data.local.model.PTest
@@ -16,14 +15,12 @@ import com.example.i_prep.domain.api.model.dto.TestInfo
 import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.CState
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.EOFException
 import java.io.File
 
 class GViewModel : ViewModel() {
@@ -44,190 +41,212 @@ class GViewModel : ViewModel() {
         return newText
     }
 
-//    private fun parseJson(message: String?): TestInfo? {
-//        val jsonData = mutableStateOf("")
-//
-//        if (message != null) {
-//            val startIndex = message.indexOf('{')
-//            val endIndex = message.lastIndexOf("}") + 1
-//            jsonData.value = message.substring(startIndex, endIndex)
-//
-//            jsonData.value = fixEscapes(jsonData.value)
-//
-//            return try {
-//                Log.v("TAG - parseJSON", jsonData.value)
-//                gson.fromJson(jsonData.value, TestInfo::class.java)
-//
-//            } catch (e: EOFException) {
-//                val modifiedJson = jsonData.value + "]}"
-//                Log.v("TAG - parseJSON2", modifiedJson)
-//
-//                gson.fromJson(modifiedJson, TestInfo::class.java)
-//            }
-//        }
-//
-//        return null
-//    }
-
     private suspend fun iPrepAPI(
-        state: CState,
-        cookie: String,
-        globalEvent: (GlobalEvent) -> Unit,
-        notification: NotificationService,
-        navHostController: NavHostController
+        state: CState
     ) {
+        val organizationId: String?
         val conversationId: String?
-        val message: String?
+        val isSuccess: Boolean
+        var message: String? = null
         var jsonData: String
         var testInfo: TestInfo? = null
 
-        val api = IPrepAPI(cookie)
-        api.getOrganizationId()
+        val api = IPrepAPI(state.cookie)
+        organizationId = api.getOrganizationId()
 
-        val attachment: AttachmentPayload? = api.uploadAttachment(File(state.filePath))
+        if (organizationId != null) {
+            onEvent(GEvent.SetStatus("Organization Id acquired!"))
 
-        when (attachment.isNotNull()) {
-            true -> {
-                conversationId = api.createNewChat()
+            val attachment: AttachmentPayload? =
+                api.uploadAttachment(organizationId, File(state.filePath))
 
-                if (conversationId != null) {
-                    message = api.sendMessage(
-                        conversationId = conversationId,
-                        prompt = getPrompt(
-                            version = 2,
-                            questionType = state.questionType,
-                            difficulty = state.difficulty,
-                            language = state.language
-                        ),
-                        attachments = listOf(attachment)
-                    )
+            when (attachment.isNotNull()) {
+                true -> {
+                    onEvent(GEvent.SetStatus("Attachment uploaded successful!"))
+                    conversationId = api.createNewChat(organizationId)
 
-                    if (message != null) {
-                        val startIndex = message.indexOf('{')
-                        val endIndex = message.lastIndexOf("}") + 1
-                        jsonData = message.substring(startIndex, endIndex)
+                    if (conversationId != null) {
+                        onEvent(GEvent.SetStatus("Conversation field created!"))
 
-                        jsonData = fixEscapes(jsonData)
+                        isSuccess = api.sendMessage(
+                            organizationId = organizationId,
+                            conversationId = conversationId,
+                            prompt = getPrompt(
+                                version = 2,
+                                questionType = state.questionType,
+                                difficulty = state.difficulty,
+                                language = state.language
+                            ),
+                            attachments = listOf(attachment)
+                        )
+                        Log.v("TAG - GViewModel", isSuccess.toString())
 
-                        try {
-                            testInfo = try {
-                                Log.v("TAG - parseJSON", jsonData)
-                                gson.fromJson(jsonData, TestInfo::class.java)
+                        when (isSuccess) {
+                            true -> {
+                                onEvent(GEvent.SetStatus("Retrieving conversation!"))
+                                message = api.getChatConversation(organizationId, conversationId)
 
-                            } catch (throwable: Throwable) {
-                                val modifiedJson = "$jsonData]}"
-                                Log.v("TAG - parseJSON", "Error: $throwable")
-                                Log.v("TAG - parseJSON2", modifiedJson)
+                                if (message != null) {
+                                    onEvent(GEvent.SetStatus("Parsing conversation from JSON!"))
+                                    val startIndex = message.indexOf('{')
+                                    val endIndex = message.lastIndexOf("}") + 1
+                                    jsonData = message.substring(startIndex, endIndex)
 
-                                gson.fromJson(modifiedJson, TestInfo::class.java)
-                            }
-                        } catch (throwable: Throwable) {
-                            Log.v("TAG - parseJSON2", "Error: $throwable")
-                        }
+                                    jsonData = fixEscapes(jsonData)
 
-                        if (testInfo != null && testInfo.questions.size > 20) {
-                            try {
-                                val number = Regex("\\d+").findAll(testInfo.description).map { it.value }.toList()
+                                    try {
+                                        testInfo = try {
+                                            Log.v("TAG - parseJSON", jsonData)
+                                            gson.fromJson(jsonData, TestInfo::class.java)
 
-                                if (number.isNotEmpty()) {
-                                    testInfo = testInfo.copy(description = testInfo.description.replace(number[0], testInfo.questions.size.toString()))
-                                }
-                            } catch (throwable: Throwable) {
-                                Log.v("TAG - parseJSON2", "Error: $throwable")
-                                notification.showNotification("Failed to edit description.", true)
-                            }
+                                        } catch (throwable: Throwable) {
+                                            val modifiedJson = "$jsonData]}"
+                                            Log.v("TAG - parseJSON2", modifiedJson)
 
-                            val image = api.getRandomImage()
-
-                            if (testInfo != null) {
-                                if (state.questionType == "tof") {
-                                    testInfo = testInfo.copy(questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) })
-                                }
-
-                                if (testInfo.questions.all { it.answer.length == 1 }) {
-                                    if (state.questionType == "mcq" || state.questionType == "fitb") {
-                                        val maxIndex = testInfo.questions.maxOfOrNull { it.answer.toInt() }
-                                        val maxChoices = testInfo.questions.maxOfOrNull { it.choices.count() }
-
-                                        testInfo = testInfo.copy(questions = testInfo.questions.map {
-                                            it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0])
-                                        })
+                                            gson.fromJson(modifiedJson, TestInfo::class.java)
+                                        }
+                                    } catch (throwable: Throwable) {
+                                        Log.v("TAG - parseJSON2", "Error: $throwable")
                                     }
-                                }
 
-                                val pTest = PTest(
-                                    title = testInfo.title,
-                                    description = testInfo.description,
-                                    tags = testInfo.tags,
-                                    questionType = state.questionType,
-                                    questions = testInfo.questions,
-                                    totalItems = testInfo.questions.size,
-                                    language = state.language,
-                                    reference = state.fileName,
-                                    image = image,
-                                    dateCreated = System.currentTimeMillis(),
+                                    if (testInfo != null && testInfo.questions.size > 20) {
+                                        onEvent(GEvent.SetStatus("Saving test to database!"))
+
+                                        try {
+                                            val number = Regex("\\d+").findAll(testInfo.description).map { it.value }.toList()
+
+                                            if (number.isNotEmpty()) {
+                                                testInfo = testInfo.copy(description = testInfo.description.replace(number[0], testInfo.questions.size.toString()))
+                                            }
+                                        } catch (throwable: Throwable) {
+                                            Log.v("TAG - parseJSON2", "Error: $throwable")
+                                        }
+
+                                        val image = api.getRandomImage()
+
+                                        if (testInfo != null) {
+                                            if (state.questionType == "tof") {
+                                                testInfo = testInfo.copy(questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) })
+                                            }
+
+                                            if (testInfo.questions.all { it.answer.length == 1 }) {
+                                                if (state.questionType == "mcq" || state.questionType == "fitb") {
+                                                    val maxIndex = testInfo.questions.maxOfOrNull { it.answer.toInt() }
+                                                    val maxChoices = testInfo.questions.maxOfOrNull { it.choices.count() }
+
+                                                    testInfo = testInfo.copy(questions = testInfo.questions.map {
+                                                        it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0])
+                                                    })
+                                                }
+                                            }
+
+                                            val pTest = PTest(
+                                                title = testInfo.title,
+                                                description = testInfo.description,
+                                                tags = testInfo.tags,
+                                                questionType = state.questionType,
+                                                questions = testInfo.questions,
+                                                totalItems = testInfo.questions.size,
+                                                language = state.language,
+                                                reference = state.fileName,
+                                                image = image,
+                                                dateCreated = System.currentTimeMillis(),
+                                            )
+
+                                            onEvent(GEvent.ShowNotification(message = "${pTest.title} successfully created with ${pTest.totalItems} questions.", isError = false, pTest = pTest))
+
+                                            api.chatFeedback(organizationId, conversationId, "nice response", "upvote")
+
+                                        } else onEvent(
+                                            GEvent.ShowNotification(
+                                                message = "Test failed to save in database. Please try again.",
+                                                isError = true
+                                            )
+                                        )
+
+                                    } else onEvent(
+                                        GEvent.ShowNotification(
+                                            message = "Test failed to save in database. Please try again.",
+                                            isError = true
+                                        )
+                                    )
+                                } else GEvent.ShowNotification(
+                                    message = "Failed to retrieve message. Please try again.",
+                                    isError = true
                                 )
-
-                                globalEvent(GlobalEvent.UpsertTest(pTest = pTest))
-
-                                api.chatFeedback(conversationId, "nice response", "upvote")
-
-                                notification.showNotification("${pTest.title} successfully created with ${pTest.totalItems} questions.", false)
-
-                            } else {
-                                notification.showNotification("Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.", false)
-
-                                api.deleteConversation(conversationId)
                             }
 
-                        } else {
-                            notification.showNotification("Test failed to create.\nSorry for inconvenience we will try to fix it soon. Please try again.", false)
-
-                            api.deleteConversation(conversationId)
+                            false -> onEvent(
+                                GEvent.ShowNotification(
+                                    message = "Test failed to converse with Claude AI.\nPlease make sure to have stable internet connection and please try again.",
+                                    isError = true
+                                )
+                            )
                         }
+
+                        api.deleteConversation(organizationId, conversationId)
+
+                    } else {
+                        onEvent(
+                            GEvent.ShowNotification(
+                                message = "Failed to create chat conversation.\nPlease make sure to have stable internet connection and please try again.",
+                                isError = true
+                            )
+                        )
                     }
-                } else notification.showNotification("Failed to conversation ID.\nCheck internet connection and please try again.", true)
+                }
+
+                false -> {
+                    onEvent(
+                        GEvent.ShowNotification(
+                            message = "Failed to upload reference file.\nPlease make sure to have stable internet connection and please try again.",
+                            isError = true
+                        )
+                    )
+                }
             }
-
-            false -> notification.showNotification("Failed to upload reference file. Please try again.", true)
-        }
-
-        withContext(Dispatchers.Main) {
-            navHostController.popBackStack()
+        } else {
+            onEvent(
+                GEvent.ShowNotification(
+                    message = "Failed to connect on Antropic's server.\nPlease make sure to have stable internet connection and please try again.",
+                    isError = true
+                )
+            )
         }
     }
 
     fun onEvent(event: GEvent) {
         when (event) {
-            is GEvent.SetState -> _state.update {
-                it.copy(
-                    status = event.status,
-                    isLoading = event.isLoading
-                )
+            is GEvent.SetStatus -> _state.update { it.copy(status = event.status) }
+            is GEvent.ShowDialog -> _state.update { it.copy(showDialog = event.showDialog) }
+            is GEvent.ShowNotification -> {
+                _state.update {
+                    it.copy(
+                        showNotification = event.showNotification,
+                        message = event.message,
+                        isError = event.isError,
+                        pTest = event.pTest
+                    )
+                }
             }
 
-            is GEvent.ShowDialog -> _state.update { it.copy(showDialog = event.showDialog) }
             is GEvent.GenerateTest -> {
-                _state.update { it.copy(status = "Create") }
+                if (state.value.status == "") {
+                    onEvent(GEvent.SetStatus("Starting to generate"))
 
-                viewModelScope.launch(Dispatchers.IO) {
-                    delay(3000)
+                    viewModelScope.launch(Dispatchers.IO) {
+                        delay(3000)
 
-                    try {
-                        iPrepAPI(
-                            state = event.state,
-                            cookie = event.cookie,
-                            globalEvent = event.globalEvent,
-                            notification = event.notification,
-                            navHostController = event.navHostController
-                        )
-                    } catch (throwable: Throwable) {
-                        event.notification.showNotification(
-                            "Failed to properly connect in Claude. Please try again.\n\nError:\n$throwable",
-                            false
-                        )
-                        withContext(Dispatchers.Main) {
-                            event.navHostController.popBackStack()
+                        try {
+                            Log.v("TAG", "API running!")
+                            iPrepAPI(state = event.state)
+                        } catch (throwable: Throwable) {
+                            onEvent(
+                                GEvent.ShowNotification(
+                                    message = "Error: $throwable",
+                                    isError = true
+                                )
+                            )
                         }
                     }
                 }
@@ -238,18 +257,22 @@ class GViewModel : ViewModel() {
 
 data class GState(
     val status: String = "",
-    val isLoading: Boolean = true,
     val showDialog: Boolean = false,
+    val showNotification: Boolean = false,
+    val message: String = "",
+    val isError: Boolean = false,
+    val pTest: PTest = emptyPTest
 )
 
 sealed interface GEvent {
-    data class SetState(val status: String, val isLoading: Boolean) : GEvent
+    data class SetStatus(val status: String) : GEvent
     data class ShowDialog(val showDialog: Boolean) : GEvent
-    data class GenerateTest(
-        val state: CState,
-        val cookie: String,
-        val globalEvent: (GlobalEvent) -> Unit,
-        val notification: NotificationService,
-        val navHostController: NavHostController
+    data class ShowNotification(
+        val showNotification: Boolean = true,
+        val message: String,
+        val isError: Boolean,
+        val pTest: PTest = emptyPTest
     ) : GEvent
+
+    data class GenerateTest(val state: CState) : GEvent
 }

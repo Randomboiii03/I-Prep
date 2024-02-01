@@ -25,7 +25,8 @@ class CViewModel : ViewModel() {
                     fileName = "",
                     filePath = "",
                     language = "",
-                    difficulty = "Easy"
+                    difficulty = "Easy",
+                    cookie = ""
                 )
             }
 
@@ -36,6 +37,7 @@ class CViewModel : ViewModel() {
                 it.copy(fileName = event.fileName, filePath = event.filePath)
             }
 
+            is CEvent.SetCookie -> state.update { it.copy(cookie = event.cookie) }
             is CEvent.Generate -> _state.update { it.copy(isGenerate = event.isGenerate) }
         }
     }
@@ -47,15 +49,16 @@ data class CState(
     val filePath: String = "",
     val language: String = "",
     val difficulty: String = "Easy",
+    val cookie: String = "",
     val isGenerate: Boolean = false
 )
 
 sealed interface CEvent {
     object Reset : CEvent
-
     data class SetQuestionType(val questionType: String) : CEvent
     data class UploadFile(val fileName: String, val filePath: String) : CEvent
     data class SetLanguage(val language: String) : CEvent
     data class SetDifficulty(val difficulty: String) : CEvent
+    data class SetCookie(val cookie: String) : CEvent
     data class Generate(val isGenerate: Boolean) : CEvent
 }

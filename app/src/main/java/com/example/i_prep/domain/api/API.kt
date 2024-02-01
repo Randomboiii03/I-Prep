@@ -3,10 +3,8 @@ package com.example.i_prep.domain.api
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.example.i_prep.common.gson
-import com.example.i_prep.domain.api.model.dto.TokenStream
 import com.example.i_prep.domain.api.model.payload.AppendMessagePayload
 import com.example.i_prep.domain.api.model.payload.AttachmentPayload
-import com.example.i_prep.domain.api.model.payload.Completion
 import com.example.i_prep.domain.api.model.payload.ConversationPayload
 import com.example.i_prep.domain.api.model.payload.FeedbackPayload
 import com.google.gson.FieldNamingPolicy
@@ -22,7 +20,6 @@ import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
@@ -31,20 +28,15 @@ import io.ktor.http.contentType
 import io.ktor.http.headers
 import io.ktor.http.isSuccess
 import io.ktor.serialization.gson.gson
-import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.InternalAPI
-import io.ktor.utils.io.readUTF8Line
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import java.util.UUID
 
 class IPrepAPI(private val cookie: String) {
 
-    private var organizationId: String = ""
-    private var chatUuid: String = ""
+//    private var organizationId: String = ""
+    var chatUuid: String = ""
 
     private val client = HttpClient(CIO) {
         engine {
@@ -74,27 +66,26 @@ class IPrepAPI(private val cookie: String) {
         }
     }
 
-    suspend fun getOrganizationId() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val response = client.get("https://claude.ai/api/organizations") {
-                    headers {
-                        append(HttpHeaders.Cookie, cookie)
-                    }
+    suspend fun getOrganizationId(): String? {
+        try {
+            val response = client.get("https://claude.ai/api/organizations") {
+                headers {
+                    append(HttpHeaders.Cookie, cookie)
                 }
-
-                if (!response.status.isSuccess()) {
-                    Log.v("TAG - getOrganizationId", "Error!")
-                    return@launch
-                }
-
-                val responseData = response.bodyAsText()
-                organizationId =
-                    JsonParser.parseString(responseData).asJsonArray[0].asJsonObject.get("uuid").asString
-
-            } catch (throwable: Throwable) {
-                Log.v("TAG - getOrganizationId", "Error: $throwable")
             }
+
+            if (!response.status.isSuccess()) {
+                Log.v("TAG - getOrganizationId", "Error!")
+                return null
+            }
+
+            val responseData = response.bodyAsText()
+
+            return JsonParser.parseString(responseData).asJsonArray[0].asJsonObject.get("uuid").asString
+
+        } catch (throwable: Throwable) {
+            Log.v("TAG - getOrganizationId", "Error: $throwable")
+            return null
         }
     }
 
@@ -102,10 +93,9 @@ class IPrepAPI(private val cookie: String) {
         return UUID.randomUUID().toString()
     }
 
-    suspend fun createNewChat(): String? {
+    suspend fun createNewChat(organizationId: String): String? {
         try {
-            val response =
-                client.post("https://claude.ai/api/organizations/$organizationId/chat_conversations") {
+            val response = client.post("https://claude.ai/api/organizations/$organizationId/chat_conversations") {
                     headers {
                         append(HttpHeaders.Cookie, cookie)
                     }
@@ -136,13 +126,13 @@ class IPrepAPI(private val cookie: String) {
     }
 
     @OptIn(InternalAPI::class)
-    suspend fun uploadAttachment(file: File): AttachmentPayload? {
+    suspend fun uploadAttachment(organizationId: String, file: File): AttachmentPayload? {
         try {
             if (file.extension == "txt") {
                 return AttachmentPayload(
                     file_name = file.name,
                     file_size = file.length(),
-                    extracted_content = file.readText(Charsets.UTF_8)
+                    extracted_content = file.readText(Charsets.UTF_8),
                 )
             }
 
@@ -159,6 +149,8 @@ class IPrepAPI(private val cookie: String) {
             val response = client.post("https://claude.ai/api/convert_document") {
                 headers {
                     append(HttpHeaders.Cookie, cookie)
+                    append(HttpHeaders.Referrer, "https://claude.ai/chat/$organizationId")
+                    append(HttpHeaders.Origin, "https://claude.ai")
                 }
                 body = multipartData
             }
@@ -172,65 +164,51 @@ class IPrepAPI(private val cookie: String) {
     }
 
     suspend fun sendMessage(
+        organizationId: String,
         conversationId: String,
         prompt: String,
         attachments: List<AttachmentPayload?> = emptyList()
-    ): String? {
+    ): Boolean {
         try {
-            val message = mutableStateOf("")
+            val status = mutableStateOf(false)
 
-            client.preparePost("https://claude.ai/api/append_message") {
+            client.preparePost("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId/completion") {
                 headers {
                     append(HttpHeaders.Accept, "text/event-stream, text/event-stream")
-                    append(HttpHeaders.Referrer, "https://claude.ai/chats")
+                    append(HttpHeaders.Referrer, "https://claude.ai/chat/$conversationId")
                     append(HttpHeaders.Origin, "https://claude.ai")
                     append(HttpHeaders.Cookie, cookie)
                 }
-
+                contentType(ContentType.Application.Json)
                 setBody(
                     gson.toJson(
                         AppendMessagePayload(
-                            completion = Completion(prompt = prompt),
-                            conversation_uuid = conversationId,
-                            organization_uuid = organizationId,
-                            text = prompt,
+                            prompt = prompt,
                             attachments = attachments
                         )
                     )
                 )
             }.execute { response ->
+                Log.v("TAG - sendMessage", response.bodyAsText())
                 if (!response.status.isSuccess()) {
                     Log.v("TAG - sendMessage", "Error!")
-                    return@execute
+                    return@execute false
                 }
 
-                val channel: ByteReadChannel = response.bodyAsChannel()
-                while (!channel.isClosedForRead) {
-                    val lineStr = channel.readUTF8Line() ?: ""
-                    if (lineStr.isNotEmpty()) {
-                        val dataJson = lineStr.substring("data: ".length)
-                        val tokenDto = gson.fromJson(dataJson, TokenStream::class.java)
-                        val tidyJson = gson.toJson(tokenDto)
-                        message.value += String(
-                            JsonParser.parseString(tidyJson).asJsonObject.get("completion").asString.toByteArray(
-                                Charsets.UTF_8
-                            ), Charsets.UTF_8
-                        )
-                    }
-                }
+                status.value = response.status.isSuccess()
             }
 
-            getChatConversation(conversationId)
-
-            return message.value
+            return status.value
 
         } catch (throwable: Throwable) {
             Log.v("TAG - sendMessage", "Error: $throwable")
-            return null
+            return false
         }
     }
 
-    suspend fun getChatConversation(conversationId: String) {
+    suspend fun getChatConversation(organizationId: String, conversationId: String): String? {
+        val message = mutableStateOf("")
+
         try {
             val response =
                 client.get("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId") {
@@ -245,15 +223,22 @@ class IPrepAPI(private val cookie: String) {
                 val responseData = response.bodyAsText()
                 val chatMessages = JsonParser.parseString(responseData).asJsonObject.get("chat_messages").asJsonArray
                 chatUuid = chatMessages.find { it.asJsonObject.get("sender").asString == "assistant" }?.asJsonObject?.get("uuid")?.asString ?: ""
+                message.value = chatMessages.find { it.asJsonObject.get("sender").asString == "assistant" }?.asJsonObject?.get("text")?.asString ?: ""
+
+            } else {
+                return null
             }
+
+            return message.value
 
         } catch (throwable: Throwable) {
             Log.v("TAG - getChatConversation", "Error: $throwable")
+            return null
         }
     }
 
-    suspend fun chatFeedback(conversationId: String, reason: String, type: String) {
-        delay(1000)
+    suspend fun chatFeedback(organizationId: String, conversationId: String, reason: String, type: String) {
+        delay(2000)
 
         client.preparePost("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId/chat_messages/$chatUuid/chat_feedback") {
             headers {
@@ -266,19 +251,17 @@ class IPrepAPI(private val cookie: String) {
             setBody(gson.toJson(FeedbackPayload(reason, type)))
         }.execute { response ->
             if (response.status.isSuccess()) {
-                deleteConversation(conversationId)
+                deleteConversation(organizationId, conversationId)
             }
         }
     }
 
-    suspend fun deleteConversation(conversationId: String) {
-        delay(1000)
+    suspend fun deleteConversation(organizationId: String, conversationId: String) {
+        delay(500)
 
         val response =
             client.delete("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId") {
-                headers {
-                    append(HttpHeaders.Cookie, cookie)
-                }
+                headers { append(HttpHeaders.Cookie, cookie) }
             }
 
         if (!response.status.isSuccess()) {

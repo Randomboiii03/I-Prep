@@ -141,7 +141,7 @@ fun Form(
                     onClick = {
                         onEvent(CEvent.Generate(true))
 
-                        navHostController.navigate(CreateNav.Generate.title) {
+                        navHostController.navigate(CreateNav.Webview.title) {
                             popUpTo(CreateNav.Form.title)
                         }
                     },
