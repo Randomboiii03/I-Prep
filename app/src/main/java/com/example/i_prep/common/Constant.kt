@@ -30,7 +30,6 @@ const val userAgent = "Mozilla/5.0 (Linux; U; Android 10; SM-G960F Build/QP1A.19
 
 const val claudeChatUrl = "https://claude.ai/chats"
 const val claudeSentryUrl = "https://claude.ai/sentry"
-const val googleCPUrl = "https://accounts.google.com/gsi/client"
 
 const val about1 = """
     I-Prep is a personalized test prep application which is integrated with Claude AI from Anthropic via a reversed engineered web API. This SERVICE is provided at no cost and is intended for use as is but with proper and responsible use is advised.

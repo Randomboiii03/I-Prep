@@ -124,29 +124,22 @@ fun Webview(
                                             sentryUrl = url
                                         }
 
-                                        Log.v("TAG - sentryUrl", sentryUrl)
                                         if (view != null) {
                                             val tempUrl = view.url
-
                                             Log.v("TAG - progress", view.progress.toString())
 
-                                            if (tempUrl != null && view.progress == 100) {
+                                            if (tempUrl != null && view.progress == 100 && !state.status) {
 
                                                 if (tempUrl.contains(
-                                                        "https://claude.ai/login",
+                                                        "claude.ai/login",
                                                         ignoreCase = true
                                                     ) ||
                                                     tempUrl.contains(
-                                                        "https://claude.ai/onboarding",
+                                                        "claude.ai/onboarding",
                                                         ignoreCase = true
                                                     )
                                                 ) {
-                                                    scope.launch {
-                                                        if (state.status) {
-                                                            delay(3000)
-                                                            onEvent(WEvent.SetLoading(false))
-                                                        }
-                                                    }
+                                                    onEvent(WEvent.SetLoading(false))
                                                 } else if (tempUrl.contains(
                                                         claudeChatUrl,
                                                         ignoreCase = true
@@ -157,8 +150,8 @@ fun Webview(
                                                     val cookie = tempCookie.split(' ')
                                                         .filterNot { it.contains("__stripe", true) }
                                                         .joinToString(" ")
-                                                    Log.v("TAG - cookie", cookie)
 
+                                                    onEvent(WEvent.SetLoading(true))
                                                     onEvent(WEvent.SetStatus(true))
                                                     cEvent(CEvent.SetCookie(cookie = cookie))
 
@@ -167,7 +160,7 @@ fun Webview(
                                                     }
 
                                                 } else {
-                                                    view.loadUrl(claudeChatUrl)
+                                                    view.loadUrl("https://claude.ai/login")
                                                 }
                                             }
                                         }
@@ -186,7 +179,7 @@ fun Webview(
                 }
             }, update = {
                 it.clearCache(true)
-                it.loadUrl(claudeChatUrl)
+                it.loadUrl("https://claude.ai/login")
             })
         }
 
