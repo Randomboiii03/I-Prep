@@ -201,7 +201,7 @@ fun Webview(
                 CircularProgressIndicator()
                 Text(
                     text = when (state.status) {
-                        true -> "Logged in on Claude AI."
+                        true -> ""
                         false -> "Checking if logged in on Claude AI..."
                     },
                     textAlign = TextAlign.Center,

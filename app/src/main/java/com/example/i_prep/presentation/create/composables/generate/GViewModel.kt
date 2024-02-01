@@ -185,7 +185,7 @@ class GViewModel : ViewModel() {
 
                             false -> onEvent(
                                 GEvent.ShowNotification(
-                                    message = "Test failed to converse with Claude AI.\nPlease make sure to have stable internet connection and please try again.",
+                                    message = "Failed to converse with Claude AI. You may have exceed your used limit.\nPlease try again after an hour or more.",
                                     isError = true
                                 )
                             )
