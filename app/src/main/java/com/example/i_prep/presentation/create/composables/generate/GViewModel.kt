@@ -15,12 +15,14 @@ import com.example.i_prep.domain.api.model.dto.TestInfo
 import com.example.i_prep.domain.api.model.payload.AttachmentPayload
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.CState
+import com.google.gson.JsonSyntaxException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.EOFException
 import java.io.File
 
 class GViewModel : ViewModel() {
@@ -67,7 +69,8 @@ class GViewModel : ViewModel() {
 
                     if (conversationId != null) {
                         onEvent(GEvent.SetStatus("Conversation field created!"))
-
+                        delay(500)
+                        onEvent(GEvent.SetStatus("Conversing to Claude AI!"))
                         isSuccess = api.sendMessage(
                             organizationId = organizationId,
                             conversationId = conversationId,
@@ -99,11 +102,15 @@ class GViewModel : ViewModel() {
                                             Log.v("TAG - parseJSON", jsonData)
                                             gson.fromJson(jsonData, TestInfo::class.java)
 
-                                        } catch (throwable: Throwable) {
-                                            val modifiedJson = "$jsonData]}"
-                                            Log.v("TAG - parseJSON2", modifiedJson)
-
-                                            gson.fromJson(modifiedJson, TestInfo::class.java)
+                                        } catch (e: JsonSyntaxException) {
+                                            if (e.cause is EOFException) {
+                                                val modifiedJson = "$jsonData]}"
+                                                Log.v("TAG - parseJSON2", "Fixed JSON: $modifiedJson")
+                                                gson.fromJson(modifiedJson, TestInfo::class.java)
+                                            } else {
+                                                Log.v("TAG - parseJSON2", "Error parsing JSON: $e")
+                                                throw e  // Rethrow to allow further handling
+                                            }
                                         }
                                     } catch (throwable: Throwable) {
                                         Log.v("TAG - parseJSON2", "Error: $throwable")
