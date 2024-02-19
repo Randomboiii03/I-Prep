@@ -37,6 +37,7 @@ class IPrepAPI(private val cookie: String) {
 
 //    private var organizationId: String = ""
     var chatUuid: String = ""
+    var result: String = ""
 
     private val client = HttpClient(CIO) {
         engine {
@@ -190,17 +191,14 @@ class IPrepAPI(private val cookie: String) {
                 )
             }.execute { response ->
                 Log.v("TAG - sendMessage", response.bodyAsText())
-                if (!response.status.isSuccess()) {
-                    Log.v("TAG - sendMessage", "Error!")
-                    return@execute false
-                }
-
+                result = response.status.isSuccess().toString()
                 status.value = response.status.isSuccess()
             }
 
             return status.value
 
         } catch (throwable: Throwable) {
+            result = "Error: $throwable"
             Log.v("TAG - sendMessage", "Error: $throwable")
             return false
         }
@@ -238,35 +236,41 @@ class IPrepAPI(private val cookie: String) {
     }
 
     suspend fun chatFeedback(organizationId: String, conversationId: String, reason: String, type: String) {
-        delay(2000)
 
         client.preparePost("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId/chat_messages/$chatUuid/chat_feedback") {
             headers {
-                append(HttpHeaders.AcceptCharset, "*/*")
-                append(HttpHeaders.Referrer, "https://claude.ai/chats/$conversationId")
+                append(HttpHeaders.Accept, "*/*")
+                append(HttpHeaders.Referrer, "https://claude.ai/chat/$conversationId")
                 append(HttpHeaders.Origin, "https://claude.ai")
                 append(HttpHeaders.Cookie, cookie)
             }
             contentType(ContentType.Application.Json)
-            setBody(gson.toJson(FeedbackPayload(reason, type)))
+            setBody(gson.toJson(FeedbackPayload(type, reason)))
         }.execute { response ->
             if (response.status.isSuccess()) {
+                Log.v("TAG - chatFeedback", "SUCCESS")
                 deleteConversation(organizationId, conversationId)
-            }
+            }else Log.v("TAG - chatFeedback", "FAILED")
+
         }
     }
 
     suspend fun deleteConversation(organizationId: String, conversationId: String) {
-        delay(500)
 
         val response =
             client.delete("https://claude.ai/api/organizations/$organizationId/chat_conversations/$conversationId") {
-                headers { append(HttpHeaders.Cookie, cookie) }
+                headers {
+                    append(HttpHeaders.Referrer, "https://claude.ai/chat/$conversationId")
+                    append(HttpHeaders.Origin, "https://claude.ai")
+                    append(HttpHeaders.Cookie, cookie)
+                }
+                contentType(ContentType.Application.Json)
+                setBody(gson.toJson(conversationId))
             }
 
         if (!response.status.isSuccess()) {
             Log.v("TAG - deleteConversation", "Error!")
-        }
+        } else Log.v("TAG - deleteConversation", "SUCCESS")
     }
 
     suspend fun getRandomImage(): String {

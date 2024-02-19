@@ -49,9 +49,10 @@ class GViewModel : ViewModel() {
         val organizationId: String?
         val conversationId: String?
         val isSuccess: Boolean
-        var message: String? = null
+        var message: String?
         var jsonData: String
         var testInfo: TestInfo? = null
+        var isError = true
 
         val api = IPrepAPI(state.cookie)
         organizationId = api.getOrganizationId()
@@ -69,8 +70,10 @@ class GViewModel : ViewModel() {
 
                     if (conversationId != null) {
                         onEvent(GEvent.SetStatus("Conversation field created!"))
+
                         delay(500)
                         onEvent(GEvent.SetStatus("Conversing to Claude AI!"))
+
                         isSuccess = api.sendMessage(
                             organizationId = organizationId,
                             conversationId = conversationId,
@@ -82,15 +85,15 @@ class GViewModel : ViewModel() {
                             ),
                             attachments = listOf(attachment)
                         )
-                        Log.v("TAG - GViewModel", isSuccess.toString())
 
                         when (isSuccess) {
                             true -> {
                                 onEvent(GEvent.SetStatus("Retrieving conversation!"))
                                 message = api.getChatConversation(organizationId, conversationId)
 
-                                if (message != null) {
+                                if (message != null && message != "") {
                                     onEvent(GEvent.SetStatus("Parsing conversation from JSON!"))
+                                    
                                     val startIndex = message.indexOf('{')
                                     val endIndex = message.lastIndexOf("}") + 1
                                     jsonData = message.substring(startIndex, endIndex)
@@ -105,7 +108,10 @@ class GViewModel : ViewModel() {
                                         } catch (e: JsonSyntaxException) {
                                             if (e.cause is EOFException) {
                                                 val modifiedJson = "$jsonData]}"
-                                                Log.v("TAG - parseJSON2", "Fixed JSON: $modifiedJson")
+                                                Log.v(
+                                                    "TAG - parseJSON2",
+                                                    "Fixed JSON: $modifiedJson"
+                                                )
                                                 gson.fromJson(modifiedJson, TestInfo::class.java)
                                             } else {
                                                 Log.v("TAG - parseJSON2", "Error parsing JSON: $e")
@@ -120,10 +126,16 @@ class GViewModel : ViewModel() {
                                         onEvent(GEvent.SetStatus("Saving test to database!"))
 
                                         try {
-                                            val number = Regex("\\d+").findAll(testInfo.description).map { it.value }.toList()
+                                            val number = Regex("\\d+").findAll(testInfo.description)
+                                                .map { it.value }.toList()
 
                                             if (number.isNotEmpty()) {
-                                                testInfo = testInfo.copy(description = testInfo.description.replace(number[0], testInfo.questions.size.toString()))
+                                                testInfo = testInfo.copy(
+                                                    description = testInfo.description.replace(
+                                                        number[0],
+                                                        testInfo.questions.size.toString()
+                                                    )
+                                                )
                                             }
                                         } catch (throwable: Throwable) {
                                             Log.v("TAG - parseJSON2", "Error: $throwable")
@@ -133,17 +145,23 @@ class GViewModel : ViewModel() {
 
                                         if (testInfo != null) {
                                             if (state.questionType == "tof") {
-                                                testInfo = testInfo.copy(questions = testInfo.questions.map { it.copy(choices = listOf("True", "False")) })
+                                                testInfo =
+                                                    testInfo.copy(questions = testInfo.questions.map {
+                                                        it.copy(choices = listOf("True", "False"))
+                                                    })
                                             }
 
                                             if (testInfo.questions.all { it.answer.length == 1 }) {
                                                 if (state.questionType == "mcq" || state.questionType == "fitb") {
-                                                    val maxIndex = testInfo.questions.maxOfOrNull { it.answer.toInt() }
-                                                    val maxChoices = testInfo.questions.maxOfOrNull { it.choices.count() }
+                                                    val maxIndex =
+                                                        testInfo.questions.maxOfOrNull { it.answer.toInt() }
+                                                    val maxChoices =
+                                                        testInfo.questions.maxOfOrNull { it.choices.count() }
 
-                                                    testInfo = testInfo.copy(questions = testInfo.questions.map {
-                                                        it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0])
-                                                    })
+                                                    testInfo =
+                                                        testInfo.copy(questions = testInfo.questions.map {
+                                                            it.copy(answer = it.choices[it.answer.toInt() - if (maxIndex == maxChoices) 1 else 0])
+                                                        })
                                                 }
                                             }
 
@@ -160,38 +178,55 @@ class GViewModel : ViewModel() {
                                                 dateCreated = System.currentTimeMillis(),
                                             )
 
-                                            onEvent(GEvent.ShowNotification(message = "${pTest.title} successfully created with ${pTest.totalItems} questions.", isError = false, pTest = pTest))
+                                            isError = false
 
-                                            api.chatFeedback(organizationId, conversationId, "nice response", "upvote")
+                                            onEvent(
+                                                GEvent.ShowNotification(
+                                                    message = "${pTest.title} successfully created with ${pTest.totalItems} questions.",
+                                                    isError = isError,
+                                                    pTest = pTest
+                                                )
+                                            )
 
                                         } else onEvent(
                                             GEvent.ShowNotification(
                                                 message = "Test failed to save in database. Please try again.",
-                                                isError = true
+                                                isError = isError
                                             )
                                         )
 
                                     } else onEvent(
                                         GEvent.ShowNotification(
-                                            message = "Test failed to save in database. Please try again.",
-                                            isError = true
+                                            message = "Test failed parse JSON. Please try again.",
+                                            isError = isError
                                         )
                                     )
+
                                 } else GEvent.ShowNotification(
                                     message = "Failed to retrieve message. Please try again.",
-                                    isError = true
+                                    isError = isError
+                                )
+
+                                api.chatFeedback(
+                                    organizationId,
+                                    conversationId,
+                                    if (isError) "JSON is broken, cannot be used please improve it. Thanks" else "nice response",
+                                    if (isError) "flag/other" else "upvote"
                                 )
                             }
 
-                            false -> onEvent(
-                                GEvent.ShowNotification(
-                                    message = "Failed to converse with Claude AI. You may have exceed your used limit.\nPlease try again after an hour or more.",
-                                    isError = true
-                                )
-                            )
-                        }
+                            false -> {
 
-                        api.deleteConversation(organizationId, conversationId)
+                                api.deleteConversation(organizationId, conversationId)
+
+                                onEvent(
+                                    GEvent.ShowNotification(
+                                        message = "Failed to converse with Claude AI. You may have exceed your used limit.\nPlease try again after an hour or more.\n${api.result}",
+                                        isError = isError
+                                    )
+                                )
+                            }
+                        }
 
                     } else {
                         onEvent(
@@ -248,6 +283,7 @@ class GViewModel : ViewModel() {
                             Log.v("TAG", "API running!")
                             iPrepAPI(state = event.state)
                         } catch (throwable: Throwable) {
+                            Log.v("TAG - GenerateTest", "Error: $throwable")
                             onEvent(
                                 GEvent.ShowNotification(
                                     message = "Error: $throwable",

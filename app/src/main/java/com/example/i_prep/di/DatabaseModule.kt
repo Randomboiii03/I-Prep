@@ -2,6 +2,7 @@ package com.example.i_prep.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.i_prep.common.NotificationService
 import com.example.i_prep.data.local.PTestDB
 import com.example.i_prep.data.local.PTestDao
 import com.example.i_prep.data.repository.DataStoreRepository

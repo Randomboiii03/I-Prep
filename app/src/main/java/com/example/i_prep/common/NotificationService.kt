@@ -6,9 +6,7 @@ import androidx.core.app.NotificationCompat
 import com.example.i_prep.R
 import kotlin.random.Random
 
-class NotificationService(
-    private val context: Context
-) {
+class NotificationService(private val context: Context) {
     private val notificationManager = context.getSystemService(NotificationManager::class.java)
 
     fun showNotification(message: String, isError: Boolean) {
