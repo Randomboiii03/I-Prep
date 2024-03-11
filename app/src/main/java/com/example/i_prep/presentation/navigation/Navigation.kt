@@ -2,6 +2,8 @@ package com.example.i_prep.presentation.navigation
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -33,6 +35,7 @@ import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class, ExperimentalCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -42,7 +45,8 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
 
     val state by mGlobalViewModel.state.collectAsState()
 
-    val postNotificationPermission = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+    val postNotificationPermission =
+        rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
 
     val connection by connectivityState()
     val isConnected = connection == ConnectionState.Available
@@ -72,7 +76,10 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
             }
         }
     ) {
-        NavHost(navController = rootNavController, startDestination = BottomNav.Home.title) {
+        NavHost(
+            navController = rootNavController,
+            startDestination = if (state.pTestList.filter { it.isAvailable }.isEmpty()) BottomNav.Create.title else BottomNav.Home.title
+        ) {
             composable(
                 route = BottomNav.Home.title,
                 enterTransition = {
@@ -100,7 +107,10 @@ fun Navigation(mGlobalViewModel: GlobalViewModel) {
                     )
                 }
             ) {
-                CreateNavHost(globalEvent = mGlobalViewModel::onEvent, navHostController = rootNavController)
+                CreateNavHost(
+                    globalEvent = mGlobalViewModel::onEvent,
+                    navHostController = rootNavController
+                )
             }
 
             composable(

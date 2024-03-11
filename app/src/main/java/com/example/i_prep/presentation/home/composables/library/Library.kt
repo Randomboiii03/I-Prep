@@ -65,31 +65,35 @@ fun Library(
             val uri = result.data?.data ?: return@rememberLauncherForActivityResult
             val text = extractTextFromUri(context, uri)
 
-            if (text.isNotNull()) {
-                val decompressText = decodeAndDecompress(text!!)
-                val pTest = gson.fromJson(decompressText, PTest::class.java)
+            try {
+                if (text.isNotNull()) {
+                    val decompressText = decodeAndDecompress(text!!)
+                    val pTest = gson.fromJson(decompressText, PTest::class.java)
 
-                globalEvent(
-                    GlobalEvent.UpsertTest(
-                        pTest = PTest(
-                            title = pTest.title,
-                            description = pTest.description,
-                            tags = pTest.tags,
-                            questionType = pTest.questionType,
-                            questions = pTest.questions.map { it.copy(correct = 0, shown = 0) },
-                            totalItems = pTest.questions.size,
-                            language = pTest.language,
-                            reference = pTest.reference,
-                            image = pTest.image,
-                            dateCreated = pTest.dateCreated
+                    globalEvent(
+                        GlobalEvent.UpsertTest(
+                            pTest = PTest(
+                                title = pTest.title,
+                                description = pTest.description,
+                                tags = pTest.tags,
+                                questionType = pTest.questionType,
+                                questions = pTest.questions.map { it.copy(correct = 0, shown = 0) },
+                                totalItems = pTest.questions.size,
+                                language = pTest.language,
+                                reference = pTest.reference,
+                                image = pTest.image,
+                                dateCreated = pTest.dateCreated
+                            )
                         )
                     )
-                )
 
-                notification.showNotification(
-                    "${pTest.title} successfully imported with ${pTest.totalItems} questions.",
-                    false
-                )
+                    notification.showNotification(
+                        "${pTest.title} successfully imported with ${pTest.totalItems} questions.",
+                        false
+                    )
+                }
+            } catch (throwable: Throwable) {
+                notification.showNotification("Invalid txt file to import.", true)
             }
         }
     }

@@ -74,18 +74,8 @@ dependencies {
     implementation(libs.accompanist.pager.indicators)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.android.core)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
     implementation(libs.core)
-    implementation(libs.zxing.android.embedded)
-    implementation(libs.barcode.scanning)
-    implementation(libs.compose.qr.code)
     implementation(libs.commons.compress)
-    implementation(libs.lz4.java)
-    implementation(libs.dec)
     implementation(libs.compose)
     implementation(libs.compose.m2)
     implementation(libs.compose.m3)
@@ -100,14 +90,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
 //    kapt("groupId:artifactId:version")
-    implementation("com.google.dagger:hilt-android:2.50")
-    kapt("com.google.dagger:hilt-compiler:2.50")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation("com.google.dagger:hilt-android:2.51")
+    kapt("com.google.dagger:hilt-compiler:2.51")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 //    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2")
 
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
 
     val room_version = "2.6.1"
 
@@ -120,7 +110,7 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-    val nav_version = "2.7.6"
+    val nav_version = "2.7.7"
 
     // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -162,12 +152,12 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // https://mvnrepository.com/artifact/com.google.accompanist/accompanist-systemuicontroller
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.33.2-alpha")
-    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     implementation("co.yml:ycharts:2.1.0")
 
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 }
 
 // Allow references to generated code
