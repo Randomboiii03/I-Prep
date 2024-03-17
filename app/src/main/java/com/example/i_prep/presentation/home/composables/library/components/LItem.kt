@@ -68,7 +68,7 @@ fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modif
                 )
 
                 Text(
-                    text = "${questionTypes.find { it.abbreviation == pTest.questionType }?.name ?: ""} • ${pTest.language}",
+                    text = "${pTest.questionType} • ${pTest.language}",
                     style = MaterialTheme.typography.bodySmall
                 )
             }

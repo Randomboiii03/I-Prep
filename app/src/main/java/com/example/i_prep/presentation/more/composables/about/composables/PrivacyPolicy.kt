@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,7 +50,7 @@ fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
         ) {
             InfoSection(title = "Introduction", info = about1)
 
-            Divider()
+            HorizontalDivider()
 
             InfoSectionWithLink(
                 title = "Use of Personal Account and Use",
@@ -77,11 +77,11 @@ fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 link = claudePrivPol
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(title = "Changes to This Privacy Policy", info = about3)
 
-            Divider()
+            HorizontalDivider()
 
             InfoSectionWithLink(
                 title = "Contact Us",

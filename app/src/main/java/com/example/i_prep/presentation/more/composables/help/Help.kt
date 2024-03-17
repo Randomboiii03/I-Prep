@@ -16,7 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -81,28 +81,28 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                 icon = Icons.Filled.Create
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Can I create tests with different types of questions?",
                 info = "\nUsers may select different types of tests that are: multiple choice, true or false or fill-in-the-blanks. We will add more question types soon if needed."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "What type of file can I select to generate a test from?",
                 info = "\nUsers can select PDF, DOCX or TXT as of now. Remember that generated test will only be text-based, so it can't read image-based text that's why we don't support PPT yet."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Can I make tests in different categories, topics or subjects?",
                 info = "\nYes, as long as you select the necessary files you want to create a tests, AI will do the rest of the work for you."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSectionWithIcon(
                 title = "How do I edit or delete a test I've already made?",
@@ -123,21 +123,21 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                 icon = Icons.Outlined.MoreVert
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Can I share my test to others?",
                 info = "\nAs of now, the app can't share test for others. If the app become successful, we may add more feature like this."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Is there a limit to how many quizzes I can create?",
                 info = "\nUsers can create up to 10 every 6-10 hours or it may vary based on demand on that day. It will reset every day so user can create more."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSectionWithLink(
                 title = "What AI does the app use?",
@@ -165,7 +165,7 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                 link = claudeAI
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Why use Claude instead of GPT of OpenAI?",
@@ -174,7 +174,7 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                         "Is this legal? We don't know, that's why use this app at your own risk. Check our Privacy Policy for more info."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Why does creating test fails sometimes?",
@@ -189,21 +189,21 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                         "We our open for collaboration to improve this app, our contact is in About > Github."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Why does the number of questions is not the same even though it is same reference file?",
                 info = "\nThe AI has a set of temperature which controls the randomness of the response it gives and also, the AI is continuously learning and improving."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "Why some of the questions on the test is not in the scope of my reference file I upload?",
                 info = "\nIn some cases the AI will add some related questions because the content of the file is too short to create questions."
             )
 
-            Divider()
+            HorizontalDivider()
 
             InfoSection(
                 title = "How do I suggest new features or report bug?",

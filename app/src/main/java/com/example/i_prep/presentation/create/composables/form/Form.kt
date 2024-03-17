@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -25,8 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.i_prep.common.NotificationService
 import com.example.i_prep.presentation.create.CEvent
 import com.example.i_prep.presentation.create.CViewModel
 import com.example.i_prep.presentation.create.composables.form.components.FDropdown
@@ -38,6 +40,8 @@ import com.example.i_prep.presentation.create.composables.form.model.questionTyp
 import com.example.i_prep.presentation.create.model.CreateNav
 import com.randomboiii.i_prep.presentation.use_case.ConnectionState
 import com.randomboiii.i_prep.presentation.use_case.connectivityState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -56,6 +60,9 @@ fun Form(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    val coroutineScope = CoroutineScope(Dispatchers.Default)
+    val notification = NotificationService(LocalContext.current)
 
     LaunchedEffect(true) {
         if (state.isGenerate) {
@@ -101,7 +108,7 @@ fun Form(
         ) {
             Text(text = "Create Test", style = MaterialTheme.typography.headlineSmall)
 
-            Divider(modifier = modifier.padding(horizontal = 16.dp))
+            HorizontalDivider(modifier = modifier.padding(horizontal = 16.dp))
 
             FDropdown(
                 value = state.questionType,
@@ -140,12 +147,17 @@ fun Form(
                 Button(
                     onClick = {
                         onEvent(CEvent.Generate(true))
+                        notification.showNotification("Generation start please wait...", false)
 
-                        navHostController.navigate(CreateNav.Webview.title) {
-                            popUpTo(CreateNav.Form.title)
+                        coroutineScope.launch {
+                            try {
+                                mCViewModel.runAPI()
+                            } catch (e: Exception) {
+                                notification.showNotification("Error: $e", false)
+                            }
                         }
                     },
-                    enabled = mCViewModel.onGenerate() && isConnected,
+                    enabled = mCViewModel.onGenerate() && isConnected && !state.isGenerate,
                 ) {
                     Text(text = "Generate")
                 }

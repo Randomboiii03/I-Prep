@@ -18,18 +18,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import com.example.i_prep.presentation.create.composables.form.model.DropdownItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FDropdown(
     value: String,
     onValueChange: (String) -> Unit,
-    list: List<DropdownItem>,
+    list: List<String>,
     label: String,
-//    supportingText: String,
-//    importanceText: String,
-//    colorImportance: Color,
     modifier: Modifier = Modifier
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -37,7 +33,7 @@ fun FDropdown(
     Column {
         ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
             OutlinedTextField(
-                value = list.find { it.abbreviation == value }?.name ?: "",
+                value = value,
                 onValueChange = {},
                 label = { Text(text = label) },
                 readOnly = true,
@@ -48,13 +44,13 @@ fun FDropdown(
             ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 list.forEachIndexed { index, dropdownItem ->
                     DropdownMenuItem(
-                        text = { Text(text = dropdownItem.name, textAlign = TextAlign.Center) },
-                        colors = MenuDefaults.itemColors(textColor = if (dropdownItem.name == value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),
+                        text = { Text(text = dropdownItem, textAlign = TextAlign.Center) },
+                        colors = MenuDefaults.itemColors(textColor = if (dropdownItem == value) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface),
                         onClick = {
-                            onValueChange(dropdownItem.abbreviation)
+                            onValueChange(dropdownItem)
                             expanded = false
                         },
-                        modifier = modifier.background(if (dropdownItem.name == value) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                        modifier = modifier.background(if (dropdownItem == value) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
                     )
                 }
             }

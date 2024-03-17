@@ -11,8 +11,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.create.composables.form.Form
-import com.example.i_prep.presentation.create.composables.generate.Generate
-import com.example.i_prep.presentation.create.composables.webview.Webview
 import com.example.i_prep.presentation.create.model.CreateNav
 import com.example.i_prep.presentation.more.composables.help.Help
 import com.example.i_prep.presentation.navigation.model.BottomNav
@@ -40,30 +38,6 @@ fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit, navHostController: NavHost
                 onEvent = mCViewModel::onEvent,
                 navHostController = createNavHostController,
                 showList = { navHostController.navigate(BottomNav.Home.title) })
-        }
-
-        composable(
-            route = CreateNav.Webview.title,
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(700)
-                )
-            }
-        ) {
-            Webview(
-                cEvent = mCViewModel::onEvent,
-                globalEvent = globalEvent,
-                navHostController = createNavHostController
-            )
-        }
-
-        composable(route = CreateNav.Generate.title) {
-            Generate(
-                globalEvent = globalEvent,
-                navHostController = createNavHostController,
-                mCViewModel = mCViewModel
-            )
         }
 
         composable(

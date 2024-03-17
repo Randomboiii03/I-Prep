@@ -5,4 +5,5 @@ plugins {
 //    kotlin("kapt") version "1.9.21"
     id("com.google.dagger.hilt.android") version "2.49" apply false
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.21"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
 }

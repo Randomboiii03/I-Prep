@@ -21,6 +21,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "API_KEY", "\"${project.properties.get("API_KEY")}\"")
     }
 
     buildTypes {
@@ -41,6 +43,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -81,6 +84,10 @@ dependencies {
     implementation(libs.compose.m3)
     implementation(libs.vico.core)
     implementation(libs.views)
+    implementation(libs.generativeai)
+    implementation(libs.itextg)
+    implementation(libs.secrets.gradle.plugin)
+    implementation(libs.ktor.client.core.jvm)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,8 +1,13 @@
 package com.example.i_prep.presentation.create
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.i_prep.domain.api.IPrepAPI
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import java.io.File
 
 class CViewModel : ViewModel() {
 
@@ -15,6 +20,42 @@ class CViewModel : ViewModel() {
 
     fun onGenerate(): Boolean {
         return state.value.questionType.isNotEmpty() && (state.value.fileName.isNotEmpty() && state.value.filePath.isNotEmpty()) && state.value.language.isNotEmpty()
+    }
+
+    private fun extractPDF(filePath: String): String? {
+        try {
+            var extractedText = ""
+
+            val pdfReader = PdfReader(filePath)
+            val numPages = pdfReader.numberOfPages
+
+            for (i in 0 until numPages) {
+                extractedText = """
+                    $extractedText${
+                    PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
+                }
+                """.trimIndent()
+            }
+
+            pdfReader.close()
+
+            return extractedText
+
+        } catch (e: Exception) {
+            Log.v("TAG", "Error: $e")
+            return null
+        }
+    }
+
+    private fun extractTXT(filePath: String): String? {
+        try {
+            val file = File(filePath)
+            return file.readText()
+
+        } catch (e: Exception) {
+            Log.v("TAG", "Error: $e")
+            return null
+        }
     }
 
     fun onEvent(event: CEvent) {
@@ -40,6 +81,31 @@ class CViewModel : ViewModel() {
             is CEvent.SetCookie -> state.update { it.copy(cookie = event.cookie) }
             is CEvent.Generate -> _state.update { it.copy(isGenerate = event.isGenerate) }
         }
+    }
+
+    suspend fun runAPI() {
+        val fileExtension = File(state.value.fileName).extension
+        Log.v("TAG", "Extension: $fileExtension")
+        val topic = when (fileExtension) {
+            "pdf" -> extractPDF(state.value.filePath)
+            "txt" -> extractTXT(state.value.filePath)
+            else -> ""
+        }
+
+        Log.v("TAG", topic.toString())
+
+        if (!topic.isNullOrEmpty()) {
+            val testInfo = IPrepAPI().generate(
+                question_type = state.value.questionType,
+                difficulty = state.value.difficulty,
+                language = state.value.language,
+                topic = topic
+            )
+        } else {
+            Log.v("TAG", "NO TEXT EXTRACTED")
+        }
+
+        _state.update { it.copy(isGenerate = false) }
     }
 }
 
