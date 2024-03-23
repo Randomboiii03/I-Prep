@@ -10,16 +10,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.i_prep.presentation.GlobalEvent
-import com.example.i_prep.presentation.create.composables.form.Form
+import com.example.i_prep.presentation.GlobalState
+import com.example.i_prep.presentation.GlobalViewModel
 import com.example.i_prep.presentation.create.model.CreateNav
 import com.example.i_prep.presentation.more.composables.help.Help
 import com.example.i_prep.presentation.navigation.model.BottomNav
 
 @Composable
-fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit, navHostController: NavHostController) {
+fun CreateNavHost(
+    mGlobalViewModel: GlobalViewModel,
+    globalState: GlobalState,
+    navHostController: NavHostController
+) {
     val createNavHostController = rememberNavController()
 
     val mCViewModel = viewModel<CViewModel>()
+    val globalEvent = mGlobalViewModel::onEvent
 
     NavHost(navController = createNavHostController, startDestination = CreateNav.Form.title) {
         composable(
@@ -34,6 +40,9 @@ fun CreateNavHost(globalEvent: (GlobalEvent) -> Unit, navHostController: NavHost
             LaunchedEffect(true) { globalEvent(GlobalEvent.ShowBottomNav(true)) }
 
             Form(
+                mGlobalViewModel = mGlobalViewModel,
+                globalState = globalState,
+                globalEvent = globalEvent,
                 mCViewModel = mCViewModel,
                 onEvent = mCViewModel::onEvent,
                 navHostController = createNavHostController,

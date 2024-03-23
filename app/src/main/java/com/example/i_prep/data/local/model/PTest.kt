@@ -3,7 +3,7 @@ package com.example.i_prep.data.local.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.i_prep.domain.api.model.dto.Question
+import com.example.i_prep.domain.api.model.Question
 
 @Entity(tableName = "pTest")
 data class PTest(

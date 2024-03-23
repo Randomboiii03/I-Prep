@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.composables.form
+package com.example.i_prep.presentation.create
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -29,29 +29,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.i_prep.common.NotificationService
-import com.example.i_prep.presentation.create.CEvent
-import com.example.i_prep.presentation.create.CViewModel
-import com.example.i_prep.presentation.create.composables.form.components.FDropdown
-import com.example.i_prep.presentation.create.composables.form.components.FTopBar
-import com.example.i_prep.presentation.create.composables.form.components.FUploadFile
-import com.example.i_prep.presentation.create.composables.form.model.difficulties
-import com.example.i_prep.presentation.create.composables.form.model.languages
-import com.example.i_prep.presentation.create.composables.form.model.questionTypes
+import com.example.i_prep.presentation.GlobalEvent
+import com.example.i_prep.presentation.GlobalState
+import com.example.i_prep.presentation.GlobalViewModel
+import com.example.i_prep.presentation.create.components.CDropdown
+import com.example.i_prep.presentation.create.components.CTopBar
+import com.example.i_prep.presentation.create.components.CUploadFile
+import com.example.i_prep.presentation.create.model.difficulties
+import com.example.i_prep.presentation.create.model.languages
+import com.example.i_prep.presentation.create.model.questionTypes
 import com.example.i_prep.presentation.create.model.CreateNav
-import com.randomboiii.i_prep.presentation.use_case.ConnectionState
-import com.randomboiii.i_prep.presentation.use_case.connectivityState
+import com.example.i_prep.common.ConnectionState
+import com.example.i_prep.common.connectivityState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun Form(
+    mGlobalViewModel: GlobalViewModel,
+    globalState: GlobalState,
+    globalEvent: (GlobalEvent) -> Unit,
     mCViewModel: CViewModel,
     onEvent: (CEvent) -> Unit,
     navHostController: NavHostController,
     showList: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val state by mCViewModel.state.collectAsState()
 
@@ -65,16 +71,14 @@ fun Form(
     val notification = NotificationService(LocalContext.current)
 
     LaunchedEffect(true) {
-        if (state.isGenerate) {
-            onEvent(CEvent.Generate(false))
-            onEvent(CEvent.Reset)
-            showList()
+        if (!globalState.isGenerate) {
+            onEvent(CEvent.ResetForm)
         }
     }
 
     Scaffold(
         topBar = {
-            FTopBar(onHelp = {
+            CTopBar(onHelp = {
                 navHostController.navigate(CreateNav.Help.title) {
                     popUpTo(CreateNav.Form.title)
                 }
@@ -110,25 +114,25 @@ fun Form(
 
             HorizontalDivider(modifier = modifier.padding(horizontal = 16.dp))
 
-            FDropdown(
+            CDropdown(
                 value = state.questionType,
-                onValueChange = { onEvent(CEvent.SetQuestionType(it)) },
+                onValueChange = { onEvent(CEvent.SetForm(state.copy(questionType = it))) },
                 list = questionTypes,
                 label = "Question Types"
             )
 
-            FUploadFile(fileName = state.fileName, onEvent = onEvent)
+            CUploadFile(state = state, onEvent = onEvent)
 
-            FDropdown(
+            CDropdown(
                 value = state.language,
-                onValueChange = { onEvent(CEvent.SetLanguage(it)) },
+                onValueChange = { onEvent(CEvent.SetForm(state.copy(language = it))) },
                 list = languages,
                 label = "Language"
             )
 
-            FDropdown(
+            CDropdown(
                 value = state.difficulty,
-                onValueChange = { onEvent(CEvent.SetDifficulty(it)) },
+                onValueChange = { onEvent(CEvent.SetForm(state.copy(difficulty = it))) },
                 list = difficulties,
                 label = "Difficulty"
             )
@@ -137,7 +141,7 @@ fun Form(
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedButton(
-                    onClick = { onEvent(CEvent.Reset) },
+                    onClick = { onEvent(CEvent.ResetForm) },
                     enabled = mCViewModel.onReset(),
                     modifier = modifier.width(107.dp)
                 ) {
@@ -146,18 +150,13 @@ fun Form(
 
                 Button(
                     onClick = {
-                        onEvent(CEvent.Generate(true))
-                        notification.showNotification("Generation start please wait...", false)
+                        globalEvent(GlobalEvent.Generate(true))
 
                         coroutineScope.launch {
-                            try {
-                                mCViewModel.runAPI()
-                            } catch (e: Exception) {
-                                notification.showNotification("Error: $e", false)
-                            }
+                            mGlobalViewModel.runAPI(state, notification)
                         }
                     },
-                    enabled = mCViewModel.onGenerate() && isConnected && !state.isGenerate,
+                    enabled = mCViewModel.onGenerate() && isConnected && !globalState.isGenerate,
                 ) {
                     Text(text = "Generate")
                 }

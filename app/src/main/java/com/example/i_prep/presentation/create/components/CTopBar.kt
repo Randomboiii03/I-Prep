@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.composables.form.components
+package com.example.i_prep.presentation.create.components
 
 import android.content.Intent
 import android.net.Uri
@@ -35,7 +35,7 @@ import com.example.i_prep.common.githubRepo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FTopBar(onHelp: () -> Unit, modifier: Modifier = Modifier) {
+fun CTopBar(onHelp: () -> Unit, modifier: Modifier = Modifier) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
 

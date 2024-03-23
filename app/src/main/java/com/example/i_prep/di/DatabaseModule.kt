@@ -2,11 +2,9 @@ package com.example.i_prep.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.i_prep.common.NotificationService
 import com.example.i_prep.data.local.PTestDB
 import com.example.i_prep.data.local.PTestDao
 import com.example.i_prep.data.repository.DataStoreRepository
-import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,11 +29,6 @@ object DatabaseModule {
     @Singleton
     fun provideDataStoreRepository(@ApplicationContext context: Context) =
         DataStoreRepository(context = context)
-
-    @Provides
-    @Singleton
-    fun provideDownloader(@ApplicationContext context: Context) =
-        IPrepDownloader(context)
 
     @Provides
     @Singleton

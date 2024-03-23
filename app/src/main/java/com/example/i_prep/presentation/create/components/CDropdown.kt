@@ -1,4 +1,4 @@
-package com.example.i_prep.presentation.create.composables.form.components
+package com.example.i_prep.presentation.create.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FDropdown(
+fun CDropdown(
     value: String,
     onValueChange: (String) -> Unit,
     list: List<String>,

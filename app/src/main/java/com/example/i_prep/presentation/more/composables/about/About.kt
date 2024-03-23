@@ -22,7 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,8 +37,6 @@ import com.example.i_prep.presentation.more.components.MTopBar
 import com.example.i_prep.presentation.more.composables.about.components.BItem
 import com.example.i_prep.presentation.more.composables.about.model.AboutNav
 import com.example.i_prep.presentation.more.composables.about.model.aboutNav
-import com.randomboiii.i_prep.presentation.use_case.ConnectionState
-import com.randomboiii.i_prep.presentation.use_case.connectivityState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,9 +47,6 @@ fun About(
     navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val connection by connectivityState()
-    val isConnected = connection == ConnectionState.Available
-
     val context = LocalContext.current
 
     Scaffold(
@@ -89,17 +83,6 @@ fun About(
                                         "I-Prep v$latestVersion",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                }
-
-                                AboutNav.CheckUpdate.title -> {
-                                    when (isConnected) {
-                                        true -> globalEvent(GlobalEvent.CheckUpdate(context, true))
-                                        false -> Toast.makeText(
-                                            context,
-                                            "Check internet connection",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
                                 }
 
                                 else -> navHostController.navigate(item.title)

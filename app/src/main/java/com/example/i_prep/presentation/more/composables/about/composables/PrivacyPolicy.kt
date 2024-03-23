@@ -30,7 +30,7 @@ import com.example.i_prep.common.about2_1
 import com.example.i_prep.common.about2_2
 import com.example.i_prep.common.about3
 import com.example.i_prep.common.about4
-import com.example.i_prep.common.claudePrivPol
+import com.example.i_prep.common.googleTerms
 import com.example.i_prep.common.githubRepo
 import com.example.i_prep.presentation.more.components.MTopBar
 
@@ -57,24 +57,24 @@ fun PrivacyPolicy(onBack: () -> Unit, modifier: Modifier = Modifier) {
                 annotatedString = buildAnnotatedString {
 
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append(about2_1 + "\n")
+                        append("$about2_1\n")
 
-                        append(about2_2 + "\n\n• ")
+                        append("$about2_2\n\n• ")
                     }
 
-                    pushStringAnnotation(tag = "anthropic", annotation = claudePrivPol)
+                    pushStringAnnotation(tag = "google", annotation = googleTerms)
                     withStyle(
                         SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
-                        append("Anthropic")
+                        append("Google")
                     }
                     pop()
                 },
-                tag = "anthropic",
-                link = claudePrivPol
+                tag = "google",
+                link = googleTerms
             )
 
             HorizontalDivider()

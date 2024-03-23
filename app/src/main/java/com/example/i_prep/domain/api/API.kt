@@ -1,37 +1,55 @@
 package com.example.i_prep.domain.api
 
 
-import android.util.Log
+import com.example.i_prep.BuildConfig
+import com.example.i_prep.common.displayLog
 import com.example.i_prep.common.gson
-import com.example.i_prep.domain.api.model.dto.Details
-import com.example.i_prep.domain.api.model.dto.Question
-import com.example.i_prep.domain.api.model.dto.TestInfo
+import com.example.i_prep.domain.api.model.Details
+import com.example.i_prep.domain.api.model.Question
+import com.example.i_prep.domain.api.model.QuestionList
+import com.example.i_prep.domain.api.model.TestInfo
+import com.example.i_prep.presentation.create.model.questionTypes
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
 import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
-import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.delay
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import kotlin.random.Random
 
 class IPrepAPI {
-    
-    fun fixFormat(response: String): String {
+
+    private val randomNumber = Random.nextLong(3000L, 5001L)
+
+    private fun fixFormat(response: String): String {
         val startIndex = response.indexOf('{')
         val endIndex = response.lastIndexOf('}') + 1
 
         return response.substring(startIndex, endIndex)
     }
 
+    private fun getImage(): String {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature")
+            .build()
+        val response = client.newCall(request).execute()
+
+        return response.body.string().split('?')[0]
+    }
+
     suspend fun generate(
-        question_type: String,
+        questionType: String,
         difficulty: String,
         language: String,
         topic: String
     ): TestInfo {
         val model = GenerativeModel(
-            "gemini-1.0-pro",
-            "AIzaSyCyXbK3_7YcA2oX_VBcRWU9kyGSzHvahY8AIzaSyCyXbK3_7YcA2oX_VBcRWU9kyGSzHvahY8",
+            modelName = "gemini-1.0-pro",
+            apiKey = BuildConfig.API_KEY,
             generationConfig = generationConfig {
                 temperature = 0.9f
                 topK = 1
@@ -46,36 +64,52 @@ class IPrepAPI {
             ),
         )
 
+        val jsonFormat = when(questionType) {
+            "True or False" -> {"""
+                {
+                    "questions": [
+                        {
+                            "question": "",
+                            "choices": ["True", "False"], // True or False only
+                            "answer": ""
+                        }
+                    ]
+                }
+            """.trimIndent()}
+
+            else -> {"""
+                {
+                    "questions": [
+                        {
+                            "question": "",
+                            "choices": [],
+                            "answer": ""
+                        }
+                    ]
+                }
+            """.trimIndent()}
+        }
+
         val prompt =
-            """Your task is to create a ${difficulty} ${language} $question_type} practice test based on the provided study material. 
+            """Your task is to create a $difficulty $language $questionType practice test based on the provided study material. 
             The study material will contain the all the information that will show on the practice test, including the topic and subject. 
             Implement the proper creation of stem questions, ensuring that there is no repetitive questions or answer, perform necessary validations, and follow best practices for creating a proper practice test. 
             Please make sure to follow the question type, difficulty, language, and subject matter for the creation of test. 
-            Please output only in this JSON format: 
-            {
-                "questions": [
-                {
-                    "question": "",
-                    "choices": [],
-                    "answer": ""
-                }
-                ]
-            }
-            Another task, if the user send "DETAILS" you will create a test title, description and tags (purpose, subject, level, format) in this JSON format:
+            Please output only in this JSON format: $jsonFormat
+            Another task, if the user send "DETAILS" you will create a test title, short description, and tags (purpose, subject, level, format, etc.) in this JSON format:
             {
                 "title": "",
                 "description": "",
                 "tags": ["",""]
             } 
-            Another task, if the user send \"MORE\" you will create more unique test questions with the same topic. If you understand, respond "OK".
+            Another task, if the user send \"MORE\" you will create more unique test questions with the same topic. If you understand all of this, respond "OK".
             
         """.trimIndent()
 
         val respond =
-            """"OK, I understand. Please provide the study material so I can generate practice test questions in the requested JSON format. 
-            Remember to specify the desired question types, difficulty, language, and subject matter questions. 
-            If you want more unique questions on the same topic, simply send "MORE" and I will generate additional questions based on the provided material.
-            If you want the details, simply send "DETAILS" and I will generate title, description and tags based on the generated test.
+            """"OK, I understand. Please provide the study material so I can generate $difficulty $language $questionType practice test questions in the requested JSON format. 
+            If you want more unique and non-repetitive questions or answer on the same topic, simply send "MORE" and I will generate additional questions based on the provided material.
+            If you want the details, simply send "DETAILS" and I will generate title, short description, and tags based on the generated test.
         """.trimIndent()
 
         val chatHistory = listOf(
@@ -87,41 +121,57 @@ class IPrepAPI {
             },
         )
 
+        delay(randomNumber)
+
         val chat = model.startChat(chatHistory)
         var response = chat.sendMessage(topic)
 
-        val questionType = object : TypeToken<List<Question>>() {}.type
-        val existingQuestions: MutableList<Question> = gson.fromJson(fixFormat(response.text.toString()), questionType)
+        val combinedQuestions = mutableListOf<Question>()
+        combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-        Log.v("TAG", existingQuestions.toString())
+        val (tokens) = model.countTokens(*chat.history.toTypedArray())
+        var tokenCount = tokens
+        val limit = tokenCount.coerceIn(10000, 30000)
 
-        val history = listOf(prompt, respond)
+        while (tokenCount <= limit) {
+            try {
+                delay(randomNumber)
 
-        var tokenCount = 0
+                response = chat.sendMessage("MORE")
+                combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-        history.forEach { messsage ->
-            tokenCount += model.countTokens(messsage).totalTokens
+                val (token) = model.countTokens(*chat.history.toTypedArray())
+                tokenCount = token
+
+                displayLog("runAPI", "Size: ${combinedQuestions.size} Token Count: $tokenCount")
+
+            } catch (e: Exception) {
+                displayLog("runAPI", "Failed, Retrying again")
+            }
         }
 
-        while (tokenCount <= 10000) {
-            response = chat.sendMessage("MORE")
-            val questions: List<Question> = gson.fromJson(fixFormat(response.text.toString()), questionType)
-            existingQuestions.addAll(questions)
-            Log.v("TAG", response.text.toString())
-            tokenCount += model.countTokens(response.text.toString()).totalTokens
-        }
+        delay(randomNumber)
 
         response = chat.sendMessage("DETAILS")
-        val details: Details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
+        val details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
+
+        displayLog("runAPI", details.toString())
+
+        delay(randomNumber)
+
+        val image = getImage()
+
+        displayLog("runAPI", "image")
 
         val testInfo = TestInfo(
             title = details.title,
             description = details.description,
             tags = details.tags,
-            questions = existingQuestions
+            questions = combinedQuestions.toSet().toList(),
+            image = image
         )
 
-        Log.v("TAG", testInfo.toString())
+        displayLog("runAPI", testInfo.toString())
 
         return testInfo
     }

@@ -1,8 +1,8 @@
-package com.example.i_prep.presentation.create.composables.form.model
+package com.example.i_prep.presentation.create.model
 
 val questionTypes = listOf(
     "Multiple Choice",
-    "True-Or-False",
+    "True or False",
 //    "ShortAnswer",
     "Fill-In-The-Blank"
 )

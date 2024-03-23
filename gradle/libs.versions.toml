@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0-alpha13"
+agp = "8.5.0-alpha01"
 kotlin = "1.9.0"
 coreKtx = "1.12.0"
 junit = "4.13.2"
@@ -32,15 +32,17 @@ composeQrCode = "1.0.1"
 commonsCompress = "1.26.1"
 lz4Java = "1.8.0"
 dec = "0.1.2"
-compose = "2.0.0-alpha.11"
-composeM2 = "2.0.0-alpha.11"
-composeM3 = "2.0.0-alpha.11"
-coreVersion = "2.0.0-alpha.11"
-views = "2.0.0-alpha.11"
+compose = "2.0.0-alpha.12"
+composeM2 = "2.0.0-alpha.12"
+composeM3 = "2.0.0-alpha.12"
+coreVersion = "2.0.0-alpha.12"
+views = "2.0.0-alpha.12"
 generativeai = "0.2.2"
 itextg = "5.5.10"
 secretsGradlePlugin = "2.0.1"
 ktorClientCoreJvm = "3.0.0-beta-1"
+ktorClientOkhttp = "3.0.0-beta-1"
+okhttp = "5.0.0-alpha.12"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -90,8 +92,9 @@ generativeai = { group = "com.google.ai.client.generativeai", name = "generative
 itextg = { group = "com.itextpdf", name = "itextg", version.ref = "itextg" }
 secrets-gradle-plugin = { group = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", name = "secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 ktor-client-core-jvm = { group = "io.ktor", name = "ktor-client-core-jvm", version.ref = "ktorClientCoreJvm" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktorClientOkhttp" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-

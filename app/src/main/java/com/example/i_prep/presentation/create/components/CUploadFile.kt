@@ -1,9 +1,7 @@
-package com.example.i_prep.presentation.create.composables.form.components
+package com.example.i_prep.presentation.create.components
 
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -21,12 +19,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.i_prep.common.displayLog
+import com.example.i_prep.common.displayToast
+import com.example.i_prep.common.extractPDF
+import com.example.i_prep.common.extractTXT
 import com.example.i_prep.presentation.create.CEvent
+import com.example.i_prep.presentation.create.CState
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier = Modifier) {
+fun CUploadFile(state: CState, onEvent: (CEvent) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -35,7 +38,6 @@ fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier 
         uri?.let {
             val contentResolver = context.contentResolver
             val cursor = contentResolver.query(uri, null, null, null, null)
-            var cacheDir = context.cacheDir
 
             // Need storage checker if there is space for the file
 
@@ -45,60 +47,54 @@ fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier 
                     val fileName = it.getString(columnIndex)
                     val fileExtension = File(fileName).extension
 
-                    if (fileExtension in arrayListOf("pdf", "docx", "doc", "txt", "xlsx", "csv")) {
-
+                    if (fileExtension in arrayListOf("pdf", "docx", "txt")) {
                         try {
                             val inputStream = contentResolver.openInputStream(uri)
                             val fileSize = inputStream?.available() ?: 0
-                            inputStream?.close()
 
                             if (fileSize <= 10000000) {
-                                val folder = File(cacheDir, "uploaded_files")
-
-                                if (!folder.exists()) {
-                                    folder.mkdir()
+                                val folder = File(context.cacheDir, "uploaded_files").apply {
+                                    if (!exists()) mkdir()
                                 }
 
                                 val file = File(folder, fileName)
 
-                                try {
-                                    val inputStream = contentResolver.openInputStream(uri)
-                                    val outputStream = FileOutputStream(file)
-                                    onEvent(CEvent.UploadFile(fileName, file.absolutePath))
-
-                                    inputStream?.use { input ->
-                                        outputStream.use { output ->
-                                            input.copyTo(output)
-                                        }
+                                inputStream?.use { input ->
+                                    FileOutputStream(file).use { output ->
+                                        input.copyTo(output)
                                     }
-
-                                    Toast.makeText(context, fileName, Toast.LENGTH_LONG).show()
-                                } catch (e: Exception) {
-                                    Toast.makeText(context, "Error: $e", Toast.LENGTH_LONG).show()
                                 }
 
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "File must be 10MB or less only",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
+                                val reference = when (fileExtension) {
+                                    "pdf" -> extractPDF(file.absolutePath)
+                                    "txt" -> extractTXT(file.absolutePath)
+                                    else -> ""
+                                }
+
+                                displayLog("CTUploadFile", reference.toString())
+
+                                if (!reference.isNullOrEmpty() && reference.isNotBlank()) {
+                                    onEvent(CEvent.SetForm(state.copy(fileName = fileName, reference = reference.toString())))
+                                    displayToast(fileName, context)
+
+                                } else displayToast("No text extracted", context)
+
+                                file.delete()
+
+                            } else displayToast("File must be 10MB or less only", context)
+
                         } catch (e: Exception) {
-                            Log.v("TAG - CTUploadFile", "$e")
+                            displayLog("CTUploadFile", "Error: $e")
                         }
 
-                    } else {
-                        Toast.makeText(context, "Can't select this type of file", Toast.LENGTH_LONG)
-                            .show()
-                    }
+                    } else displayToast("Can't select this type of file", context)
                 }
             }
         }
     }
 
     OutlinedTextField(
-        value = fileName,
+        value = state.fileName,
         onValueChange = {},
         readOnly = true,
         maxLines = 1,
@@ -107,7 +103,7 @@ fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier 
             Icon(imageVector = Icons.Default.UploadFile, contentDescription = "Upload File")
         },
         supportingText = {
-            Text(text = "Upload document file (e.g. PDF, DOCX or TXT)")
+            Text(text = "Upload document file (e.g. PDF or TXT)")
         },
         enabled = false,
         colors = OutlinedTextFieldDefaults.colors(
@@ -122,6 +118,6 @@ fun FUploadFile(fileName: String, onEvent: (CEvent) -> Unit, modifier: Modifier 
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
-            ) { launcher.launch("*/*") }
+            ) { launcher.launch("application/pdf") }
     )
 }

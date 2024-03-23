@@ -16,6 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.i_prep.common.claudeAI
+import com.example.i_prep.common.geminiAI
 import com.example.i_prep.common.githubRepo
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.more.components.MTopBar
@@ -92,7 +93,7 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
 
             InfoSection(
                 title = "What type of file can I select to generate a test from?",
-                info = "\nUsers can select PDF, DOCX or TXT as of now. Remember that generated test will only be text-based, so it can't read image-based text that's why we don't support PPT yet."
+                info = "\nUsers can select PDF or TXT as of now. Remember that generated test will only be text-based, so it can't read image-based text that's why we don't support PPT yet."
             )
 
             HorizontalDivider()
@@ -125,16 +126,30 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
 
             HorizontalDivider()
 
-            InfoSection(
-                title = "Can I share my test to others?",
-                info = "\nAs of now, the app can't share test for others. If the app become successful, we may add more feature like this."
+            InfoSectionWithIcon(
+                title = "How do I share a test I've already made?",
+                info = buildAnnotatedString {
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append("\n1. Click the test you want to share.\n")
+                        append("2. In upper right of the screen, click ")
+                    }
+
+                    appendInlineContent("share", "[share]")
+
+                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
+                        append(" to share the test.\n\n")
+                        append("You can choose anywhere or method you like to share, but as of now it is limited in number where you can share it.")
+                    }
+                },
+                id = "share",
+                icon = Icons.Outlined.Share
             )
 
             HorizontalDivider()
 
             InfoSection(
                 title = "Is there a limit to how many quizzes I can create?",
-                info = "\nUsers can create up to 10 every 6-10 hours or it may vary based on demand on that day. It will reset every day so user can create more."
+                info = "\nThere will be no limit. But at the same time traffic of using model will be heavy as the failure of generating practice test will be."
             )
 
             HorizontalDivider()
@@ -143,10 +158,10 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                 title = "What AI does the app use?",
                 info = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colorScheme.onSurface)) {
-                        append("\nThe app use Claude AI of Anthropic. To know more about this AI, click this ")
+                        append("\nThe app use Gemini 1.0 Pro of Google. To know more about this AI, click this ")
                     }
 
-                    pushStringAnnotation(tag = "claude", annotation = githubRepo)
+                    pushStringAnnotation(tag = "gemini", annotation = githubRepo)
                     withStyle(
                         SpanStyle(
                             color = MaterialTheme.colorScheme.primary,
@@ -161,17 +176,16 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                         append(".")
                     }
                 },
-                tag = "claude",
-                link = claudeAI
+                tag = "gemini",
+                link = geminiAI
             )
 
             HorizontalDivider()
 
             InfoSection(
-                title = "Why use Claude instead of GPT of OpenAI?",
-                info = "\nClaude has a huge context window than newest model of GPT, it may lose in some aspect but it is good to use when it comes to QA of documents.\n\n" +
-                        "Also, we all know that API of any AI cost money, we don't use any official API instead we use Claude web chat's API - reversed engineer it to be use of in this app. \n\n" +
-                        "Is this legal? We don't know, that's why use this app at your own risk. Check our Privacy Policy for more info."
+                title = "Why use Gemini AI instead of other existing AI model?",
+                info = "\nGemini has a free version where developer and non-developer can explore and use. It may lose in some aspect from other AI model, it is pretty good for free of charge model.\n" +
+                        "It can still compete on other existing model, but soon will be more advanced as the AI race is just started."
             )
 
             HorizontalDivider()
@@ -181,9 +195,9 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
                 info = "\n1. Internet fluctuation or too slow\n\n" +
                         "- The connection between the app and the server of the AI has been cut or timed out due to long broken connection.\n\n" +
                         "2. Converting to JSON\n\n" +
-                        "- Sometimes the response of the AI is cut or broken in which we tried to filter and fix, but with many possibility we can't patch all of it.\n\n" +
-                        "3. AI can't understand the prompt\n\n" +
-                        "- Due to the length of prompt, added extracted text from the reference file or some privacy policy of the company of the Anthropic, it refused to follow the prompt that the app send.\n\n" +
+                        "- Sometimes the response of the AI is cut or broken in which we tried to filter and fix, but it is low occurrence.\n\n" +
+                        "3. AI model stop generating\n\n" +
+                        "- Due to the high demand of this AI, there will be a lot of request everytime, so expect frequent failure.\n\n" +
                         "4. Bug\n\n" +
                         "- The developer of this app has not enough knowledge in this particular field, some of the error can't be patch or find to fix as of now.\n\n" +
                         "We our open for collaboration to improve this app, our contact is in About > Github."
@@ -192,15 +206,15 @@ fun Help(globalEvent: (GlobalEvent) -> Unit, onBack: () -> Unit, modifier: Modif
             HorizontalDivider()
 
             InfoSection(
-                title = "Why does the number of questions is not the same even though it is same reference file?",
-                info = "\nThe AI has a set of temperature which controls the randomness of the response it gives and also, the AI is continuously learning and improving."
+                title = "Why some of the questions on the test is not in the scope of my reference file I upload?",
+                info = "\nIn some cases the AI will add some related questions because the content of the file is too short to create questions."
             )
 
             HorizontalDivider()
 
             InfoSection(
-                title = "Why some of the questions on the test is not in the scope of my reference file I upload?",
-                info = "\nIn some cases the AI will add some related questions because the content of the file is too short to create questions."
+                title = "Why some of the questions on the test is repeating?",
+                info = "\nIn some cases the AI will repeat questions because the content of the file is too short to create questions."
             )
 
             HorizontalDivider()

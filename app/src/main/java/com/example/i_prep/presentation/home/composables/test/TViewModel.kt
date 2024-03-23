@@ -8,7 +8,7 @@ import androidx.navigation.NavHostController
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.domain.api.model.dto.Question
+import com.example.i_prep.domain.api.model.Question
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.home.model.HomeNav
 import kotlinx.coroutines.Dispatchers

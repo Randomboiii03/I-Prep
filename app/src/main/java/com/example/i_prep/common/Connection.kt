@@ -1,4 +1,4 @@
-package com.randomboiii.i_prep.presentation.use_case
+package com.example.i_prep.common
 
 import android.content.Context
 import android.net.ConnectivityManager

@@ -24,26 +24,21 @@ const val updateJSON = "https://raw.githubusercontent.com/Randomboiii03/I-Prep/m
 
 const val googleForm = "https://forms.gle/dqFPQ5un5FHfYftr8"
 
-const val claudeAI = "https://support.anthropic.com/en/collections/4078531-claude-ai"
-
-const val userAgent = "Mozilla/5.0 (Linux; U; Android 10; SM-G960F Build/QP1A.190711.020; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/95.0.4638.50 Mobile Safari/537.36 OPR/60.0.2254.59405"
-
-const val claudeChatUrl = "https://claude.ai/chats"
-const val claudeSentryUrl = "https://claude.ai/sentry"
+const val geminiAI = "https://deepmind.google/technologies/gemini/#introduction"
 
 const val about1 = """
-    I-Prep is a personalized test prep application which is integrated with Claude AI from Anthropic via a reversed engineered web API. This SERVICE is provided at no cost and is intended for use as is but with proper and responsible use is advised.
+    I-Prep is a personalized test prep application which is integrated with Gemini 1.0 Pro from Google. This SERVICE is provided at no cost and is intended for use as is but with proper and responsible use is advised.
     
-    This page details our policies with the use and disclosure of affiliation with Anthropic.
+    This page details our policies with the use and disclosure of affiliation with Google.
     
-    If you choose to use our Service, then you agree to the use of your personal/owned account for signing-in to get access for Claude AI. We will not collect any information upon or during use of our Service. All documents used and uploaded to create the test will not be our responsibility, all will be under the Anthropics’ Terms of Use and Privacy Policy. """
+    If you choose to use our Service, then you agree also to the Terms of Service of using Gemini AI as Google entails. We will not collect any information upon or during use of our Service. All extracted information from documents used to create the test will not be our responsibility, all will be under the Google’ Terms of Service. """
 
 const val about2_1 = """
-    For integrating Claude AI for our Service, we may require you to sign-in your personal/owned account. With this, we will use the cookies upon signing-in to use in our reverse engineered API to connect and use Claude. The accounts and uploaded documents that have been used will not be collected as described in this privacy policy.""""
+    For integrating Gemini AI for our Service, may require considerable patient when generating practice test, because of limit the model has, as it is a free. The uploaded documents that have been used will not be collected as described in this privacy policy.""""
 const val about2_2 = """
-    Links to the privacy policy of third-party service provides used by the app:"""
+    Links to the Terms of Service of third-party service provides used by the app:"""
 
-const val claudePrivPol = "https://console.anthropic.com/legal/privacy"
+const val googleTerms = "https://ai.google.dev/terms"
 
 const val about3 = """
     We may periodically update our Privacy Policy. Thus, you are advised to review this page periodically for any changes."""

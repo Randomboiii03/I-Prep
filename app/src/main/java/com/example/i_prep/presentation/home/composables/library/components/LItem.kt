@@ -27,7 +27,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.i_prep.R
 import com.example.i_prep.data.local.model.PTest
-import com.example.i_prep.presentation.create.composables.form.model.questionTypes
 
 @Composable
 fun HItem(pTest: PTest, onClickItem: (PTest) -> Unit, modifier: Modifier = Modifier) {

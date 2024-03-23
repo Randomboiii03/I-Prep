@@ -6,10 +6,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.itextpdf.text.pdf.PdfReader
+import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -111,3 +114,46 @@ fun shareFile(context: Context, fileName: String, content: String) {
     context.startActivity(chooser)
 }
 
+fun extractPDF(filePath: String): String? {
+    try {
+        var extractedText = ""
+
+        val pdfReader = PdfReader(filePath)
+        val numPages = pdfReader.numberOfPages
+
+        for (i in 0 until numPages) {
+            extractedText = """
+                    $extractedText${
+                PdfTextExtractor.getTextFromPage(pdfReader, i + 1).trim { it <= ' ' }
+            }
+                """.trimIndent()
+        }
+
+        pdfReader.close()
+
+        return extractedText
+
+    } catch (e: Exception) {
+        Log.v("TAG", "Error: $e")
+        return null
+    }
+}
+
+fun extractTXT(filePath: String): String? {
+    try {
+        val file = File(filePath)
+        return file.readText()
+
+    } catch (e: Exception) {
+        Log.v("TAG", "Error: $e")
+        return null
+    }
+}
+
+fun displayToast(message: String, context: Context) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+fun displayLog(from: String, message: String) {
+    Log.v("TAG - $from", message)
+}

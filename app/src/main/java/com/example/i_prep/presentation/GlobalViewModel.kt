@@ -1,32 +1,27 @@
 package com.example.i_prep.presentation
 
-import android.content.Context
-import android.os.Environment
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.i_prep.common.compareToVersion
+import com.example.i_prep.common.NotificationService
+import com.example.i_prep.common.displayLog
 import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
-import com.example.i_prep.common.latestVersion
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.domain.app_updater.AppUpdater
-import com.example.i_prep.domain.app_updater.downloader.IPrepDownloader
+import com.example.i_prep.domain.api.ApiCallTimer
+import com.example.i_prep.domain.api.IPrepAPI
 import com.example.i_prep.domain.use_cases.DeleteHistory
 import com.example.i_prep.domain.use_cases.DeleteTest
 import com.example.i_prep.domain.use_cases.GetAllHistory
 import com.example.i_prep.domain.use_cases.GetAllTest
 import com.example.i_prep.domain.use_cases.UpsertHistory
 import com.example.i_prep.domain.use_cases.UpsertTest
+import com.example.i_prep.presentation.create.CState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,8 +34,7 @@ class GlobalViewModel @Inject constructor(
 //    private val getHistoryById: GetHistoryById,
 //    private val getLastHistory: GetLastHistory,
     private val upsertHistory: UpsertHistory,
-    private val deleteHistory: DeleteHistory,
-    private val downloader: IPrepDownloader
+//    private val deleteHistory: DeleteHistory
 ) : ViewModel() {
     private val _state: MutableStateFlow<GlobalState> = MutableStateFlow(GlobalState())
     val state = _state
@@ -48,6 +42,57 @@ class GlobalViewModel @Inject constructor(
     init {
         onEvent(GlobalEvent.GetAllTest)
         onEvent(GlobalEvent.GetAllHistory)
+    }
+
+    suspend fun runAPI(cState: CState, notification: NotificationService) {
+        var attempt = 0
+
+        notification.showNotification(
+            "Starting to generate practice test. Please wait patiently.",
+            false
+        )
+
+        while (attempt <= 3) {
+            try {
+                val (testInfo, apiCallTime) = ApiCallTimer.measureTime {
+                    IPrepAPI().generate(
+                        questionType = cState.questionType,
+                        difficulty = cState.difficulty,
+                        language = cState.language,
+                        topic = cState.reference
+                    )
+                }
+
+                val pTest = PTest(
+                    title = testInfo.title,
+                    description = testInfo.description,
+                    tags = testInfo.tags,
+                    questionType = cState.questionType,
+                    questions = testInfo.questions,
+                    totalItems = testInfo.questions.size,
+                    language = cState.language,
+                    image = testInfo.image,
+                    dateCreated = System.currentTimeMillis(),
+                    reference = cState.fileName
+                )
+
+                onEvent(GlobalEvent.UpsertTest(pTest))
+
+                notification.showNotification(
+                    "${testInfo.title} is generated successfully with ${pTest.totalItems} questions for $apiCallTime",
+                    false
+                )
+
+                break
+
+            } catch (e: Exception) {
+                displayLog("runAPI", "Error: $e")
+                notification.showNotification("Something went wrong, trying again...", true)
+                attempt += 1
+            }
+        }
+
+        _state.update { it.copy(isGenerate = false) }
     }
 
     fun onEvent(event: GlobalEvent) {
@@ -159,71 +204,8 @@ class GlobalViewModel @Inject constructor(
             }
 
             is GlobalEvent.ShowBottomNav -> _state.update { it.copy(showBottomNav = event.isShow) }
-            is GlobalEvent.CheckUpdate -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    val updateChangeLog = AppUpdater().checkUpdates()
 
-                    when (updateChangeLog != null) {
-                        true -> {
-                            val existingFileExists = File(
-                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                                updateChangeLog.url.split("/").last()
-                            ).exists()
-
-                            when (existingFileExists) {
-                                true -> {
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(
-                                            event.context,
-                                            "The latest version is downloaded and waiting for you to install.",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    }
-                                }
-
-                                false -> {
-                                    when (latestVersion.compareToVersion(updateChangeLog.latestVersion)) {
-                                        true -> {
-                                            withContext(Dispatchers.Main) {
-                                                Toast.makeText(
-                                                    event.context,
-                                                    "Downloading latest version",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            }
-
-                                            downloader.downloadFIle(
-                                                url = updateChangeLog.url)
-                                        }
-
-                                        false -> {
-                                            if (event.showToast) {
-                                                withContext(Dispatchers.Main) {
-                                                    Toast.makeText(
-                                                        event.context,
-                                                        "App is up-to-date",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        false -> {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    event.context,
-                                    "Failed to update",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    }
-                }
-            }
+            is GlobalEvent.Generate -> _state.update { it.copy(isGenerate = event.isGenerate) }
         }
     }
 }
@@ -235,7 +217,8 @@ data class GlobalState(
     val tHistoryList: List<THistory> = emptyList(),
     val tHistory: THistory = emptyTHistory,
     val showBottomNav: Boolean = true,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isGenerate: Boolean = false
 )
 
 sealed interface GlobalEvent {
@@ -254,5 +237,5 @@ sealed interface GlobalEvent {
 
     data class GetHistory(val tHistory: THistory, val pTest: PTest) : GlobalEvent
 
-    data class CheckUpdate(val context: Context, val showToast: Boolean) : GlobalEvent
+    data class Generate(val isGenerate: Boolean) : GlobalEvent
 }

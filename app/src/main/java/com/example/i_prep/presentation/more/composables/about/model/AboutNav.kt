@@ -16,6 +16,6 @@ sealed class AboutNav(
 
 val aboutNav = listOf(
     AboutNav.Version,
-    AboutNav.CheckUpdate,
+//    AboutNav.CheckUpdate,
     AboutNav.PrivacyPolicy
 )

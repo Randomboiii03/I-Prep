@@ -1,4 +1,4 @@
-package com.example.i_prep.domain.api.model.dto
+package com.example.i_prep.domain.api.model
 
 data class Details(
     val title: String,
