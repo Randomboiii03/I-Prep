@@ -1,14 +1,8 @@
 package com.example.i_prep.presentation.create
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.i_prep.common.extractPDF
-import com.example.i_prep.common.extractTXT
-import com.example.i_prep.data.local.model.PTest
-import com.example.i_prep.domain.api.IPrepAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import java.io.File
 
 class CViewModel : ViewModel() {
 

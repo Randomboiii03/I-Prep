@@ -43,7 +43,6 @@ import coil.request.ImageRequest
 import com.example.i_prep.R
 import com.example.i_prep.common.compressAndEncode
 import com.example.i_prep.common.gson
-import com.example.i_prep.common.shareFile
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.presentation.GlobalEvent
 import com.example.i_prep.presentation.GlobalState
@@ -52,6 +51,7 @@ import com.example.i_prep.presentation.home.composables.details.components.DDesc
 import com.example.i_prep.presentation.home.composables.details.components.DFAB
 import com.example.i_prep.presentation.home.composables.details.components.DModifyDialog
 import com.example.i_prep.presentation.home.composables.details.components.DMoreDetail
+import com.example.i_prep.presentation.home.composables.details.components.DShareDialog
 import com.example.i_prep.presentation.home.composables.details.components.DStatistics
 import com.example.i_prep.presentation.home.composables.details.components.DTags
 import com.example.i_prep.presentation.home.composables.details.components.DTopBar
@@ -73,6 +73,7 @@ fun Details(
 
     var changeChart by rememberSaveable { mutableStateOf(true) }
     var showModifyDialog by rememberSaveable { mutableStateOf(false) }
+    var showShareDialog by rememberSaveable { mutableStateOf(false) }
 
     var rowHeight by rememberSaveable { mutableStateOf(250) }
 
@@ -85,6 +86,12 @@ fun Details(
             onModify = {
                 globalEvent(GlobalEvent.UpsertTest(it))
             })
+    }
+
+    if (showShareDialog) {
+        DShareDialog(
+            text = compressAndEncode(gson.toJson(pTest.copy(questions = pTest.questions.map { it.copy(correct = 0, shown = 0) }))),
+            onDismiss = { showShareDialog = it })
     }
 
     Box(
@@ -126,9 +133,7 @@ fun Details(
                         globalEvent(GlobalEvent.DeleteTest(pTest))
                         onBack()
                     },
-                    onShare = {
-                        shareFile(context, pTest.title, compressAndEncode(gson.toJson(pTest)))
-                    })
+                    onShare = { showShareDialog = it })
             },
             floatingActionButton = { DFAB(onClickFAB = { takeTest(globalState.pTest) }) },
             containerColor = Color.Transparent

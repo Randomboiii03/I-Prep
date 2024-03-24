@@ -8,9 +8,8 @@ import com.example.i_prep.common.emptyPTest
 import com.example.i_prep.common.emptyTHistory
 import com.example.i_prep.data.local.model.PTest
 import com.example.i_prep.data.local.model.THistory
-import com.example.i_prep.domain.api.ApiCallTimer
-import com.example.i_prep.domain.api.IPrepAPI
-import com.example.i_prep.domain.use_cases.DeleteHistory
+import com.example.i_prep.domain.api.iPrep.ApiCallTimer
+import com.example.i_prep.domain.api.iPrep.IPrepAPI
 import com.example.i_prep.domain.use_cases.DeleteTest
 import com.example.i_prep.domain.use_cases.GetAllHistory
 import com.example.i_prep.domain.use_cases.GetAllTest

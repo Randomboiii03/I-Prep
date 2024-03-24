@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DTopBar(
     onBack: () -> Unit,
-    onShare: () -> Unit,
+    onShare: (Boolean) -> Unit,
     onModify: (Boolean) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -69,7 +69,7 @@ fun DTopBar(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            onShare()
+                            onShare(true)
                         }
                 )
 

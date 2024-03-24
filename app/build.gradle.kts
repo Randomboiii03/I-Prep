@@ -23,7 +23,8 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "API_KEY", "\"${project.properties.get("API_KEY")}\"")
+        buildConfigField("String", "geminiAIKey", "\"${project.properties.get("geminiAIKey")}\"")
+        buildConfigField("String", "pasteLinkKey", "\"${project.properties.get("pasteLinkKey")}\"")
     }
 
     buildTypes {

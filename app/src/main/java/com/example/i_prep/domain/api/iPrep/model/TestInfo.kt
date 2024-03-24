@@ -1,4 +1,4 @@
-package com.example.i_prep.domain.api.model
+package com.example.i_prep.domain.api.iPrep.model
 
 data class TestInfo(
     val title: String,

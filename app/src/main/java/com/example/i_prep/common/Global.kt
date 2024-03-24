@@ -71,48 +71,48 @@ fun decodeAndDecompress(encodedInput: String): String {
     }
 }
 
-@SuppressLint("QueryPermissionsNeeded")
-fun shareFile(context: Context, fileName: String, content: String) {
-
-    val folder = File(context.cacheDir, "shared_files")
-
-    if (!folder.exists()) folder.mkdirs()
-
-    val file = File(folder, "$fileName.txt")
-
-    try {
-        FileOutputStream(file).use { stream ->
-            stream.write(content.toByteArray())  // Write string to file
-        }
-    } catch (e: IOException) {
-        // Handle exception if file creation or writing fails
-        Log.e("ShareText", "Error creating or writing to file", e)
-    }
-
-    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-
-    val intent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"  // Set MIME type for text file
-        putExtra(Intent.EXTRA_STREAM, uri)
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-    }
-
-    val chooser = Intent.createChooser(intent, "Share File")
-
-    val resInfoList: List<ResolveInfo> =
-        context.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
-
-    for (resolveInfo in resInfoList) {
-        val packageName = resolveInfo.activityInfo.packageName
-        context.grantUriPermission(
-            packageName,
-            uri,
-            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-        )
-    }
-
-    context.startActivity(chooser)
-}
+//@SuppressLint("QueryPermissionsNeeded")
+//fun shareFile(context: Context, fileName: String, content: String) {
+//
+//    val folder = File(context.cacheDir, "shared_files")
+//
+//    if (!folder.exists()) folder.mkdirs()
+//
+//    val file = File(folder, "$fileName.txt")
+//
+//    try {
+//        FileOutputStream(file).use { stream ->
+//            stream.write(content.toByteArray())  // Write string to file
+//        }
+//    } catch (e: IOException) {
+//        // Handle exception if file creation or writing fails
+//        Log.e("ShareText", "Error creating or writing to file", e)
+//    }
+//
+//    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+//
+//    val intent = Intent(Intent.ACTION_SEND).apply {
+//        type = "text/plain"  // Set MIME type for text file
+//        putExtra(Intent.EXTRA_STREAM, uri)
+//        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+//    }
+//
+//    val chooser = Intent.createChooser(intent, "Share File")
+//
+//    val resInfoList: List<ResolveInfo> =
+//        context.packageManager.queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+//
+//    for (resolveInfo in resInfoList) {
+//        val packageName = resolveInfo.activityInfo.packageName
+//        context.grantUriPermission(
+//            packageName,
+//            uri,
+//            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+//        )
+//    }
+//
+//    context.startActivity(chooser)
+//}
 
 fun extractPDF(filePath: String): String? {
     try {

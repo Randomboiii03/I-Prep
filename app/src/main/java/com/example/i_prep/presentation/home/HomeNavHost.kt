@@ -121,7 +121,11 @@ fun HomeNavHost(
             Result(
                 score = state.score,
                 itemSet = state.pTest.itemSet,
-                onBack = { homeNavHostController.popBackStack() },
+                onBack = {
+                    homeNavHostController.navigate(HomeNav.Library.title) {
+                        popUpTo(HomeNav.Library.title)
+                    }
+                },
                 onResult = {
                     homeNavHostController.navigate(HomeNav.View.title) {
                         popUpTo(HomeNav.Library.title)

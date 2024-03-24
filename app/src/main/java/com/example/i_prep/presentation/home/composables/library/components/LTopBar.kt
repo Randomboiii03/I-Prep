@@ -49,7 +49,7 @@ fun HTopBar(
     isSearch: Boolean,
     showSearch: () -> Unit,
     showFilter: (Boolean) -> Unit,
-    importTest: () -> Unit,
+    importTest: (Boolean) -> Unit,
     searchText: String,
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -151,7 +151,7 @@ fun HTopBar(
                             text = "Import Test",
                             onClick = {
                                 expanded = !expanded
-                                importTest()
+                                importTest(true)
                             })
                     }
                 }

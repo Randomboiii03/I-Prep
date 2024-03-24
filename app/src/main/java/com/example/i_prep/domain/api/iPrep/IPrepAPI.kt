@@ -1,14 +1,13 @@
-package com.example.i_prep.domain.api
+package com.example.i_prep.domain.api.iPrep
 
 
 import com.example.i_prep.BuildConfig
 import com.example.i_prep.common.displayLog
 import com.example.i_prep.common.gson
-import com.example.i_prep.domain.api.model.Details
-import com.example.i_prep.domain.api.model.Question
-import com.example.i_prep.domain.api.model.QuestionList
-import com.example.i_prep.domain.api.model.TestInfo
-import com.example.i_prep.presentation.create.model.questionTypes
+import com.example.i_prep.domain.api.iPrep.model.Details
+import com.example.i_prep.domain.api.iPrep.model.Question
+import com.example.i_prep.domain.api.iPrep.model.QuestionList
+import com.example.i_prep.domain.api.iPrep.model.TestInfo
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
@@ -49,7 +48,7 @@ class IPrepAPI {
     ): TestInfo {
         val model = GenerativeModel(
             modelName = "gemini-1.0-pro",
-            apiKey = BuildConfig.API_KEY,
+            apiKey = BuildConfig.geminiAIKey,
             generationConfig = generationConfig {
                 temperature = 0.9f
                 topK = 1

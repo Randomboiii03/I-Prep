@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +31,9 @@ fun DModifyDialog(
     onModify: (PTest) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var title = mutableStateOf(pTest.title)
-    var itemSet = mutableStateOf(pTest.itemSet)
-    var isTimed = mutableStateOf(pTest.isTimed)
+    val title = mutableStateOf(pTest.title)
+    val itemSet = mutableIntStateOf(pTest.itemSet)
+    val isTimed = mutableStateOf(pTest.isTimed)
 
     AlertDialog(
         onDismissRequest = { onDismiss(false) },
@@ -40,9 +41,9 @@ fun DModifyDialog(
             Button(
                 onClick = {
                     onDismiss(false)
-                    onModify(pTest.copy(title = title.value, itemSet = itemSet.value, isTimed = isTimed.value))
+                    onModify(pTest.copy(title = title.value, itemSet = itemSet.intValue, isTimed = isTimed.value))
                 },
-                enabled = title.value.isNotEmpty() && itemSet.value > 0
+                enabled = title.value.isNotEmpty() && itemSet.intValue > 0
             ) {
                 Text(text = "Confirm")
             }
@@ -71,19 +72,19 @@ fun DModifyDialog(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
-                        value = "${itemSet.value}",
+                        value = "${itemSet.intValue}",
                         suffix = { Text(text = "/ ${pTest.totalItems}") },
-                        onValueChange = {
+                        onValueChange = { it ->
                             Log.v("TAG", it)
                             val value = it.filter { it.isDigit() }
                             if (value.isNotEmpty()) {
                                 if (value.toInt() <= pTest.totalItems) {
-                                    itemSet.value = value.toInt()
+                                    itemSet.intValue = value.toInt()
                                 }
-                            } else itemSet.value = 0
+                            } else itemSet.intValue = 0
                         },
                         label = { Text(text = "Item Set") },
-                        isError = itemSet.value <= 0,
+                        isError = itemSet.intValue <= 0,
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                         modifier = modifier.weight(1f)
                     )

@@ -1,4 +1,4 @@
-package com.example.i_prep.domain.api
+package com.example.i_prep.domain.api.iPrep
 
 object ApiCallTimer {
     suspend fun <T> measureTime(block: suspend () -> T): Pair<T, String> {

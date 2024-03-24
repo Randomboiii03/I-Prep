@@ -6,12 +6,14 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -69,7 +71,7 @@ fun AITem(
     ) {
         Row(
             modifier = modifier
-                .weight(4f)
+                .weight(3.5f)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -110,6 +112,7 @@ fun AITem(
                 modifier = modifier
                     .wrapContentSize()
                     .padding(horizontal = 16.dp)
+                    .width(IntrinsicSize.Max)
             ) {
                 Box(
                     modifier = modifier
