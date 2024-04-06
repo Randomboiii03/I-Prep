@@ -81,7 +81,7 @@ class IPrepAPI {
                     "questions": [
                         {
                             "question": "",
-                            "choices": [],
+                            "choices": ["", "", "", ""],
                             "answer": ""
                         }
                     ]
@@ -90,9 +90,23 @@ class IPrepAPI {
         }
 
         val prompt =
-            """Your task is to create a $difficulty $language $questionType practice test based on the provided study material. 
+            """This guide equips you to transform limited study materials into a springboard for active learning. Move beyond rote memorization by crafting questions that challenge you to:
+
+            - Apply concepts: How can this be used in the real world?
+            - Analyze strengths and weaknesses: What are the pros and cons of this idea?
+            - Evaluate persuasiveness: Is the argument convincing? Why or why not?
+            - Predict or Infer from the material: What might happen next? Can you draw conclusions about something not mentioned?
+            - Make Connections to prior knowledge: How does this compare to what you already know?
+            - Identify Gaps in Knowledge for further exploration: What caused this event? What are the unaddressed implications? Are there counterarguments?
+            - Explore Different Question Formats (open ended, true/false, matching) to test your understanding in diverse ways.
+                
+            Imagine you're the teacher, and your limited study materials are the only resource your students have.
+            Your task is to create a $difficulty $language $questionType practice test based on the provided study material.
+            Craft questions that would push them beyond memorization and into active engagement with the material. 
             The study material will contain the all the information that will show on the practice test, including the topic and subject. 
-            Implement the proper creation of stem questions, ensuring that there is no repetitive questions or answer, perform necessary validations, and follow best practices for creating a proper practice test. 
+            Implement the proper creation of stem questions, ensure that there is no repetitive questions or answer and perform necessary validations.
+            Please follow best practices for creating a proper practice test use Fink's Taxonomy of Significant Learning as a framework and SOLO Taxonomy.
+            
             Please make sure to follow the question type, difficulty, language, and subject matter for the creation of test. 
             Please output only in this JSON format: $jsonFormat
             Another task, if the user send "DETAILS" you will create a test title, short description, and tags (purpose, subject, level, format, etc.) in this JSON format:
@@ -102,7 +116,7 @@ class IPrepAPI {
                 "tags": ["",""]
             } 
             Another task, if the user send \"MORE\" you will create more unique test questions with the same topic. If you understand all of this, respond "OK".
-            
+            Utilize the strategies above to create a stimulating learning experience! Thank you, you're the best!
         """.trimIndent()
 
         val respond =
@@ -130,9 +144,8 @@ class IPrepAPI {
 
         val (tokens) = model.countTokens(*chat.history.toTypedArray())
         var tokenCount = tokens
-        val limit = tokenCount.coerceIn(10000, 30000)
 
-        while (tokenCount <= limit) {
+        while (tokenCount <= 25000) {
             try {
                 delay(randomNumber)
 

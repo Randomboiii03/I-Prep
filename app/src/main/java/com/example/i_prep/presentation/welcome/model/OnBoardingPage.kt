@@ -15,8 +15,8 @@ sealed class OnBoardingPage(
 
     object Second: OnBoardingPage(
         title = "Prep Your Way, Not the Textbook Way",
-        description = "Claude AI Tailors Your Learning Journey",
-        image = R.drawable.claude
+        description = "Gemini AI Tailors Your Learning Journey",
+        image = R.drawable.gemini
     )
 
     object Third: OnBoardingPage(
