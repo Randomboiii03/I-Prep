@@ -98,7 +98,6 @@ class IPrepAPI {
             - Predict or Infer from the material: What might happen next? Can you draw conclusions about something not mentioned?
             - Make Connections to prior knowledge: How does this compare to what you already know?
             - Identify Gaps in Knowledge for further exploration: What caused this event? What are the unaddressed implications? Are there counterarguments?
-            - Explore Different Question Formats (open ended, true/false, matching) to test your understanding in diverse ways.
                 
             Imagine you're the teacher, and your limited study materials are the only resource your students have.
             Your task is to create a $difficulty $language $questionType practice test based on the provided study material.
