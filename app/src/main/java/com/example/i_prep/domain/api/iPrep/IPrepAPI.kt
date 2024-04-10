@@ -21,7 +21,8 @@ import kotlin.random.Random
 
 class IPrepAPI {
 
-    private val randomNumber = Random.nextLong(3000L, 5001L)
+//    private val randomNumber = Random.nextLong(1500L, 3001L)
+    private val timeDelay = 2500L
 
     private fun fixFormat(response: String): String {
         val startIndex = response.indexOf('{')
@@ -89,15 +90,38 @@ class IPrepAPI {
             """.trimIndent()}
         }
 
-        val prompt =
-            """This guide equips you to transform limited study materials into a springboard for active learning. Move beyond rote memorization by crafting questions that challenge you to:
+        val guide = when(questionType) {
+            "True or False" -> {"""
+                - Identify a Key Concept: Pick a core idea from your study material.
+                - Twist it Up: Craft a statement that is either completely true or completely false based on the concept.
+                - True: This could be a direct restatement of a fact from the material.
+                - False: Here's where it gets interesting! You can slightly twist a fact, introduce a logical fallacy, or contradict an underlying assumption.
+                - Plant the Seed of Doubt: Make the statement believable enough to create a healthy debate among your classmates.
+                - Justification is Key: Provide a brief explanation for why the statement is true or false. This will guide your classmates towards the key concept and encourage them to revisit the material for deeper understanding.
+            """.trimIndent()}
 
-            - Apply concepts: How can this be used in the real world?
-            - Analyze strengths and weaknesses: What are the pros and cons of this idea?
-            - Evaluate persuasiveness: Is the argument convincing? Why or why not?
-            - Predict or Infer from the material: What might happen next? Can you draw conclusions about something not mentioned?
-            - Make Connections to prior knowledge: How does this compare to what you already know?
-            - Identify Gaps in Knowledge for further exploration: What caused this event? What are the unaddressed implications? Are there counterarguments?
+            "Multiple Choice" -> {"""
+                - Apply concepts: How can this be used in the real world?
+                - Analyze strengths and weaknesses: What are the pros and cons of this idea?
+                - Evaluate persuasiveness: Is the argument convincing? Why or why not?
+                - Predict or Infer from the material: What might happen next? Can you draw conclusions about something not mentioned?
+                - Make Connections to prior knowledge: How does this compare to what you already know?
+                - Identify Gaps in Knowledge for further exploration: What caused this event? What are the unaddressed implications? Are there counterarguments?
+            """.trimIndent()}
+
+            else -> {"""
+                - Identify a Core Process or Formula:  Find a central process or formula  presented in your study material. This will be the framework for your fill-in-the-blank.
+                - Leave a Strategic Gap:  Choose a crucial element within the process or formula and replace it with a blank. This blank should be significant enough to require understanding,  but not so obscure that it becomes impossible to answer.
+                - Maintain Clarity:  Don't  overload the question with too many blanks. Aim for one or two blanks at most to ensure the question remains clear and focused.
+                - Offer Multiple Answer Choices (Optional):  While fill-in-the-blank questions traditionally involve open-ended answers, you can consider including a limited set of answer choices  to guide your classmates. This can be particularly helpful with limited material  as it narrows down the possibilities and reinforces key terms.
+                - Think Beyond Straight Recall:  While some blanks might  require recalling specific terms, aim to also  include blanks that encourage applying or analyzing the information.
+            """.trimIndent()}
+        }
+
+        val prompt =
+            """This guide equips you to transform limited study materials into a springboard for active learning. 
+            Move beyond rote memorization by crafting $questionType questions that challenge you to:
+            $guide
                 
             Imagine you're the teacher, and your limited study materials are the only resource your students have.
             Your task is to create a $difficulty $language $questionType practice test based on the provided study material.
@@ -108,7 +132,7 @@ class IPrepAPI {
             
             Please make sure to follow the question type, difficulty, language, and subject matter for the creation of test. 
             Please output only in this JSON format: $jsonFormat
-            Another task, if the user send "DETAILS" you will create a test title, short description, and tags (purpose, subject, level, format, etc.) in this JSON format:
+            Another task, if the user send "DETAILS" you will create a test short title, short description, and tags (purpose, subject, level, format, etc.) in this JSON format:
             {
                 "title": "",
                 "description": "",
@@ -133,7 +157,7 @@ class IPrepAPI {
             },
         )
 
-        delay(randomNumber)
+        delay(timeDelay)
 
         val chat = model.startChat(chatHistory)
         var response = chat.sendMessage(topic)
@@ -143,10 +167,13 @@ class IPrepAPI {
 
         val (tokens) = model.countTokens(*chat.history.toTypedArray())
         var tokenCount = tokens
+        val tokenLimit = tokens.coerceIn(16000, 25000)
 
-        while (tokenCount <= 25000) {
+        var attempt = 0
+
+        while (tokenCount <= tokenLimit) {
             try {
-                delay(randomNumber)
+                delay(timeDelay)
 
                 response = chat.sendMessage("MORE")
                 combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
@@ -158,17 +185,20 @@ class IPrepAPI {
 
             } catch (e: Exception) {
                 displayLog("runAPI", "Failed, Retrying again")
+                attempt++
+
+                if (attempt >= 10) break
             }
         }
 
-        delay(randomNumber)
+        delay(timeDelay)
 
         response = chat.sendMessage("DETAILS")
         val details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
 
         displayLog("runAPI", details.toString())
 
-        delay(randomNumber)
+        delay(timeDelay)
 
         val image = getImage()
 
