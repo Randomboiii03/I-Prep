@@ -22,7 +22,7 @@ val emptyTHistory: THistory = THistory(0, 0, emptyList(), emptyList(), 0, 0, 0)
 
 const val updateJSON = "https://raw.githubusercontent.com/Randomboiii03/I-Prep/master/update-changelog.json"
 
-const val googleForm = "https://forms.gle/dqFPQ5un5FHfYftr8"
+const val googleForm = "https://forms.gle/7Sa7fZeEf57AyhFQA"
 
 const val geminiAI = "https://deepmind.google/technologies/gemini/#introduction"
 
