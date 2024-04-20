@@ -29,7 +29,6 @@ No more stressing over exams. With I-PREP, you'll be ready to tackle anything th
 <img src="https://github.com/Randomboiii03/I-Prep/assets/113816315/4dcfd042-1973-4978-ab4c-ac6b799f5f96" width="200" height="450">
 <img src="https://github.com/Randomboiii03/I-Prep/assets/113816315/3df0b280-eb3c-4e52-b672-d8e9f7204260" width="200" height="450">
 <img src="https://github.com/Randomboiii03/I-Prep/assets/113816315/1e76645d-9ee8-4626-bf6b-ed580dbbeee9" width="200" height="450">
-<img src="https://github.com/Randomboiii03/I-Prep/assets/113816315/09551df2-a15e-4473-8b80-9976b148bb83" width="200" height="450">
 <img src="https://github.com/Randomboiii03/I-Prep/assets/113816315/d3f1b90b-0a03-4793-b957-107c7f825524" width="200" height="450">
 
 <h3>Installation</h3>
