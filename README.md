@@ -2,7 +2,7 @@
 
 Hey there, meet **I-PREP**, the brainchild of our capstone project that's here to revolutionize how you prepare for tests. It's like having a study buddy, but with a sprinkle of AI magic.
 
-Here's the scoop: We've used Gemini AI from Google to make studying feel like a breeze. I-PREP dives into your lecture notes, textbooks, and presentations, then cooks up customized practice tests just for you. It's like having a personal tutor in your pocket!
+Here's the scoop: We've used **Gemini AI** from **Google** to make studying feel like a breeze. I-PREP dives into your lecture notes, textbooks, and presentations, then cooks up customized practice tests just for you. It's like having a personal tutor in your pocket!
 
 But wait, there's more! We've little bit gamified to keep things fun and engaging. Don't worry, it's simple enough for anyone to use, but trust us, it's super helpful.
 
@@ -12,12 +12,12 @@ No more stressing over exams. With I-PREP, you'll be ready to tackle anything th
 
 <ul>
   <li>Test Creation: Create multiple-choice, fill-in-the-blank, and true or false questions using uploaded documents such as lecture notes, textbooks, or presentations.</li>
-  <li>Question Types: Generate diverse question types to cater to different learning styles and assessment needs.</li>
-  <li>Statistical Insights: Access comprehensive statistics on tests created, tests taken, and many more.</li>
-  <li>Test History: Keep track of your test-taking journey with a detailed history of tests taken, including scores and questions answered.</li>
-  <li>Test Compilation/Library: Build a personal library of tests for quick access of generated tests.</li>
-  <li>Editable Test Items: Customize the number of questions to be shown when taking test.</li>
-  <li>Shareable Tests: Share your custom tests with others using a unique code, fostering collaborative learning and knowledge sharing.</li>
+  <li>**Question Types:** Generate diverse question types to cater to different learning styles and assessment needs.</li>
+  <li>**Statistical Insights:** Access comprehensive statistics on tests created, tests taken, and many more.</li>
+  <li>**Test History:** Keep track of your test-taking journey with a detailed history of tests taken, including scores and questions answered.</li>
+  <li>**Test Compilation/Library:** Build a personal library of tests for quick access of generated tests.</li>
+  <li>**Editable Test Items:** Customize the number of questions to be shown when taking test.</li>
+  <li>**Shareable Tests:** Share your custom tests with others using a unique code, fostering collaborative learning and knowledge sharing.</li>
 </ul>
 
 <h3>Screenshots</h3>
@@ -33,8 +33,8 @@ No more stressing over exams. With I-PREP, you'll be ready to tackle anything th
 
 <h3>Installation</h3>
 
-Go to this [release link](https://github.com/Randomboiii03/I-Prep/releases) to download and install
+Go to this [**release link**](https://github.com/Randomboiii03/I-Prep/releases) to download and install.
 
 <h3>Short Survey</h3>
 
-We may have your time to take this survey [form link](https://forms.gle/W1ePkYugrbFVfbUK6), we appreciate your time. Thank you so much!
+We may have your time to take this survey [**form link**](https://forms.gle/W1ePkYugrbFVfbUK6), we appreciate your time. Thank you so much!
