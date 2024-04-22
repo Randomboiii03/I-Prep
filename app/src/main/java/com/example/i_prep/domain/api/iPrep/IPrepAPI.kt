@@ -21,8 +21,8 @@ import kotlin.random.Random
 
 class IPrepAPI {
 
-//    private val randomNumber = Random.nextLong(1500L, 3001L)
-    private val timeDelay = 2500L
+    private val timeDelay = Random.nextLong(5000L, 10001L)
+//    private val timeDelay = 10000L
 
     private fun fixFormat(response: String): String {
         val startIndex = response.indexOf('{')
@@ -167,7 +167,7 @@ class IPrepAPI {
 
         val (tokens) = model.countTokens(*chat.history.toTypedArray())
         var tokenCount = tokens
-        val tokenLimit = tokens.coerceIn(16000, 25000)
+        val tokenLimit = tokens + 8500
 
         var attempt = 0
 
@@ -181,7 +181,7 @@ class IPrepAPI {
                 val (token) = model.countTokens(*chat.history.toTypedArray())
                 tokenCount = token
 
-                displayLog("runAPI", "Size: ${combinedQuestions.size} Token Count: $tokenCount")
+                displayLog("runAPI", "Size: ${combinedQuestions.count()} Token Count: $tokenCount")
 
             } catch (e: Exception) {
                 displayLog("runAPI", "Failed, Retrying again")

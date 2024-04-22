@@ -62,6 +62,10 @@ class GlobalViewModel @Inject constructor(
                     )
                 }
 
+                if (testInfo.questions.size <= 20) {
+                    continue
+                }
+
                 val pTest = PTest(
                     title = testInfo.title,
                     description = testInfo.description,
@@ -86,7 +90,11 @@ class GlobalViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 displayLog("runAPI", "Error: $e")
-                notification.showNotification("Something went wrong, trying again...", true)
+
+                if (attempt >= 3) {
+                    notification.showNotification("Failed to create test due to server traffic. Please try again...", true)
+                }
+
                 attempt += 1
             }
         }
