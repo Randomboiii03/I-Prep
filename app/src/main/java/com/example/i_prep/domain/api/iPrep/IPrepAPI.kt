@@ -8,6 +8,7 @@ import com.example.i_prep.domain.api.iPrep.model.Details
 import com.example.i_prep.domain.api.iPrep.model.Question
 import com.example.i_prep.domain.api.iPrep.model.QuestionList
 import com.example.i_prep.domain.api.iPrep.model.TestInfo
+import com.google.ai.client.generativeai.Chat
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.HarmCategory
@@ -24,46 +25,31 @@ class IPrepAPI {
     private val timeDelay = Random.nextLong(5000L, 10001L)
 //    private val timeDelay = 10000L
 
-    private fun fixFormat(response: String): String {
-        val startIndex = response.indexOf('{')
-        val endIndex = response.lastIndexOf('}') + 1
+    var tokenCount = 0
 
-        return response.substring(startIndex, endIndex)
-    }
+    private val model = GenerativeModel(
+        modelName = "gemini-1.0-pro",
+        apiKey = BuildConfig.geminiAIKey,
+        generationConfig = generationConfig {
+            temperature = 0.9f
+            topK = 1
+            topP = 1f
+            maxOutputTokens = 2048
+        },
+        safetySettings = listOf(
+            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
+            SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.LOW_AND_ABOVE),
+            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.LOW_AND_ABOVE),
+            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.LOW_AND_ABOVE),
+        ),
+    )
 
-    private fun getImage(): String {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature")
-            .build()
-        val response = client.newCall(request).execute()
-
-        return response.body.string().split('?')[0]
-    }
-
-    suspend fun generate(
+    suspend fun setupChat(
         questionType: String,
         difficulty: String,
         language: String,
         topic: String
-    ): TestInfo {
-        val model = GenerativeModel(
-            modelName = "gemini-1.0-pro",
-            apiKey = BuildConfig.geminiAIKey,
-            generationConfig = generationConfig {
-                temperature = 0.9f
-                topK = 1
-                topP = 1f
-                maxOutputTokens = 2048
-            },
-            safetySettings = listOf(
-                SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.MEDIUM_AND_ABOVE),
-                SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.MEDIUM_AND_ABOVE),
-                SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.MEDIUM_AND_ABOVE),
-                SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.MEDIUM_AND_ABOVE),
-            ),
-        )
-
+    ): Chat {
         val jsonFormat = when(questionType) {
             "True or False" -> {"""
                 {
@@ -155,18 +141,52 @@ class IPrepAPI {
             content("model") {
                 text(respond)
             },
+            content("user") {
+                text("""Below is the topic in a language "$language":
+                    $topic
+                    Please analyze and understand the subject matter the topic have.
+                """.trimMargin())
+            },
+            content("model") {
+                text("""Nice! This study material is very informative. If you want to start creating $difficulty $language $questionType practice test questions, simply send "START" and I will start.""")
+            }
         )
+
+        val chat = model.startChat(chatHistory)
+
+        val (tokens) = model.countTokens(*chat.history.toTypedArray())
+        tokenCount = tokens
 
         delay(timeDelay)
 
-        val chat = model.startChat(chatHistory)
-        var response = chat.sendMessage(topic)
+        return chat
+    }
+
+    private fun fixFormat(response: String): String {
+        val startIndex = response.indexOf('{')
+        val endIndex = response.lastIndexOf('}') + 1
+
+        return response.substring(startIndex, endIndex)
+    }
+
+    private fun getImage(): String {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature")
+            .build()
+        val response = client.newCall(request).execute()
+
+        return response.body.string().split('?')[0]
+    }
+
+    suspend fun generate(chat: Chat): TestInfo? {
+        var response = chat.sendMessage("START")
 
         val combinedQuestions = mutableListOf<Question>()
         combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
         val (tokens) = model.countTokens(*chat.history.toTypedArray())
-        var tokenCount = tokens
+        tokenCount = tokens
         val tokenLimit = tokens + 8500
 
         var attempt = 0
@@ -184,6 +204,7 @@ class IPrepAPI {
                 displayLog("runAPI", "Size: ${combinedQuestions.count()} Token Count: $tokenCount")
 
             } catch (e: Exception) {
+                displayLog("runAPI", "Error-generate: $e")
                 displayLog("runAPI", "Failed, Retrying again")
                 attempt++
 
@@ -193,10 +214,24 @@ class IPrepAPI {
 
         delay(timeDelay)
 
-        response = chat.sendMessage("DETAILS")
-        val details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
+        attempt = 0
 
-        displayLog("runAPI", details.toString())
+        var details: Details? = null
+
+        while (attempt <= 5) {
+            try {
+                response = chat.sendMessage("DETAILS")
+                details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
+
+                displayLog("runAPI", details.toString())
+                break
+
+            } catch (e: Exception) {
+                displayLog("runAPI", "Error-generate: $e")
+                displayLog("runAPI", "Failed, Retrying again")
+                attempt++
+            }
+        }
 
         delay(timeDelay)
 
@@ -204,16 +239,20 @@ class IPrepAPI {
 
         displayLog("runAPI", "image")
 
-        val testInfo = TestInfo(
-            title = details.title,
-            description = details.description,
-            tags = details.tags,
-            questions = combinedQuestions.toSet().toList(),
-            image = image
-        )
+        if (details != null) {
+            val testInfo = TestInfo(
+                title = details.title,
+                description = details.description,
+                tags = details.tags,
+                questions = combinedQuestions.toSet().toList(),
+                image = image
+            )
 
-        displayLog("runAPI", testInfo.toString())
+            displayLog("runAPI", testInfo.toString())
 
-        return testInfo
+            return testInfo
+        }
+
+        return null
     }
 }

@@ -17,6 +17,7 @@ import com.example.i_prep.domain.use_cases.UpsertHistory
 import com.example.i_prep.domain.use_cases.UpsertTest
 import com.example.i_prep.presentation.create.CState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -51,18 +52,27 @@ class GlobalViewModel @Inject constructor(
             false
         )
 
+        val iPrep = IPrepAPI()
+
         while (attempt <= 3) {
             try {
-                val (testInfo, apiCallTime) = ApiCallTimer.measureTime {
-                    IPrepAPI().generate(
-                        questionType = cState.questionType,
-                        difficulty = cState.difficulty,
-                        language = cState.language,
-                        topic = cState.reference
-                    )
+                val chat = iPrep.setupChat(
+                    questionType = cState.questionType,
+                    difficulty = cState.difficulty,
+                    language = cState.language,
+                    topic = cState.reference
+                )
+
+                if (iPrep.tokenCount > 25000) {
+                    notification.showNotification("Document is too long. Please upload shorter document.", true)
+                    break
                 }
 
-                if (testInfo.questions.size <= 20) {
+                val (testInfo, apiCallTime) = ApiCallTimer.measureTime {
+                    IPrepAPI().generate(chat)
+                }
+
+                if (testInfo == null || testInfo.questions.size <= 20) {
                     continue
                 }
 
@@ -96,6 +106,7 @@ class GlobalViewModel @Inject constructor(
                 }
 
                 attempt += 1
+                delay(2000)
             }
         }
 

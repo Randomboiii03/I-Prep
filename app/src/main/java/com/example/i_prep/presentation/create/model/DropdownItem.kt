@@ -15,5 +15,5 @@ val difficulties = listOf(
 
 val languages = listOf(
     "English",
-    "Filipino"
+    "Tagalog"
 )
