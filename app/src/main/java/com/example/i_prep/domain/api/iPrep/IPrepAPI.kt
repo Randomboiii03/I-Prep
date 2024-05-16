@@ -27,22 +27,24 @@ class IPrepAPI {
 
     var tokenCount = 0
 
-    private val model = GenerativeModel(
-        modelName = "gemini-1.0-pro",
-        apiKey = BuildConfig.geminiAIKey,
-        generationConfig = generationConfig {
-            temperature = 0.9f
-            topK = 1
-            topP = 1f
-            maxOutputTokens = 2048
-        },
-        safetySettings = listOf(
-            SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
-            SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.LOW_AND_ABOVE),
-            SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.LOW_AND_ABOVE),
-            SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.LOW_AND_ABOVE),
-        ),
-    )
+    private var model: GenerativeModel? = null
+
+    private fun fixFormat(response: String): String {
+        val startIndex = response.indexOf('{')
+        val endIndex = response.lastIndexOf('}') + 1
+
+        return response.substring(startIndex, endIndex)
+    }
+
+    private fun getImage(): String {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature")
+            .build()
+        val response = client.newCall(request).execute()
+
+        return response.body.string().split('?')[0]
+    }
 
     suspend fun setupChat(
         questionType: String,
@@ -104,7 +106,7 @@ class IPrepAPI {
             """.trimIndent()}
         }
 
-        val prompt =
+        val systemPrompt =
             """This guide equips you to transform limited study materials into a springboard for active learning. 
             Move beyond rote memorization by crafting $questionType questions that challenge you to:
             $guide
@@ -117,7 +119,7 @@ class IPrepAPI {
             Please follow best practices for creating a proper practice test use Fink's Taxonomy of Significant Learning as a framework and SOLO Taxonomy.
             
             Please make sure to follow the question type, difficulty, language, and subject matter for the creation of test. 
-            Please output only in this JSON format: $jsonFormat
+            Please output only in this JSON format in the language of $language: $jsonFormat
             Another task, if the user send "DETAILS" you will create a test short title, short description, and tags (purpose, subject, level, format, etc.) in this JSON format:
             {
                 "title": "",
@@ -136,15 +138,9 @@ class IPrepAPI {
 
         val chatHistory = listOf(
             content("user") {
-                text(prompt)
-            },
-            content("model") {
-                text(respond)
-            },
-            content("user") {
                 text("""Below is the topic in a language "$language":
                     $topic
-                    Please analyze and understand the subject matter the topic have.
+                    Please analyze and understand the subject matter that the topic have.
                 """.trimMargin())
             },
             content("model") {
@@ -152,9 +148,28 @@ class IPrepAPI {
             }
         )
 
-        val chat = model.startChat(chatHistory)
+        model = GenerativeModel(
+            modelName = "gemini-1.5-pro-latest",
+            apiKey = BuildConfig.geminiAIKey,
+            generationConfig = generationConfig {
+                temperature = 1f
+                topK = 64
+                topP = 0.95f
+                maxOutputTokens = 8192
+                responseMimeType = "text/plain"
+            },
+            safetySettings = listOf(
+                SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
+                SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.LOW_AND_ABOVE),
+                SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.LOW_AND_ABOVE),
+                SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.LOW_AND_ABOVE),
+            ),
+            systemInstruction = content { text(systemPrompt) }
+        )
 
-        val (tokens) = model.countTokens(*chat.history.toTypedArray())
+        val chat = model!!.startChat(chatHistory)
+
+        val (tokens) = model!!.countTokens(*chat.history.toTypedArray())
         tokenCount = tokens
 
         delay(timeDelay)
@@ -162,30 +177,17 @@ class IPrepAPI {
         return chat
     }
 
-    private fun fixFormat(response: String): String {
-        val startIndex = response.indexOf('{')
-        val endIndex = response.lastIndexOf('}') + 1
-
-        return response.substring(startIndex, endIndex)
-    }
-
-    private fun getImage(): String {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://random.imagecdn.app/v1/image?width=400&height=600&category=nature")
-            .build()
-        val response = client.newCall(request).execute()
-
-        return response.body.string().split('?')[0]
-    }
-
     suspend fun generate(chat: Chat): TestInfo? {
         var response = chat.sendMessage("START")
-
+        displayLog("RESPONSE", response.text.toString())
         val combinedQuestions = mutableListOf<Question>()
         combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-        val (tokens) = model.countTokens(*chat.history.toTypedArray())
+        if (model == null) {
+            return null
+        }
+
+        val (tokens) = model!!.countTokens(*chat.history.toTypedArray())
         tokenCount = tokens
         val tokenLimit = tokens + 8500
 
@@ -198,9 +200,9 @@ class IPrepAPI {
                 response = chat.sendMessage("MORE")
                 combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-                val (token) = model.countTokens(*chat.history.toTypedArray())
+                val (token) = model!!.countTokens(*chat.history.toTypedArray())
                 tokenCount = token
-
+                displayLog("RESPONSE", response.text.toString())
                 displayLog("runAPI", "Size: ${combinedQuestions.count()} Token Count: $tokenCount")
 
             } catch (e: Exception) {
