@@ -25,10 +25,6 @@ class IPrepAPI {
     private val timeDelay = Random.nextLong(5000L, 10001L)
 //    private val timeDelay = 10000L
 
-    var tokenCount = 0
-
-    private var model: GenerativeModel? = null
-
     private fun fixFormat(response: String): String {
         val startIndex = response.indexOf('{')
         val endIndex = response.lastIndexOf('}') + 1
@@ -46,12 +42,12 @@ class IPrepAPI {
         return response.body.string().split('?')[0]
     }
 
-    suspend fun setupChat(
+    suspend fun generate(
         questionType: String,
         difficulty: String,
         language: String,
         topic: String
-    ): Chat {
+    ): TestInfo? {
         val jsonFormat = when(questionType) {
             "True or False" -> {"""
                 {
@@ -148,7 +144,7 @@ class IPrepAPI {
             }
         )
 
-        model = GenerativeModel(
+        val model = GenerativeModel(
             modelName = "gemini-1.5-pro-latest",
             apiKey = BuildConfig.geminiAIKey,
             generationConfig = generationConfig {
@@ -156,7 +152,7 @@ class IPrepAPI {
                 topK = 64
                 topP = 0.95f
                 maxOutputTokens = 8192
-                responseMimeType = "text/plain"
+                responseMimeType = "application/json"
             },
             safetySettings = listOf(
                 SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.LOW_AND_ABOVE),
@@ -167,29 +163,18 @@ class IPrepAPI {
             systemInstruction = content { text(systemPrompt) }
         )
 
-        val chat = model!!.startChat(chatHistory)
-
-        val (tokens) = model!!.countTokens(*chat.history.toTypedArray())
-        tokenCount = tokens
+        val chat = model.startChat(chatHistory)
 
         delay(timeDelay)
 
-        return chat
-    }
-
-    suspend fun generate(chat: Chat): TestInfo? {
         var response = chat.sendMessage("START")
-        displayLog("RESPONSE", response.text.toString())
+
         val combinedQuestions = mutableListOf<Question>()
         combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-        if (model == null) {
-            return null
-        }
-
-        val (tokens) = model!!.countTokens(*chat.history.toTypedArray())
-        tokenCount = tokens
-        val tokenLimit = tokens + 8500
+        val (tokens) = model.countTokens(*chat.history.toTypedArray())
+        var tokenCount = tokens
+        val tokenLimit = tokens + 6500
 
         var attempt = 0
 
@@ -197,12 +182,13 @@ class IPrepAPI {
             try {
                 delay(timeDelay)
 
-                response = chat.sendMessage("MORE")
+                response = chat.sendMessage("MORE, don't repeat questions please")
+                displayLog("RESPONSE", response.text.toString())
                 combinedQuestions.addAll(gson.fromJson(fixFormat(response.text.toString()), QuestionList::class.java).questions)
 
-                val (token) = model!!.countTokens(*chat.history.toTypedArray())
+                val (token) = model.countTokens(*chat.history.toTypedArray())
                 tokenCount = token
-                displayLog("RESPONSE", response.text.toString())
+
                 displayLog("runAPI", "Size: ${combinedQuestions.count()} Token Count: $tokenCount")
 
             } catch (e: Exception) {
@@ -225,7 +211,6 @@ class IPrepAPI {
                 response = chat.sendMessage("DETAILS")
                 details = gson.fromJson(fixFormat(response.text.toString()), Details::class.java)
 
-                displayLog("runAPI", details.toString())
                 break
 
             } catch (e: Exception) {
