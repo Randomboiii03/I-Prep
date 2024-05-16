@@ -52,24 +52,15 @@ class GlobalViewModel @Inject constructor(
             false
         )
 
-        val iPrep = IPrepAPI()
-
         while (attempt <= 3) {
             try {
-                val chat = iPrep.setupChat(
-                    questionType = cState.questionType,
-                    difficulty = cState.difficulty,
-                    language = cState.language,
-                    topic = cState.reference
-                )
-
-                if (iPrep.tokenCount > 25000) {
-                    notification.showNotification("Document is too long. Please upload shorter document.", true)
-                    break
-                }
-
                 val (testInfo, apiCallTime) = ApiCallTimer.measureTime {
-                    IPrepAPI().generate(chat)
+                    IPrepAPI().generate(
+                        questionType = cState.questionType,
+                        difficulty = cState.difficulty,
+                        language = cState.language,
+                        topic = cState.reference
+                    )
                 }
 
                 if (testInfo == null || testInfo.questions.size <= 20) {
