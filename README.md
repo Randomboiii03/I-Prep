@@ -12,12 +12,12 @@ No more stressing over exams. With I-PREP, you'll be ready to tackle anything th
 
 <ul>
   <li>Test Creation: Create multiple-choice, fill-in-the-blank, and true or false questions using uploaded documents such as lecture notes, textbooks, or presentations.</li>
-  <li>**Question Types:** Generate diverse question types to cater to different learning styles and assessment needs.</li>
-  <li>**Statistical Insights:** Access comprehensive statistics on tests created, tests taken, and many more.</li>
-  <li>**Test History:** Keep track of your test-taking journey with a detailed history of tests taken, including scores and questions answered.</li>
-  <li>**Test Compilation/Library:** Build a personal library of tests for quick access of generated tests.</li>
-  <li>**Editable Test Items:** Customize the number of questions to be shown when taking test.</li>
-  <li>**Shareable Tests:** Share your custom tests with others using a unique code, fostering collaborative learning and knowledge sharing.</li>
+  <li>Question Types: Generate diverse question types to cater to different learning styles and assessment needs.</li>
+  <li>Statistical Insights: Access comprehensive statistics on tests created, tests taken, and many more.</li>
+  <li>Test History: Keep track of your test-taking journey with a detailed history of tests taken, including scores and questions answered.</li>
+  <li>Test Compilation/Library: Build a personal library of tests for quick access of generated tests.</li>
+  <li>Editable Test Items: Customize the number of questions to be shown when taking test.</li>
+  <li>Shareable Tests: Share your custom tests with others using a unique code, fostering collaborative learning and knowledge sharing.</li>
 </ul>
 
 <h3>Screenshots</h3>
